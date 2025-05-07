@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Phiếu Tính Tiền</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="receipt">
+    <header>
+      <img class="logo" src="logo.png" alt="Logo công ty"/>
+      <div class="store-info">
+        <h1>NHATGIANG STORE</h1>
+        <p>SN 729 Bà Triệu, P. Trường Thi, TPTH<br/>SDT: 0919050618</p>
+      </div>
+    </header>
+
+    <section class="head">
+      <h2>Phiếu Tính Tiền</h2>
+      <p><strong>Số:</strong> <span id="tx-id"></span></p>
+      <p><strong>Ngày:</strong> <span id="tx-date"></span></p>
+      <p><strong>Khách hàng:</strong> <span id="tx-customer"></span></p>
+      <p><strong>SĐT:</strong> <span id="tx-phone"></span></p>
+      <p><strong>Địa chỉ:</strong> <span id="tx-address"></span></p>
+    </section>
+
+    <table class="items">
+      <thead>
+        <tr><th>STT</th><th>Tên SP</th><th>SL</th><th>Đơn giá</th><th>Thành tiền</th></tr>
+      </thead>
+      <tbody id="items-body"></tbody>
+      <tfoot>
+        <tr><td colspan="4" class="text-right">Tổng tiền:</td><td id="sum-total"></td></tr>
+        <tr><td colspan="4" class="text-right">Giảm giá:</td><td id="discount"></td></tr>
+        <tr class="total-row"><td colspan="4" class="text-right">Thành tiền:</td><td id="final-total"></td></tr>
+      </tfoot>
+    </table>
+
+    <section class="footer">
+      <p><strong>Bằng chữ:</strong> <span id="in-words"></span></p>
+      <div class="qr-code">
+        <img id="qr" src="" alt="QR Payment"/>
+      </div>
+      <p>Quý khách vui lòng giữ lại Phiếu Tính tiền.<br/>Xin cảm ơn và hẹn gặp lại!</p>
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
