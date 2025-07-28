@@ -1,81 +1,56 @@
 <!DOCTYPE html>
-<html lang='vi'>
+<html lang="vi">
 <head>
-  <meta charset='UTF-8'>
+  <meta charset="UTF-8">
   <title>Phiếu tính tiền</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      width: 105mm;
+      padding: 20px;
+      max-width: 480px;
       margin: auto;
-      padding: 10px;
-      border: 1px solid #000;
+      font-size: 16px;
     }
-    .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .logo {
-      width: 60px;
-    }
-    .company-info {
-      text-align: right;
-      font-size: 14px;
-    }
-    h2 {
+    h2, h3 {
       text-align: center;
-      margin: 10px 0;
     }
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 14px;
+      margin: 10px 0;
     }
-    table, th, td {
-      border: 1px solid black;
-    }
-    th, td {
-      padding: 4px;
+    td, th {
+      border: 1px solid #000;
+      padding: 6px;
       text-align: center;
     }
-    .bold {
-      font-weight: bold;
-    }
-    .footer {
-      margin-top: 10px;
-      font-size: 14px;
+    .note {
+      font-style: italic;
+      text-align: center;
+      line-height: 1.6;
     }
     .qr {
       text-align: center;
       margin-top: 15px;
     }
-    .qr img {
-      width: 120px;
-    }
   </style>
 </head>
 <body>
 
-  <div class='header'>
-    <img src='https://i.ibb.co/HDGQyJBw/1-Logo-100358.jpg' alt='Logo' class='logo'>
-    <div class='footer'>
-      <p><strong>HUONG DO PICKLEBALL</strong><br>
-      <a>118 Lò Chum, P. Hạc Thành, tỉnh Thanh Hóa</a>
-    </div>
+  <div style="text-align:center">
+    <img src="https://i.imgur.com/3XcCTuJ.png" alt="logo" width="80">
+    <h3>HUONG DO PICKLEBALL</h3>
+    <p>118 Lò Chum, P. Hạc Thành, tỉnh Thanh Hóa</p>
   </div>
 
   <h2>PHIẾU TÍNH TIỀN</h2>
 
-    <p>
-<div style='line-height:1.4; font-size:14px'>
-  <strong>Số giao dịch:</strong> " & [IDT] & "<br>
-  <strong>Ngày, giờ:</strong> " & TEXT([Ngaygioihethong], "DD/MM/YYYY hh:mm:ss") & "<br>
-  <strong>Tên Khách hàng:</strong> " & [Tenkh] & "<br>
-  <strong>Giờ bắt đầu:</strong> " & TEXT([tugio], "hh:mm") & "<br>
-  <strong>Giờ kết thúc:</strong> " & TEXT([dengio], "hh:mm") & "<br>
-</div>
- <p>    
+  <p><strong>Số giao dịch:</strong> 286eed09</p>
+  <p><strong>Ngày, giờ:</strong> 23/07/2025 22:34:11</p>
+  <p><strong>Tên Khách hàng:</strong> Chị Ánh</p>
+  <p><strong>Giờ bắt đầu:</strong> 22:34</p>
+  <p><strong>Giờ kết thúc:</strong> 22:34</p>
+
   <table>
     <tr>
       <th>Dịch vụ</th>
@@ -83,32 +58,33 @@
       <th>Đơn giá</th>
       <th>Thành tiền</th>
     </tr>
-    <tr>    
-<td style='text-align:left'>" & SUBSTITUTE([Inventory Change Log][Tenhangban], ",", "<br>") & "</td> 
-  <td style='text-align:center'>" & SUBSTITUTE(TEXT([Inventory Change Log][Soluong]), ",", "<br>") & "</td>               
-  <td style='text-align:right'>" & SUBSTITUTE(TEXT([Inventory Change Log][dongia]), ",", "<br>") & "</td>                
-  <td style='text-align:right'>" & SUBSTITUTE(TEXT([Inventory Change Log][Thanhtien]), ",", "<br>") & "</td>                
-                
+    <tr>
+      <td>Thuê sân Xé vé</td>
+      <td>2</td>
+      <td>35.000</td>
+      <td>70.000</td>
     </tr>
- </table>
+    <tr>
+      <td>Nước Revie</td>
+      <td>1</td>
+      <td>15.000</td>
+      <td>15.000</td>
+    </tr>
+  </table>
 
- <div style='line-height:1.4; font-size:14px'>
-    <p>
-       <strong>Tổng cộng:</strong> "&text(sum([Inventory Change Log][Thanhtien]))&" VND<br>
-       <strong>Bằng chữ:</strong> "&(list([Bangchu]))&"</p>
+  <p><strong>Tổng cộng:</strong> 85.000 VND</p>
+  <p><strong>Bằng chữ:</strong> Tám mươi lăm ngàn đồng</p>
 
-
+  <div class="qr">
+    <img src="https://img.vietqr.io/image/970449-001668779999-compact.png?amount=85000&accountName=HUONGDOPICKLEBALL" width="180" alt="QR">
+    <br><img src="https://vietqr.net/assets/images/logo-vietqr.png" height="24">
   </div>
 
-  <div class='qr'>
- 
-    <img src="&[qr]&" style='width: 150px; height: 150px;'>
+  <div class="note">
+    <p><b><i>Quý khách vui lòng giữ lại phiếu tính tiền</i></b></p>
+    <p><b><i>Xin cảm ơn và hẹn gặp lại!</i></b></p>
+    <p><b><i>Cảm ơn khi tiếp nhận phản hồi của quý khách.</i></b></p>
   </div>
 
-<div style='line-height:1; font-size:12px; text-align:center'>
-  <p><b><i>Quý khách vui lòng giữ lại phiếu tính tiền</i></b></p>
-  <p><b><i>Xin cảm ơn và hẹn gặp lại!</i></b></p>
-  <p><b><i>Cảm ơn khi tiếp nhận phản hồi của quý khách.</i></b></p>
-</div>
 </body>
 </html>
