@@ -1,156 +1,784 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>.: B&#431;U &#272;I&#7878;N THI&#7878;U HO� :.</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<style>
-.navbar {
-  overflow: hidden;
-  background-color: #FCB71E;
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-.navbar a {
-  float: left;
-  font-size: 16px;
-  color: white;
-  text-align: center;
-  padding: 14px 16px;
-  text-decoration: none;
-}
-
-.dropdown {
-  float: left;
-  overflow: hidden;
-}
-
-.dropdown .dropbtn {
-  cursor: pointer;
-  font-size: 16px;  
-  border: none;
-  outline: none;
-  color: white;
-  padding: 14px 16px;
-  background-color: inherit;
-  font-family: inherit;
-  margin: 0;
-}
-
-.navbar a:hover, .dropdown:hover .dropbtn, .dropbtn:focus {
-  background-color: red;
-}
-
-.dropdown-content {
-  display: none;
-  position: absolute;
-  background-color: #f9f9f9;
-  min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  z-index: 1;
-}
-
-.dropdown-content a {
-  float: none;
-  color: black;
-  padding: 12px 16px;
-  text-decoration: none;
-  display: block;
-  text-align: left;
-}
-
-.dropdown-content a:hover {
-  background-color: #ddd;
-}
-
-.show {
-  display: block;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pickleball Haven - Sân Pickleball Chuyên Nghiệp</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Reset CSS */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        /* Header */
+        header {
+            background-color: #2E8B57;
+            color: white;
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+            color: #FFD700;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        nav ul li {
+            margin-left: 25px;
+        }
+        
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        nav ul li a:hover {
+            color: #FFD700;
+        }
+        
+        .cta-button {
+            background-color: #FF6B6B;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .cta-button:hover {
+            background-color: #FF8E8E;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1591789375226-9a7ba84fc5b7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 100px 0;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 30px;
+        }
+        
+        /* About Section */
+        .about {
+            padding: 80px 0;
+            background-color: #f9f9f9;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+            color: #2E8B57;
+            font-size: 2.2rem;
+        }
+        
+        .about-content {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 40px;
+        }
+        
+        .about-text {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .about-image {
+            flex: 1;
+            min-width: 300px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .about-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        /* Features Section */
+        .features {
+            padding: 80px 0;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .feature-card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: #2E8B57;
+            margin-bottom: 20px;
+        }
+        
+        .feature-card h3 {
+            margin-bottom: 15px;
+            color: #2E8B57;
+        }
+        
+        /* Pricing Section */
+        .pricing {
+            padding: 80px 0;
+            background-color: #f9f9f9;
+        }
+        
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .pricing-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        
+        .pricing-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .pricing-header {
+            background-color: #2E8B57;
+            color: white;
+            padding: 20px;
+        }
+        
+        .pricing-price {
+            font-size: 2.5rem;
+            margin: 15px 0;
+        }
+        
+        .pricing-features {
+            padding: 20px;
+            list-style: none;
+        }
+        
+        .pricing-features li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .pricing-button {
+            display: block;
+            margin: 20px;
+            padding: 12px 0;
+            background-color: #2E8B57;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .pricing-button:hover {
+            background-color: #3CB371;
+        }
+        
+        /* Gallery Section */
+        .gallery {
+            padding: 80px 0;
+        }
+        
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+        
+        .gallery-item {
+            border-radius: 10px;
+            overflow: hidden;
+            height: 250px;
+            position: relative;
+        }
+        
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+        
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+        
+        /* Contact Section */
+        .contact {
+            padding: 80px 0;
+            background-color: #f9f9f9;
+        }
+        
+        .contact-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+        }
+        
+        .contact-info {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .contact-form {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .info-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .info-icon {
+            font-size: 1.5rem;
+            color: #2E8B57;
+            margin-right: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .form-group textarea {
+            height: 150px;
+        }
+        
+        .submit-button {
+            background-color: #2E8B57;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .submit-button:hover {
+            background-color: #3CB371;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: #2E8B57;
+            color: white;
+            padding: 50px 0 20px;
+        }
+        
+        .footer-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+        
+        .footer-section h3 {
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-links a {
+            color: #ddd;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: #FFD700;
+        }
+        
+        .social-icons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .social-icons a {
+            color: white;
+            font-size: 1.5rem;
+            transition: color 0.3s;
+        }
+        
+        .social-icons a:hover {
+            color: #FFD700;
+        }
+        
+        .copyright {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            nav ul {
+                margin-top: 20px;
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            nav ul li {
+                margin: 10px 0;
+            }
+            
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
-<img border="0" src="../jpg/vnpost-logo1.png" width="332" height="52"><div class="navbar">
-  <a href="http://10.41.74.99">Trang ch&#7911;</a>
-	<a target="_blank" href="https://www.appsheet.com/start/4fcacdb1-7218-44b8-8b6d-6c9c35a3fce6?platform=desktop#vss=H4sIAAAAAAAAA52OvQ4CIRCE32VqnoDWmGiMNhobscBjSYh3cDk49UJ4dxd_Yqt2u7PzzU7GxdF1m3Rzhjzkz7aiCRJZYTf1pCAVZsGnIbQKQmGju6e4CHUoKEfxZhNFyPw9Kv__KuAM-eSso6HmVIr5F8PnSrBQ_SgC3Zj0qaVHSfaXwpoNzRjJ7LnCj6_j0s9vvfZmHQzHWd1GKndbTHqGUQEAAA==&view=Home&appName=MUONGLATBCN-846464982">Nh&#7853;p B�n h�ng
-	<a href="http://10.41.74.99/thieuhoa/admin">Qu&#7843;n tr&#7883;
-	</a>
-  <div class="dropdown">
-  <button class="dropbtn" onclick="myFunction()" style="width: 116; height: 18">B�o c�o
-    <i class="fa fa-caret-down"></i>
-  </button>
-  <div class="dropdown-content" id="myDropdown">
- 
-    <a target="_blank" href="https://docs.google.com/spreadsheets/d/1AQQTrRNfPUOyCBQsRoR9UHi43tkYQddIoE1mfENCC6Q/edit#gid=2081708136">1. Thu B&#7843;o hi&#7875;m Y t&#7871; & B&#7843;o hi&#7875;m x� h&#7897;i</a>
-    <a target="_blank" href="https://docs.google.com/spreadsheets/d/18AgnaDdOAuKEpAGpk3NtUv-upN_7ZuAsYKjG2ghFCe0/edit?gid=121912064#gid=121912064">2. B�o c�o k&#7871;t qu&#7843; b�n h�ng </a>
+    <!-- Header -->
+    <header>
+        <div class="container header-container">
+            <div class="logo">
+                <i class="fas fa-table-tennis-paddle-ball"></i>
+                <span>Pickleball Haven</span>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#about">Giới thiệu</a></li>
+                    <li><a href="#features">Tiện ích</a></li>
+                    <li><a href="#pricing">Bảng giá</a></li>
+                    <li><a href="#gallery">Hình ảnh</a></li>
+                    <li><a href="#contact">Liên hệ</a></li>
+                </ul>
+            </nav>
+            <a href="#contact" class="cta-button">Đặt sân ngay</a>
+        </div>
+    </header>
 
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Trải nghiệm Pickleball đẳng cấp</h1>
+            <p>Sân chơi hiện đại, chuyên nghiệp dành cho những người đam mê thể thao Pickleball. Đặt sân ngay để tận hưởng những giây phút thi đấu tuyệt vời nhất!</p>
+            <a href="#contact" class="cta-button">Đặt sân ngay</a>
+        </div>
+    </section>
 
-  </div>
-  </div> 
-</div>
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <h2 class="section-title">Về chúng tôi</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <h3>Pickleball Haven - Địa điểm lý tưởng cho môn thể thao phát triển nhanh nhất thế giới</h3>
+                    <p>Với 6 sân trong nhà và ngoài trời đạt tiêu chuẩn quốc tế, Pickleball Haven tự hào là địa điểm hàng đầu dành cho những người yêu thích môn thể thao Pickleball. Sân của chúng tôi được xây dựng với bề mặt cao cấp, hệ thống chiếu sáng hiện đại và trang thiết bị đầy đủ.</p>
+                    <p>Đội ngũ nhân viên chuyên nghiệp của chúng tôi luôn sẵn sàng hỗ trợ để mang đến cho bạn những trải nghiệm tuyệt vời nhất. Dù bạn là người mới bắt đầu hay vận động viên chuyên nghiệp, chúng tôi đều có các chương trình phù hợp cho bạn.</p>
+                </div>
+                <div class="about-image">
+                    <img src="https://images.unsplash.com/photo-1660037117285-829a2a6cb979?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" alt="Sân Pickleball">
+                </div>
+            </div>
+        </div>
+    </section>
 
-<h3></h3>
-<table border="0" width="100%">
-	<tr>
-		<td>
-		<table border="0" width="100%">
-			<tr>
-				<td>&nbsp;</td>
-				<td width="261">&nbsp;</td>
-				<td width="139">
-				&nbsp;</td>
-				<td width="139">
-				&nbsp;</td>
-				<td width="139">
-				&nbsp;</td>
-				<td width="139">
-				&nbsp;</td>
-				<td width="139">
-				&nbsp;</td>
-				<td>&nbsp;</td>
-				<td>&nbsp;</td>
-			</tr>
-			</table>
-		</td>
-	</tr>
-	</table>
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <h2 class="section-title">Tiện ích nổi bật</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <h3>Hệ thống chiếu sáng hiện đại</h3>
+                    <p>Sân được trang bị hệ thống đèn LED hiện đại, cho phép chơi cả vào buổi tối với chất lượng ánh sáng tốt nhất.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-store"></i>
+                    </div>
+                    <h3>Cửa hàng dụng cụ</h3>
+                    <p>Chúng tôi cung cấp đầy đủ các dụng cụ chơi Pickleball từ vợt, bóng đến phụ kiện với chất lượng cao.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <h3>Quán café & giải khát</h3>
+                    <p>Khu vực nghỉ ngơi và thư giãn với đồ uống và snack đa dạng, phục vụ trước, trong và sau khi chơi.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shower"></i>
+                    </div>
+                    <h3>Phòng thay đồ & tắm</h3>
+                    <p>Hệ thống phòng thay đồ và tắm riêng biệt, sạch sẽ, tiện nghi cho cả nam và nữ.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-car"></i>
+                    </div>
+                    <h3>Bãi đỗ xe rộng rãi</h3>
+                    <p>Bãi đỗ xe miễn phí với sức chứa lên đến 50 ô tô và 100 xe máy, an toàn và thuận tiện.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <h3>Huấn luyện viên chuyên nghiệp</h3>
+                    <p>Đội ngũ HLV giàu kinh nghiệm sẵn sàng hướng dẫn từ cơ bản đến nâng cao cho mọi lứa tuổi.</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-<script>
-/* When the user clicks on the button, 
-toggle between hiding and showing the dropdown content */
-function myFunction() {
-  document.getElementById("myDropdown").classList.toggle("show");
-}
+    <!-- Pricing Section -->
+    <section id="pricing" class="pricing">
+        <div class="container">
+            <h2 class="section-title">Bảng giá</h2>
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3>Sân tiêu chuẩn</h3>
+                        <div class="pricing-price">150.000đ/giờ</div>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>Sân ngoài trời tiêu chuẩn</li>
+                        <li>Ánh sáng tự nhiên</li>
+                        <li>Cho thuê vợt và bóng</li>
+                        <li>Phục vụ đồ uống tại chỗ</li>
+                    </ul>
+                    <a href="#contact" class="pricing-button">Đặt ngay</a>
+                </div>
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3>Sân cao cấp</h3>
+                        <div class="pricing-price">250.000đ/giờ</div>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>Sân trong nhà máy lạnh</li>
+                        <li>Hệ thống chiếu sáng chuyên nghiệp</li>
+                        <li>Vợt cao cấp miễn phí</li>
+                        <li>Nước uống miễn phí</li>
+                        <li>Khăn lạnh miễn phí</li>
+                    </ul>
+                    <a href="#contact" class="pricing-button">Đặt ngay</a>
+                </div>
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3>Gói thành viên</h3>
+                        <div class="pricing-price">2.500.000đ/tháng</div>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>Chơi không giới hạn các ngày trong tuần</li>
+                        <li>Ưu tiên đặt sân</li>
+                        <li>Giảm 20% tại quán café</li>
+                        <li>Giảm 15% khi mua dụng cụ</li>
+                        <li>2 buổi tập với HLV/tháng</li>
+                    </ul>
+                    <a href="#contact" class="pricing-button">Đăng ký</a>
+                </div>
+            </div>
+        </div>
+    </section>
 
-// Close the dropdown if the user clicks outside of it
-window.onclick = function(e) {
-  if (!e.target.matches('.dropbtn')) {
-  var myDropdown = document.getElementById("myDropdown");
-    if (myDropdown.classList.contains('show')) {
-      myDropdown.classList.remove('show');
-    }
-  }
-}
-</script>
-<table border="0" width="100%" bgcolor="#000000">
-	<tr>
-		<td width="26">
-				<b><font face="Tahoma"><span style="font-size: 10pt">
-				<font color="#FFFFFF">
-		<img border="0" src="../jpg/home%20-%20end.jpg" width="20" height="15"></font></span></font></b></td>
-		<td>
-		<font face="Tahoma" style="font-size: 10pt; " color="#FCB71E">B&#431;U &#272;I&#7878;N 
-		T&#7880;NH THANH H�A - THANH HOA POST</font></td>
-	</tr>
-	<tr>
-		<td width="26">
-		<img border="0" src="../jpg/dia%20chi.jpg" width="21" height="21"></td>
-		<td>
-		<span style="font-size: 10pt; box-sizing: border-box; font-style: inherit; font-Tahoma: inherit; font-weight: inherit; font-stretch: inherit; line-height: inherit; font-family: Roboto-Regular; vertical-align: baseline; border-radius: 0px; display: block; border: 0px none; margin: 0px; padding: 0px">
-		<font face="Tahoma" color="#FCB71E">&#272;&#7883;a 
-			ch&#7881;: S&#7889; 33 Tr&#7847;n Ph� - P. &#272;i&#7879;n Bi�n - TP Thanh H�a. Copy right(C) 
-		2021.</font></span></td>
-	</tr>
-</table>
+    <!-- Gallery Section -->
+    <section id="gallery" class="gallery">
+        <div class="container">
+            <h2 class="section-title">Hình ảnh sân bãi</h2>
+            <div class="gallery-grid">
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1543481726-44c5d2dfc32c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" alt="Sân Pickleball">
+                </div>
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" alt="Người chơi Pickleball">
+                </div>
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1571019614244-c3ddfd0eadae?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" alt="Dụng cụ Pickleball">
+                </div>
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1591789375226-9a7ba84fc5b7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" alt="Sân tập luyện">
+                </div>
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1660037117285-829a2a6cb979?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" alt="Giải đấu Pickleball">
+                </div>
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" alt="Huấn luyện viên">
+                </div>
+            </div>
+        </div>
+    </section>
 
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2 class="section-title">Liên hệ đặt sân</h2>
+            <div class="contact-container">
+                <div class="contact-info">
+                    <h3>Thông tin liên hệ</h3>
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div>
+                            <h4>Địa chỉ</h4>
+                            <p>123 Đường Thể Thao, Quận 1, TP. Hồ Chí Minh</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div>
+                            <h4>Điện thoại</h4>
+                            <p>(028) 3823 4567</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div>
+                            <h4>Email</h4>
+                            <p>info@pickleballhaven.vn</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div>
+                            <h4>Giờ mở cửa</h4>
+                            <p>Thứ 2 - Thứ 6: 6:00 - 22:00<br>Thứ 7 & Chủ nhật: 6:00 - 23:00</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="contact-form">
+                    <h3>Đặt sân ngay</h3>
+                    <form>
+                        <div class="form-group">
+                            <label for="name">Họ và tên</label>
+                            <input type="text" id="name" placeholder="Nhập họ tên của bạn" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Số điện thoại</label>
+                            <input type="tel" id="phone" placeholder="Nhập số điện thoại" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" placeholder="Nhập email của bạn">
+                        </div>
+                        <div class="form-group">
+                            <label for="date">Ngày đặt sân</label>
+                            <input type="date" id="date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="time">Khung giờ</label>
+                            <input type="time" id="time" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Ghi chú thêm</label>
+                            <textarea id="message" placeholder="Ghi chú thêm cho chúng tôi"></textarea>
+                        </div>
+                        <button type="submit" class="submit-button">Gửi đặt sân</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-container">
+                <div class="footer-section">
+                    <h3>Pickleball Haven</h3>
+                    <p>Địa điểm lý tưởng cho những người đam mê thể thao Pickleball. Chúng tôi cam kết mang đến trải nghiệm tốt nhất cho người chơi.</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#"><i class="fab fa-tiktok"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Liên kết nhanh</h3>
+                    <ul class="footer-links">
+                        <li><a href="#about">Giới thiệu</a></li>
+                        <li><a href="#features">Tiện ích</a></li>
+                        <li><a href="#pricing">Bảng giá</a></li>
+                        <li><a href="#gallery">Hình ảnh</a></li>
+                        <li><a href="#contact">Liên hệ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Dịch vụ</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Thuê sân theo giờ</a></li>
+                        <li><a href="#">Gói thành viên</a></li>
+                        <li><a href="#">Huấn luyện cá nhân</a></li>
+                        <li><a href="#">Tổ chức giải đấu</a></li>
+                        <li><a href="#">Mua dụng cụ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Đăng ký nhận tin</h3>
+                    <p>Đăng ký để nhận thông tin khuyến mãi và sự kiện đặc biệt từ chúng tôi.</p>
+                    <form>
+                        <div class="form-group">
+                            <input type="email" placeholder="Nhập email của bạn" required>
+                        </div>
+                        <button type="submit" class="submit-button">Đăng ký</button>
+                    </form>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 Pickleball Haven. Tất cả quyền được bảo lưu.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Simple form validation and smooth scrolling
+        document.addEventListener('DOMContentLoaded', function() {
+            // Smooth scrolling for navigation links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+            
+            // Form submission
+            const contactForm = document.querySelector('.contact-form form');
+            if (contactForm) {
+                contactForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    alert('Cảm ơn bạn đã đặt sân! Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất.');
+                    contactForm.reset();
+                });
+            }
+            
+            // Newsletter subscription
+            const newsletterForm = document.querySelector('.footer-section form');
+            if (newsletterForm) {
+                newsletterForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    alert('Cảm ơn bạn đã đăng ký nhận tin!');
+                    newsletterForm.reset();
+                });
+            }
+        });
+    </script>
 </body>
 </html>
