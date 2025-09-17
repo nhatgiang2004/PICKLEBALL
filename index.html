@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sân Pickleball Hường Đỗ</title>
+    <title>Pickleball Haven - Sân Pickleball Chuyên Nghiệp</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Reset CSS */
@@ -320,7 +320,8 @@
         }
         
         .form-group input,
-        .form-group textarea {
+        .form-group textarea,
+        .form-group select {
             width: 100%;
             padding: 12px;
             border: 1px solid #ddd;
@@ -346,6 +347,44 @@
         
         .submit-button:hover {
             background-color: #3CB371;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+        
+        .modal h2 {
+            color: #2E8B57;
+            margin-bottom: 20px;
+        }
+        
+        .modal-close {
+            background-color: #2E8B57;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
         }
         
         /* Footer */
@@ -440,7 +479,7 @@
         <div class="container header-container">
             <div class="logo">
                 <i class="fas fa-table-tennis-paddle-ball"></i>
-                <span>Pickleball Hường Đỗ</span>
+                <span>Pickleball Haven</span>
             </div>
             <nav>
                 <ul>
@@ -470,8 +509,8 @@
             <h2 class="section-title">Về chúng tôi</h2>
             <div class="about-content">
                 <div class="about-text">
-                    <h3>Pickleball Hường Đỗ - Địa điểm lý tưởng cho môn thể thao phát triển nhanh nhất thế giới</h3>
-                    <p>Với 2 sân trong nhà đạt tiêu chuẩn quốc tế, Pickleball Hường Đỗ tự hào là địa điểm hàng đầu dành cho những người yêu thích môn thể thao Pickleball. Sân của chúng tôi được xây dựng với bề mặt cao cấp, hệ thống chiếu sáng hiện đại và trang thiết bị đầy đủ.</p>
+                    <h3>Pickleball Haven - Địa điểm lý tưởng cho môn thể thao phát triển nhanh nhất thế giới</h3>
+                    <p>Với 6 sân trong nhà và ngoài trời đạt tiêu chuẩn quốc tế, Pickleball Haven tự hào là địa điểm hàng đầu dành cho những người yêu thích môn thể thao Pickleball. Sân của chúng tôi được xây dựng với bề mặt cao cấp, hệ thống chiếu sáng hiện đại và trang thiết bị đầy đủ.</p>
                     <p>Đội ngũ nhân viên chuyên nghiệp của chúng tôi luôn sẵn sàng hỗ trợ để mang đến cho bạn những trải nghiệm tuyệt vời nhất. Dù bạn là người mới bắt đầu hay vận động viên chuyên nghiệp, chúng tôi đều có các chương trình phù hợp cho bạn.</p>
                 </div>
                 <div class="about-image">
@@ -655,30 +694,65 @@
                 </div>
                 <div class="contact-form">
                     <h3>Đặt sân ngay</h3>
-                    <form>
+                    <form id="bookingForm">
                         <div class="form-group">
-                            <label for="name">Họ và tên</label>
-                            <input type="text" id="name" placeholder="Nhập họ tên của bạn" required>
+                            <label for="name">Họ và tên *</label>
+                            <input type="text" id="name" name="name" placeholder="Nhập họ tên của bạn" required>
                         </div>
                         <div class="form-group">
-                            <label for="phone">Số điện thoại</label>
-                            <input type="tel" id="phone" placeholder="Nhập số điện thoại" required>
+                            <label for="phone">Số điện thoại *</label>
+                            <input type="tel" id="phone" name="phone" placeholder="Nhập số điện thoại" required>
                         </div>
                         <div class="form-group">
                             <label for="email">Email</label>
-                            <input type="email" id="email" placeholder="Nhập email của bạn">
+                            <input type="email" id="email" name="email" placeholder="Nhập email của bạn">
                         </div>
                         <div class="form-group">
-                            <label for="date">Ngày đặt sân</label>
-                            <input type="date" id="date" required>
+                            <label for="courtType">Loại sân *</label>
+                            <select id="courtType" name="courtType" required>
+                                <option value="">Chọn loại sân</option>
+                                <option value="Sân tiêu chuẩn">Sân tiêu chuẩn - 150.000đ/giờ</option>
+                                <option value="Sân cao cấp">Sân cao cấp - 250.000đ/giờ</option>
+                            </select>
                         </div>
                         <div class="form-group">
-                            <label for="time">Khung giờ</label>
-                            <input type="time" id="time" required>
+                            <label for="date">Ngày đặt sân *</label>
+                            <input type="date" id="date" name="date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="time">Khung giờ *</label>
+                            <select id="time" name="time" required>
+                                <option value="">Chọn khung giờ</option>
+                                <option value="6:00 - 7:00">6:00 - 7:00</option>
+                                <option value="7:00 - 8:00">7:00 - 8:00</option>
+                                <option value="8:00 - 9:00">8:00 - 9:00</option>
+                                <option value="9:00 - 10:00">9:00 - 10:00</option>
+                                <option value="10:00 - 11:00">10:00 - 11:00</option>
+                                <option value="11:00 - 12:00">11:00 - 12:00</option>
+                                <option value="13:00 - 14:00">13:00 - 14:00</option>
+                                <option value="14:00 - 15:00">14:00 - 15:00</option>
+                                <option value="15:00 - 16:00">15:00 - 16:00</option>
+                                <option value="16:00 - 17:00">16:00 - 17:00</option>
+                                <option value="17:00 - 18:00">17:00 - 18:00</option>
+                                <option value="18:00 - 19:00">18:00 - 19:00</option>
+                                <option value="19:00 - 20:00">19:00 - 20:00</option>
+                                <option value="20:00 - 21:00">20:00 - 21:00</option>
+                                <option value="21:00 - 22:00">21:00 - 22:00</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="duration">Thời lượng (giờ) *</label>
+                            <select id="duration" name="duration" required>
+                                <option value="">Chọn thời lượng</option>
+                                <option value="1">1 giờ</option>
+                                <option value="2">2 giờ</option>
+                                <option value="3">3 giờ</option>
+                                <option value="4">4 giờ</option>
+                            </select>
                         </div>
                         <div class="form-group">
                             <label for="message">Ghi chú thêm</label>
-                            <textarea id="message" placeholder="Ghi chú thêm cho chúng tôi"></textarea>
+                            <textarea id="message" name="message" placeholder="Ghi chú thêm cho chúng tôi"></textarea>
                         </div>
                         <button type="submit" class="submit-button">Gửi đặt sân</button>
                     </form>
@@ -686,6 +760,15 @@
             </div>
         </div>
     </section>
+
+    <!-- Modal -->
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <h2>Đặt sân thành công!</h2>
+            <p>Cảm ơn bạn đã đặt sân tại Pickleball Haven. Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất để xác nhận.</p>
+            <button class="modal-close" onclick="closeModal()">Đóng</button>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer>
@@ -724,7 +807,7 @@
                 <div class="footer-section">
                     <h3>Đăng ký nhận tin</h3>
                     <p>Đăng ký để nhận thông tin khuyến mãi và sự kiện đặc biệt từ chúng tôi.</p>
-                    <form>
+                    <form id="newsletterForm">
                         <div class="form-group">
                             <input type="email" placeholder="Nhập email của bạn" required>
                         </div>
@@ -760,17 +843,37 @@
             });
             
             // Form submission
-            const contactForm = document.querySelector('.contact-form form');
-            if (contactForm) {
-                contactForm.addEventListener('submit', function(e) {
+            const bookingForm = document.getElementById('bookingForm');
+            if (bookingForm) {
+                bookingForm.addEventListener('submit', function(e) {
                     e.preventDefault();
-                    alert('Cảm ơn bạn đã đặt sân! Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất.');
-                    contactForm.reset();
+                    
+                    // Lấy dữ liệu từ form
+                    const formData = {
+                        name: document.getElementById('name').value,
+                        phone: document.getElementById('phone').value,
+                        email: document.getElementById('email').value,
+                        courtType: document.getElementById('courtType').value,
+                        date: document.getElementById('date').value,
+                        time: document.getElementById('time').value,
+                        duration: document.getElementById('duration').value,
+                        message: document.getElementById('message').value,
+                        timestamp: new Date().toISOString()
+                    };
+                    
+                    // Lưu vào LocalStorage (tạm thời)
+                    saveBookingToLocalStorage(formData);
+                    
+                    // Hiển thị modal thành công
+                    showModal();
+                    
+                    // Reset form
+                    bookingForm.reset();
                 });
             }
             
             // Newsletter subscription
-            const newsletterForm = document.querySelector('.footer-section form');
+            const newsletterForm = document.getElementById('newsletterForm');
             if (newsletterForm) {
                 newsletterForm.addEventListener('submit', function(e) {
                     e.preventDefault();
@@ -778,9 +881,49 @@
                     newsletterForm.reset();
                 });
             }
+            
+            // Set min date to today
+            const dateInput = document.getElementById('date');
+            if (dateInput) {
+                const today = new Date().toISOString().split('T')[0];
+                dateInput.setAttribute('min', today);
+            }
+        });
+        
+        // Lưu dữ liệu vào LocalStorage
+        function saveBookingToLocalStorage(bookingData) {
+            let bookings = JSON.parse(localStorage.getItem('pickleballBookings')) || [];
+            bookings.push(bookingData);
+            localStorage.setItem('pickleballBookings', JSON.stringify(bookings));
+            
+            // In ra console để kiểm tra (có thể xóa trong production)
+            console.log('Booking saved:', bookingData);
+            console.log('All bookings:', bookings);
+        }
+        
+        // Hiển thị modal
+        function showModal() {
+            const modal = document.getElementById('successModal');
+            if (modal) {
+                modal.style.display = 'flex';
+            }
+        }
+        
+        // Đóng modal
+        function closeModal() {
+            const modal = document.getElementById('successModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+        
+        // Đóng modal khi click bên ngoài
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('successModal');
+            if (event.target === modal) {
+                closeModal();
+            }
         });
     </script>
 </body>
 </html>
-
-
