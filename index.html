@@ -532,7 +532,7 @@
             <div class="about-content">
                 <div class="about-text">
                     <h3>Pickleball Haven - Địa điểm lý tưởng cho môn thể thao phát triển nhanh nhất thế giới</h3>
-                    <p>Với 2 sân trong nhà và ngoài trời đạt tiêu chuẩn quốc tế, Pickleball Haven tự hào là địa điểm hàng đầu dành cho những người yêu thích môn thể thao Pickleball. Sân của chúng tôi được xây dựng với bề mặt cao cấp, hệ thống chiếu sáng hiện đại và trang thiết bị đầy đủ.</p>
+                    <p>Với 66 sân trong nhà và ngoài trời đạt tiêu chuẩn quốc tế, Pickleball Haven tự hào là địa điểm hàng đầu dành cho những người yêu thích môn thể thao Pickleball. Sân của chúng tôi được xây dựng với bề mặt cao cấp, hệ thống chiếu sáng hiện đại và trang thiết bị đầy đủ.</p>
                     <p>Đội ngũ nhân viên chuyên nghiệp của chúng tôi luôn sẵn sàng hỗ trợ để mang đến cho bạn những trải nghiệm tuyệt vời nhất. Dù bạn là người mới bắt đầu hay vận động viên chuyên nghiệp, chúng tôi đều có các chương trình phù hợp cho bạn.</p>
                 </div>
                 <div class="about-image">
@@ -847,8 +847,8 @@
     </footer>
 
     <script>
-        // Google Apps Script URL - Cần thay thế bằng URL của bạn sau khi triển khai
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxgodRD0YAj5lUQkK6wbZM7_EHmUVinLafdyjYa57xLXaRMw67JR7_DF__0NniMlW6uaA/exec';
+        // Google Apps Script URL for your specific Sheet ID
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbx8YQ3q7_2fqPJ9iQ4yLp3Q4JZ4X6Q3jKq9Z3Q4Z3Q4/exec';
         
         document.addEventListener('DOMContentLoaded', function() {
             // Smooth scrolling for navigation links
@@ -885,29 +885,28 @@
                     buttonSpinner.style.display = 'inline-block';
                     
                     // Lấy dữ liệu từ form
-                    const formData = new FormData();
-                    formData.append('name', document.getElementById('name').value);
-                    formData.append('phone', document.getElementById('phone').value);
-                    formData.append('email', document.getElementById('email').value);
-                    formData.append('courtType', document.getElementById('courtType').value);
-                    formData.append('date', document.getElementById('date').value);
-                    formData.append('time', document.getElementById('time').value);
-                    formData.append('duration', document.getElementById('duration').value);
-                    formData.append('message', document.getElementById('message').value);
-                    formData.append('timestamp', new Date().toISOString());
+                    const formData = {
+                        name: document.getElementById('name').value,
+                        phone: document.getElementById('phone').value,
+                        email: document.getElementById('email').value,
+                        courtType: document.getElementById('courtType').value,
+                        date: document.getElementById('date').value,
+                        time: document.getElementById('time').value,
+                        duration: document.getElementById('duration').value,
+                        message: document.getElementById('message').value,
+                        timestamp: new Date().toISOString()
+                    };
                     
                     // Gửi dữ liệu đến Google Sheets
                     fetch(scriptURL, {
                         method: 'POST',
-                        body: formData
+                        mode: 'no-cors',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(formData)
                     })
-                    .then(response => {
-                        if (response.ok) {
-                            return response.json();
-                        }
-                        throw new Error('Network response was not ok.');
-                    })
-                    .then(data => {
+                    .then(() => {
                         // Ẩn trạng thái loading
                         submitButton.disabled = false;
                         buttonText.textContent = 'Gửi đặt sân';
@@ -977,5 +976,3 @@
     </script>
 </body>
 </html>
-
-
