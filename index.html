@@ -4,133 +4,235 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hường Đỗ Pickleball - Sân Pickleball Chuyên Nghiệp tại Thanh Hóa</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        /* CSS Reset */
+        body, h1, h2, h3, p, ul, li {
             margin: 0;
             padding: 0;
-            background-color: #e7f5ff; /* Màu xanh dương nhạt */
+            border: 0;
+            font-size: 100%;
+            font: inherit;
+            vertical-align: baseline;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.5;
+            background-color: #f0f8ff; /* Light blue background */
             color: #333;
         }
+
+        /* Header */
         header {
-            background-color: #007bff; /* Màu xanh dương đậm */
+            background-color: #007bff; /* Strong blue */
             color: #fff;
-            padding: 20px;
+            padding: 1rem 0;
             text-align: center;
         }
-        nav {
-            background-color: #66b3ff; /* Màu xanh dương trung bình */
-            padding: 10px;
-            text-align: center;
+
+        .header-content {
+            width: 80%;
+            margin: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        nav a {
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+        }
+
+        nav ul li a {
+            display: block;
             color: #fff;
             text-decoration: none;
-            padding: 10px 20px;
+            padding: 0.5rem 1rem;
             border-radius: 5px;
-            margin: 0 10px;
-            background-color: #007bff;
+            transition: background-color 0.3s;
         }
-        section {
-            padding: 20px;
-            margin: 20px;
-            background-color: #fff;
-            border-radius: 8px;
+
+        nav ul li a:hover {
+            background-color: #0056b3;
         }
-        .cta-button {
-            background-color: #28a745;
+
+        /* Hero Section */
+        #hero {
+            background: linear-gradient(rgba(0, 123, 255, 0.7), rgba(0, 123, 255, 0.7)), url('https://images.unsplash.com/photo-1532635124-d6cca68ef63a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fHNwb3J0JTIwc2V0dXB8ZW58MHx8MHx8fDA%3D') center/cover no-repeat;
             color: #fff;
-            padding: 10px 20px;
+            text-align: center;
+            padding: 5rem 0;
+            margin-bottom: 2rem;
+        }
+
+        #hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: #28a745; /* Green button */
+            color: #fff;
+            padding: 0.75rem 1.5rem;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #218838;
+        }
+
+        /* Main Content Sections */
+        #about, #services, #gallery, #contact {
+            width: 80%;
+            margin: auto;
+            padding: 2rem 0;
+        }
+
+        #about h2, #services h2, #gallery h2, #contact h2 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: #007bff;
+        }
+
+        /* Services Section */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .service-item {
+            background-color: #fff;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .service-item i {
+            font-size: 2rem;
+            color: #007bff;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Gallery Section */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Contact Section */
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .contact-form label {
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+
+        .contact-form input, .contact-form textarea {
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .contact-form button {
+            background-color: #007bff;
+            color: #fff;
+            padding: 0.75rem 1.5rem;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            transition: background-color 0.3s;
         }
+
+        .contact-form button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Footer */
         footer {
-            text-align: center;
-            padding: 10px;
             background-color: #333;
             color: #fff;
-        }
-        .image-gallery {
-            display: flex;
-            overflow-x: auto;
-            padding: 10px;
-        }
-        .image-gallery img {
-            width: 200px;
-            height: auto;
-            margin: 0 10px;
-            border-radius: 5px;
+            text-align: center;
+            padding: 1rem 0;
         }
     </style>
 </head>
 <body>
+
     <header>
-        <h1>Hường Đỗ Pickleball</h1>
-        <p>Sân Pickleball chuyên nghiệp hàng đầu tại Thanh Hóa</p>
+        <div class="header-content">
+            <div class="logo">Hường Đỗ Pickleball</div>
+            <nav>
+                <ul>
+                    <li><a href="#about">Giới thiệu</a></li>
+                    <li><a href="#services">Tiện ích</a></li>
+                    <li><a href="#gallery">Hình ảnh</a></li>
+                    <li><a href="#contact">Liên hệ</a></li>
+                </ul>
+            </nav>
+        </div>
     </header>
 
-    <nav>
-        <a href="#gioi-thieu">Giới thiệu</a>
-        <a href="#tien-ich">Tiện ích</a>
-        <a href="#bang-gia">Bảng giá</a>
-        <a href="#hinh-anh">Hình ảnh</a>
-        <a href="#dat-san">Đặt sân</a>
-    </nav>
+    <section id="hero">
+        <h1>Chào mừng đến với Hường Đỗ Pickleball</h1>
+        <p>Sân chơi Pickleball chuyên nghiệp hàng đầu tại Thanh Hóa</p>
+        <a href="#contact" class="btn">Đặt Sân Ngay</a>
+    </section>
 
-    <section id="gioi-thieu">
+    <section id="about">
         <h2>Giới thiệu</h2>
         <p>Hường Đỗ Pickleball là sân chơi Pickleball đẳng cấp, chuyên nghiệp tại Thanh Hóa. Với cơ sở vật chất hiện đại, đội ngũ nhân viên nhiệt tình, chúng tôi cam kết mang đến cho bạn những trải nghiệm tuyệt vời nhất.</p>
         <p>Địa chỉ: 118 Lò Chum, Phường Hạc Thành, tỉnh Thanh Hóa</p>
         <p>Điện thoại: 0919050618</p>
     </section>
 
-    <section id="tien-ich">
+    <section id="services">
         <h2>Tiện ích</h2>
-        <ul>
-            <li>Sân đạt chuẩn quốc tế</li>
-            <li>Ánh sáng tốt, đảm bảo chơi vào buổi tối</li>
-            <li>Dụng cụ chơi đầy đủ</li>
-            <li>Khu vực nghỉ ngơi thoải mái</li>
-            <li>Bãi đỗ xe rộng rãi</li>
-        </ul>
-    </section>
-
-    <section id="bang-gia">
-        <h2>Bảng giá</h2>
-        <p>Giá thuê sân: [Giá]. Vui lòng liên hệ để biết thêm chi tiết.</p>
-    </section>
-
-    <section id="hinh-anh">
-        <h2>Hình ảnh</h2>
-        <div class="image-gallery">
-            <img src="[Đường dẫn đến ảnh 1]" alt="Hình ảnh sân Pickleball">
-            <img src="[Đường dẫn đến ảnh 2]" alt="Hình ảnh sân Pickleball">
-            <img src="[Đường dẫn đến ảnh 3]" alt="Hình ảnh sân Pickleball">
-            <!-- Thêm các hình ảnh khác vào đây -->
+        <div class="services-grid">
+            <div class="service-item">
+                <i class="fas fa-check-circle"></i>
+                <h3>Sân đạt chuẩn quốc tế</h3>
+            </div>
+            <div class="service-item">
+                <i class="fas fa-sun"></i>
+                <h3>Ánh sáng tốt</h3>
+            </div>
+            <div class="service-item">
+                <i class="fas fa-table-tennis"></i>
+                <h3>Dụng cụ đầy đủ</h3>
+            </div>
+            <div class="service-item">
+                <i class="fas fa-couch"></i>
+                <h3>Khu vực nghỉ ngơi</h3>
+            </div>
         </div>
     </section>
 
-    <section id="dat-san">
-        <h2>Đặt sân</h2>
-        <p>Vui lòng liên hệ số điện thoại 0919050618 để đặt sân.</p>
-        <!--
-        <form>
-            <label for="name">Tên:</label><br>
-            <input type="text" id="name" name="name"><br>
-            <label for="phone">Số điện thoại:</label><br>
-            <input type="text" id="phone" name="phone"><br>
-            <label for="date">Ngày đặt:</label><br>
-            <input type="date" id="date" name="date"><br>
-            <label for="time">Giờ đặt:</label><br>
-            <input type="time" id="time" name="time"><br>
-            <input type="submit" value="Đặt sân">
-        </form>
-        -->
-    </section>
-
-    <footer>
-        <p>&copy; 2024 Hường Đỗ Pickleball. All rights reserved.</p>
-    </footer>
-</body>
-</html>
+    <section id="gallery">
+        <h2>Hình ảnh</h2>
+        <div class="gallery-grid">
+            <div class="gallery-item">
+                <img src="[Đường dẫn đến ảnh 1]"
