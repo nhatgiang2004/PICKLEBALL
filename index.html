@@ -3,236 +3,349 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hường Đỗ Pickleball - Sân Pickleball Chuyên Nghiệp tại Thanh Hóa</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>Hệ Thống Cửa Hàng | VNB Sports</title>
     <style>
-        /* CSS Reset */
-        body, h1, h2, h3, p, ul, li {
-            margin: 0;
-            padding: 0;
-            border: 0;
-            font-size: 100%;
-            font: inherit;
-            vertical-align: baseline;
+        :root {
+            --primary-color: #d90000;
+            --secondary-color: #f1f1f1;
+            --text-color: #333;
+            --light-text-color: #666;
+            --border-color: #e0e0e0;
         }
 
         body {
             font-family: Arial, sans-serif;
-            line-height: 1.5;
-            background-color: #f0f8ff; /* Light blue background */
-            color: #333;
+            margin: 0;
+            padding: 0;
+            color: var(--text-color);
         }
 
-        /* Header */
-        header {
-            background-color: #007bff; /* Strong blue */
-            color: #fff;
-            padding: 1rem 0;
-            text-align: center;
-        }
-
-        .header-content {
-            width: 80%;
-            margin: auto;
+       .header {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-
-        nav ul {
-            list-style: none;
-            display: flex;
-        }
-
-        nav ul li a {
-            display: block;
-            color: #fff;
-            text-decoration: none;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-        }
-
-        nav ul li a:hover {
-            background-color: #0056b3;
-        }
-
-        /* Hero Section */
-        #hero {
-            background: linear-gradient(rgba(0, 123, 255, 0.7), rgba(0, 123, 255, 0.7)), url('https://images.unsplash.com/photo-1532635124-d6cca68ef63a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fHNwb3J0JTIwc2V0dXB8ZW58MHx8MHx8fDA%3D') center/cover no-repeat;
-            color: #fff;
-            text-align: center;
-            padding: 5rem 0;
-            margin-bottom: 2rem;
-        }
-
-        #hero h1 {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .btn {
-            display: inline-block;
-            background-color: #28a745; /* Green button */
-            color: #fff;
-            padding: 0.75rem 1.5rem;
-            text-decoration: none;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-        }
-
-        .btn:hover {
-            background-color: #218838;
-        }
-
-        /* Main Content Sections */
-        #about, #services, #gallery, #contact {
-            width: 80%;
-            margin: auto;
-            padding: 2rem 0;
-        }
-
-        #about h2, #services h2, #gallery h2, #contact h2 {
-            font-size: 2rem;
-            margin-bottom: 1.5rem;
-            text-align: center;
-            color: #007bff;
-        }
-
-        /* Services Section */
-        .services-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-        }
-
-        .service-item {
+            justify-content: space-between;
+            padding: 10px 50px;
             background-color: #fff;
-            padding: 1rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            flex-wrap: wrap;
         }
 
-        .service-item i {
-            font-size: 2rem;
-            color: #007bff;
-            margin-bottom: 0.5rem;
-        }
-
-        /* Gallery Section */
-        .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1rem;
-        }
-
-        .gallery-item img {
-            width: 100%;
-            height: auto;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Contact Section */
-        .contact-form {
+       .header-left,.header-right {
             display: flex;
-            flex-direction: column;
+            align-items: center;
+            gap: 20px;
         }
 
-        .contact-form label {
-            margin-bottom: 0.5rem;
+       .header-left.logo img {
+            height: 40px;
+        }
+
+       .header-left.hotline {
+            font-size: 14px;
+            color: var(--primary-color);
             font-weight: bold;
         }
 
-        .contact-form input, .contact-form textarea {
-            padding: 0.75rem;
-            margin-bottom: 1rem;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        .contact-form button {
-            background-color: #007bff;
-            color: #fff;
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .contact-form button:hover {
-            background-color: #0056b3;
-        }
-
-        /* Footer */
-        footer {
-            background-color: #333;
-            color: #fff;
+       .header-center {
             text-align: center;
-            padding: 1rem 0;
+            flex-grow: 1;
+        }
+
+       .header-center h1 {
+            font-size: 20px;
+            color: var(--primary-color);
+            margin: 0;
+        }
+
+       .header-right.search-box {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            padding: 5px;
+        }
+
+       .header-right.search-box input {
+            border: none;
+            outline: none;
+            padding: 5px;
+        }
+
+       .header-right.search-box button {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0 5px;
+        }
+
+       .header-right.actions {
+            display: flex;
+            gap: 15px;
+            font-size: 14px;
+        }
+
+       .navbar {
+            background-color: #fff;
+            padding: 10px 50px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+       .navbar ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+       .navbar a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+       .navbar a:hover {
+            color: var(--primary-color);
+        }
+
+       .main-content {
+            display: flex;
+            max-width: 1200px;
+            margin: 20px auto;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+       .sidebar {
+            flex: 1;
+            padding: 20px;
+            background-color: #fff;
+            border-right: 1px solid var(--border-color);
+        }
+
+       .map-container {
+            flex: 2;
+        }
+
+       .map-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+       .location-filter {
+            margin-bottom: 20px;
+        }
+
+       .location-filter select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+       .store-list.store-item {
+            border-bottom: 1px dashed var(--border-color);
+            padding: 15px 0;
+            cursor: pointer;
+        }
+
+       .store-list.store-item:hover {
+            background-color: #f9f9f9;
+        }
+
+       .store-list.store-item:last-child {
+            border-bottom: none;
+        }
+
+       .store-list.store-item h3 {
+            margin: 0 0 5px;
+            font-size: 16px;
+            color: var(--primary-color);
+        }
+
+       .store-list.store-item p {
+            margin: 0;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+       .footer {
+            background-color: #fff;
+            padding: 40px 50px;
+            border-top: 1px solid var(--border-color);
+        }
+
+       .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+       .footer-section h4 {
+            font-size: 16px;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+       .footer-section p,.footer-section ul {
+            font-size: 12px;
+            line-height: 1.6;
+            color: var(--light-text-color);
+        }
+
+       .footer-section ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        @media (max-width: 768px) {
+           .header {
+                flex-direction: column;
+                text-align: center;
+            }
+           .header-left,.header-right {
+                flex-direction: column;
+                gap: 10px;
+            }
+           .navbar ul {
+                flex-direction: column;
+                gap: 10px;
+            }
+           .main-content {
+                flex-direction: column;
+            }
+           .sidebar {
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+            }
+           .footer-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="header-content">
-            <div class="logo">Hường Đỗ Pickleball</div>
-            <nav>
+    <div class="header">
+        <div class="header-left">
+            <div class="logo">
+                <img src="https://i.ibb.co/6y4tW64/vnb-logo.png" alt="VNB Sports">
+            </div>
+            <div class="hotline">
+                HOTLINE: 0977508430 | 0338000308
+            </div>
+        </div>
+        <div class="header-center">
+            <h1>HỆ THỐNG CỬA HÀNG</h1>
+        </div>
+        <div class="header-right">
+            <div class="search-box">
+                <input type="text" placeholder="Tìm sản phẩm...">
+                <button>🔎</button>
+            </div>
+            <div class="actions">
+                <span>TRA CỨU</span>
+                <span>GIỎ HÀNG</span>
+                <span>TÀI KHOẢN</span>
+                <span>ĐĂNG NHẬP</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="navbar">
+        <ul>
+            <li><a href="#">TRANG CHỦ</a></li>
+            <li><a href="#">SẢN PHẨM</a></li>
+            <li><a href="#">SALE OFF</a></li>
+            <li><a href="#">TIN TỨC</a></li>
+            <li><a href="#">CHÍNH SÁCH NHƯỢNG QUYỀN</a></li>
+            <li><a href="#">HƯỚNG DẪN</a></li>
+            <li><a href="#">GIỚI THIỆU</a></li>
+            <li><a href="#">LIÊN HỆ</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="sidebar">
+            <div class="location-filter">
+                <select>
+                    <option>Chọn tỉnh/thành</option>
+                </select>
+                <select>
+                    <option>Chọn quận/huyện</option>
+                </select>
+            </div>
+            <div class="store-list">
+                <div class="store-item">
+                    <h3>VNB Super Center</h3>
+                    <p>📍 390/2 Hà Huy Giáp, Phường Thạnh Lộc, Quận 12<br>📞 0936155994</p>
+                </div>
+                <div class="store-item">
+                    <h3>VNB PREMIUM Quận 1</h3>
+                    <p>📍 20 Cao Bá Nhã, Phường Nguyễn Cư Trinh, TPHCM<br>📞 0931823614</p>
+                </div>
+                <div class="store-item">
+                    <h3>VNB PREMIUM Quận 11</h3>
+                    <p>📍 209 Âu Cơ, Phường 5, Quận 11, Tp.HCM<br>📞 0828833323</p>
+                </div>
+                <div class="store-item">
+                    <h3>VNB PREMIUM Bình Thạnh</h3>
+                    <p>📍 284 Xô Viết Nghệ Tĩnh, P21, Quận Bình Thạnh, Tp.HCM<br>📞 0862521779</p>
+                </div>
+                <div class="store-item">
+                    <h3>VNB PREMIUM TP Thủ Đức</h3>
+                    <p>📍 916 Kha Vạn Cân, Phường Trường Thọ TP Thủ Đức<br>📞 0767306363</p>
+                </div>
+                <div class="store-item">
+                    <h3>VNB PREMIUM Ninh Kiều Cần Thơ</h3>
+                    <p>📍 96/1 Trần Hưng Đạo, P.An Cư, Q.Ninh Kiều, TP Cần Thơ<br>📞 0825316316</p>
+                </div>
+            </div>
+        </div>
+        <div class="map-container">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15669.969145980003!2d106.6710484!3d10.8700032!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x317529b5c3d4f127%3A0x6b6d5f7b0f69f2e3!2sVNB%20Sports%20Super%20Center!5e0!3m2!1sen!2s!4v1695628286123!5m2!1sen!2s" allowfullscreen="" loading="lazy"></iframe>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="footer-grid">
+            <div class="footer-section">
+                <h4>THÔNG TIN CHUNG</h4>
+                <p>VNB Sports là hệ thống cửa hàng cầu lông với hơn 50 chi nhánh trên toàn quốc, cung cấp sỉ và lẻ các mặt hàng dụng cụ cầu lông từ phong trào đến chuyên nghiệp.</p>
+            </div>
+            <div class="footer-section">
+                <h4>HỆ THỐNG LIÊN HỆ</h4>
+                <p>Hệ thống cửa hàng: 1 Super Center, 5 shop Premium và 75 cửa hàng trên toàn quốc.</p>
+                <p>Xem toàn bộ cửa hàng VNB.</p>
+            </div>
+            <div class="footer-section">
+                <h4>CHÍNH SÁCH</h4>
                 <ul>
-                    <li><a href="#about">Giới thiệu</a></li>
-                    <li><a href="#services">Tiện ích</a></li>
-                    <li><a href="#gallery">Hình ảnh</a></li>
-                    <li><a href="#contact">Liên hệ</a></li>
+                    <li>Thông tin về vận chuyển và giao nhận</li>
+                    <li>Chính sách đổi trả, hoàn tiền</li>
+                    <li>Chính sách bảo hành</li>
+                    <li>Bảo mật thông tin khách hàng</li>
                 </ul>
-            </nav>
-        </div>
-    </header>
-
-    <section id="hero">
-        <h1>Chào mừng đến với Hường Đỗ Pickleball</h1>
-        <p>Sân chơi Pickleball chuyên nghiệp hàng đầu tại Thanh Hóa</p>
-        <a href="#contact" class="btn">Đặt Sân Ngay</a>
-    </section>
-
-    <section id="about">
-        <h2>Giới thiệu</h2>
-        <p>Hường Đỗ Pickleball là sân chơi Pickleball đẳng cấp, chuyên nghiệp tại Thanh Hóa. Với cơ sở vật chất hiện đại, đội ngũ nhân viên nhiệt tình, chúng tôi cam kết mang đến cho bạn những trải nghiệm tuyệt vời nhất.</p>
-        <p>Địa chỉ: 118 Lò Chum, Phường Hạc Thành, tỉnh Thanh Hóa</p>
-        <p>Điện thoại: 0919050618</p>
-    </section>
-
-    <section id="services">
-        <h2>Tiện ích</h2>
-        <div class="services-grid">
-            <div class="service-item">
-                <i class="fas fa-check-circle"></i>
-                <h3>Sân đạt chuẩn quốc tế</h3>
             </div>
-            <div class="service-item">
-                <i class="fas fa-sun"></i>
-                <h3>Ánh sáng tốt</h3>
-            </div>
-            <div class="service-item">
-                <i class="fas fa-table-tennis"></i>
-                <h3>Dụng cụ đầy đủ</h3>
-            </div>
-            <div class="service-item">
-                <i class="fas fa-couch"></i>
-                <h3>Khu vực nghỉ ngơi</h3>
+            <div class="footer-section">
+                <h4>HƯỚNG DẪN</h4>
+                <ul>
+                    <li>Danh sách số tài khoản chính thức của các shop trong hệ thống VNB Sports</li>
+                    <li>Hướng dẫn cách chọn vợt cầu lông cho người mới</li>
+                    <li>Vá mút vợt cầu lông</li>
+                </ul>
             </div>
         </div>
-    </section>
+    </div>
 
-    <section id="gallery">
-        <h2>Hình ảnh</h2>
-        <div class="gallery-grid">
-            <div class="gallery-item">
-                <img src="[Đường dẫn đến ảnh 1]"
+</body>
+</html>
