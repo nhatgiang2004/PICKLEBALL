@@ -6,9 +6,14 @@
 <meta name="theme-color" content="#0f172a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Trọng tài PB">
-<link rel="icon" href="./icon/icon-192.png">
-<link rel="apple-touch-icon" href="./icon/icon-180.png">
+<meta name="apple-mobile-web-app-title" content="Trọng tài">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="application-name" content="Trọng tài">
+<!-- Icon riêng cho module Trọng tài khi "Thêm vào màn hình chính" -->
+<link rel="manifest" href="./manifest-trongtai.json?v=1">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon/trongtai-192.png?v=1">
+<link rel="icon" type="image/png" sizes="512x512" href="./icon/trongtai-512.png?v=1">
+<link rel="apple-touch-icon" sizes="180x180" href="./icon/trongtai-180.png?v=1">
 <title>Trọng tài Pickleball</title>
 <style>
 :root{
@@ -99,7 +104,7 @@ details.conn{margin:4px 0 0;font-size:13.5px}details.conn summary{cursor:pointer
 .mode button small{display:block;font-weight:600;color:var(--muted);font-size:12px}
 .mode button.on{border-color:var(--a);background:#eff6ff}
 /* ---------- Scoring ---------- */
-.score-screen{background:#0b1220;color:#fff;height:100%;min-height:100%;display:flex;flex-direction:column;overflow:hidden}
+.score-screen{background:#0b1220;color:#fff;position:fixed;inset:0;height:100vh;height:100dvh;min-height:0;display:flex;flex-direction:column;overflow:hidden;padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
 .score-screen .bar{background:#0b1220;border-bottom:1px solid rgba(255,255,255,.08)}
 .call{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 14px;background:#111a2e}
 .call .cv{font-size:30px;font-weight:900;letter-spacing:.04em;font-variant-numeric:tabular-nums}
@@ -144,11 +149,48 @@ details.conn{margin:4px 0 0;font-size:13.5px}details.conn summary{cursor:pointer
 .dock button span{font-size:18px}
 .dock button:active{background:#334155}
 .dock button[disabled]{opacity:.4}
-@media (orientation:landscape) and (max-height:560px){
-  .courts{grid-template-rows:none;grid-template-columns:1fr 1fr}
-  .team .pts{font-size:clamp(72px,30vh,150px)}
-  .call{padding:4px 14px}.call .cv{font-size:24px}.hands button{height:38px}
-  .dock{grid-template-columns:repeat(4,1fr)}
+/* ---------- Màn hình NGANG: 2 đội hai bên, bảng điều khiển ở giữa ---------- */
+@media (orientation:landscape){
+  .score-screen{display:grid;grid-template-columns:minmax(0,1fr) clamp(190px,27vw,300px) minmax(0,1fr);grid-template-rows:auto auto 1fr;
+    grid-template-areas:"a bar b" "a call b" "a dock b";column-gap:8px;padding:8px max(8px,env(safe-area-inset-right,0px)) max(8px,env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px))}
+  .courts{display:contents}
+  .courts>.team:first-child{grid-area:a}.courts>.team:last-child{grid-area:b}
+  .score-screen .bar{grid-area:bar;position:static;padding:0 0 6px;border:0;background:transparent;gap:6px}
+  .score-screen .bar h1{font-size:13px}.score-screen .bar small{font-size:11px}
+  .score-screen .bar .icon-btn{width:34px;height:34px;border-radius:10px;font-size:16px}
+  .call{grid-area:call;flex-direction:column;align-items:stretch;gap:6px;padding:8px;border-radius:16px;background:#111a2e;flex-wrap:nowrap}
+  .call .cv{font-size:clamp(22px,7vh,34px);text-align:center;letter-spacing:.02em}
+  .call .cl{text-align:center}
+  #handBox{flex:none}
+  .hands{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .hands button{min-width:0;height:clamp(34px,10vh,46px);font-size:15px;padding:0 6px}
+  .hands button.sw{grid-column:1/-1}
+  .hands-who{text-align:center;max-width:none;font-size:11px;margin-top:4px}
+  .dock{grid-area:dock;align-self:end;grid-template-columns:1fr 1fr;gap:6px;padding:8px 0 0;background:transparent}
+  .dock button{min-height:0;height:clamp(36px,11vh,50px);flex-direction:row;gap:6px;font-size:12.5px}
+  .dock button span{font-size:15px}
+  .team{border-radius:22px;padding:12px 14px}
+  .team .nm{font-size:clamp(15px,4.2vh,22px);padding-right:84px}
+  .team .pts{font-size:clamp(70px,46vh,230px);line-height:.85}
+  .team .hint{display:none}
+  .serve{top:10px;right:10px}
+  .score-screen~.toast{top:calc(8px + var(--safe-t));bottom:auto;font-size:14px;padding:8px 14px}
+}
+/* Ngang và thấp (điện thoại xoay ngang, có thanh Safari): gọn thêm */
+@media (orientation:landscape) and (max-height:420px){
+  .score-screen .bar small{display:none}
+  .call{padding:6px;gap:4px}
+  .hands-who{display:none}
+  .dock button{font-size:11.5px;gap:4px}.dock button span{font-size:15px}
+  .team .pts{font-size:clamp(56px,44vh,200px)}
+}
+@media (orientation:landscape) and (max-height:300px){
+  .score-screen{padding-top:6px;padding-bottom:6px}
+  .score-screen .bar{padding-bottom:4px}.score-screen .bar .icon-btn{width:30px;height:30px}
+  .call{padding:5px;gap:4px}.call .cv{font-size:20px}
+  .hands button{height:30px;font-size:13px}
+  .dock{padding-top:4px;gap:4px}.dock button{height:30px;border-radius:10px;font-size:10.5px}
+  .team{padding:8px 10px;border-radius:16px}.team .nm{font-size:14px}
 }
 /* ---------- Sheet / modal ---------- */
 .sheet-bg{position:fixed;inset:0;background:rgba(2,6,23,.6);z-index:50;display:flex;align-items:flex-end;justify-content:center;animation:fade .2s}
