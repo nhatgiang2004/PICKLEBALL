@@ -11,9 +11,9 @@
 <meta name="application-name" content="Trọng tài">
 <!-- Icon riêng cho module Trọng tài khi "Thêm vào màn hình chính" -->
 <link rel="manifest" href="./manifest-trongtai.json?v=1">
-<link rel="icon" type="image/png" sizes="192x192" href="./icon/trongtai-192.png?v=7">
-<link rel="icon" type="image/png" sizes="512x512" href="./icon/trongtai-512.png?v=7">
-<link rel="apple-touch-icon" sizes="180x180" href="./icon/trongtai-180.png?v=7">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon/trongtai-192.png?v=1">
+<link rel="icon" type="image/png" sizes="512x512" href="./icon/trongtai-512.png?v=1">
+<link rel="apple-touch-icon" sizes="180x180" href="./icon/trongtai-180.png?v=1">
 <title>Trọng tài Pickleball</title>
 <style>
 :root{
@@ -125,6 +125,10 @@ details.conn{margin:4px 0 0;font-size:13.5px}details.conn summary{cursor:pointer
   .hands-who{text-align:left;max-width:none;margin-top:6px;font-size:12px}
   .team .hint{display:none}
 }
+.mini{display:none}
+body.scoring{overflow:hidden;position:fixed;inset:0;width:100%;height:100%}
+.fs-hint{position:fixed;left:50%;top:calc(10px + var(--safe-t));transform:translateX(-50%);z-index:90;width:min(560px,calc(100% - 24px));background:#fde047;color:#111827;border-radius:14px;padding:10px 12px;font-size:13px;line-height:1.35;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.fs-hint button{display:block;margin:8px 0 0 auto;background:#111827;color:#fff;border-radius:10px;padding:6px 12px;font-weight:800}
 .hands-who{font-size:11px;color:#94a3b8;font-weight:800;text-align:right;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px}
 .sync{width:9px;height:9px;border-radius:50%;background:#64748b;display:inline-block;margin-right:6px;vertical-align:middle}
 .sync.on{background:#22c55e;box-shadow:0 0 0 4px rgba(34,197,94,.2)}.sync.busy{background:#f59e0b}.sync.err{background:#ef4444}
@@ -157,7 +161,12 @@ details.conn{margin:4px 0 0;font-size:13.5px}details.conn summary{cursor:pointer
   .courts>.team{pointer-events:auto;grid-row:1}
   .courts>.team:first-child{grid-column:1}.courts>.team:last-child{grid-column:3}
   .score-screen .bar,.call,.dock{position:relative;z-index:3}
-  .score-screen .bar{grid-area:bar;padding:0 0 6px;border:0;background:transparent;gap:6px}
+  .score-screen .bar{display:none!important}
+  .mini{display:flex;align-items:center;gap:6px}
+  .mini .icon-btn{width:32px;height:32px;border-radius:10px;font-size:15px;background:#1e293b}
+  .mini-t{flex:1;min-width:0;font-size:12px;font-weight:800;color:#cbd5e1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mini .sync{margin:0 2px 0 0}
+  .score-screen .bar-unused{grid-area:bar;padding:0 0 6px;border:0;background:transparent;gap:6px}
   .score-screen .bar h1{font-size:13px}.score-screen .bar small{font-size:11px}
   .score-screen .bar .icon-btn{width:34px;height:34px;border-radius:10px;font-size:16px}
   .call{grid-area:call;flex-direction:column;align-items:stretch;gap:6px;padding:8px;border-radius:16px;background:#111a2e;flex-wrap:nowrap}
@@ -338,7 +347,7 @@ function barHtml(title,sub,left){
     '<button class="icon-btn" id="btnReload" title="Tải lại">⟳</button><button class="icon-btn" id="btnOut" title="Kết nối dữ liệu">⚙</button></header>';
 }
 function renderList(){
-  stopLive();
+  stopLive();document.body.classList.remove('scoring');var fh=document.getElementById('fsHint');if(fh)fh.remove();
   var all=allMatches();
   var cnt={pending:0,live:0,done:0,all:all.length};all.forEach(function(m){var s=statusOf(m);cnt[s]++;if(s==='live')cnt.pending++;});
   var f=S.filter,q=S.q.trim().toLowerCase();
@@ -346,7 +355,7 @@ function renderList(){
     .filter(function(m){return !q||(teamName(m.teamA)+' '+teamName(m.teamB)+' '+m.label).toLowerCase().indexOf(q)>=0;})
     .sort(function(a,b){var la=statusOf(a)==='live'?0:1,lb=statusOf(b)==='live'?0:1;return la-lb||(a.sort<b.sort?-1:a.sort>b.sort?1:0);});
   var pend=LS.get('outbox',[]);
-  var html=barHtml(S.data.tournament.name||'Giải Pickleball','🏓 Trọng tài đếm điểm')+
+  var html=barHtml(S.data.tournament.name||'Giải Pickleball','🏓 Trọng tài đếm điểm • bản 9.6')+
     '<div class="tools"><div class="seg" id="seg">'+[['pending','Chưa đấu'],['live','Đang đấu'],['done','Đã đấu'],['all','Tất cả']].map(function(x){return '<button data-f="'+x[0]+'" class="'+(f===x[0]?'on':'')+'">'+x[1]+'<b>'+cnt[x[0]]+'</b></button>';}).join('')+'</div>'+
     '<input class="search" id="search" placeholder="Tìm tên VĐV, bảng, vòng…" value="'+esc(S.q)+'" type="search"></div>'+
     (pend.length?'<div class="wrap" style="padding-bottom:0"><div class="msg warn">⚠ Có '+pend.length+' kết quả chưa gửi được lên Google Sheet. <button class="btn ghost" id="sendPend" style="min-height:36px;margin-top:8px">Gửi lại ngay</button></div></div>':'')+
@@ -426,14 +435,16 @@ function renderScore(){
   var m=S.match,g=S.game;
   app.className='screen score-screen';
   app.innerHTML='<header class="bar"><button class="icon-btn" id="back">←</button><h1>'+esc(m.label)+'<small id="gInfo"></small></h1><span class="sync" id="sync" title="Trạng thái Live"></span></header>'+
-    '<div class="call"><div class="cv" id="callV"></div><div class="cl" id="callL"></div><div id="handBox"><div class="hands" id="hands"><button data-h="1">Tay 1</button><button data-h="2">Tay 2</button><button class="sw" data-h="x" title="Đổi quyền giao sang đội kia">⇄ Đổi giao</button></div><div class="hands-who" id="handsWho"></div></div></div>'+
+    '<div class="call"><div class="mini"><button class="icon-btn" id="back2" aria-label="Quay lại">←</button><span class="mini-t">'+esc(m.label)+'</span><button class="icon-btn" id="fsBtn" aria-label="Toàn màn hình">⛶</button><span class="sync" id="sync2"></span></div><div class="cv" id="callV"></div><div class="cl" id="callL"></div><div id="handBox"><div class="hands" id="hands"><button data-h="1">Tay 1</button><button data-h="2">Tay 2</button><button class="sw" data-h="x" title="Đổi quyền giao sang đội kia">⇄ Đổi giao</button></div><div class="hands-who" id="handsWho"></div></div></div>'+
     '<div class="courts" id="courts"></div>'+
     '<div class="dock"><button id="undo"><span>↶</span>Hoàn tác</button><button id="fix"><span>✎</span>Chỉnh điểm</button><button id="swap"><span>⇅</span>Đổi sân</button><button id="end"><span>⏹</span>Kết thúc</button></div>';
-  $('#back').onclick=function(){renderList();};
-  $('#hands').onclick=function(e){var b=e.target.closest('[data-h]');if(!b)return;setHand(b.dataset.h);};
-  $('#undo').onclick=undo;$('#fix').onclick=openAdjust;$('#swap').onclick=function(){g.swap=!g.swap;persist();drawCourts();};
-  $('#end').onclick=function(){finishPrompt(true);};
-  keepAwake();drawCourts();pushLive();
+  var back=function(){exitFull();document.body.classList.remove('scoring');renderList();};
+  tapBind($('#back'),back);tapBind($('#back2'),back);tapBind($('#fsBtn'),function(){goFull(true);});
+  app.querySelectorAll('#hands [data-h]').forEach(function(b){tapBind(b,function(){setHand(b.dataset.h);});});
+  tapBind($('#undo'),undo);tapBind($('#fix'),openAdjust);tapBind($('#swap'),function(){g.swap=!g.swap;persist();drawCourts();});
+  tapBind($('#end'),function(){finishPrompt(true);});
+  document.body.classList.add('scoring');
+  keepAwake();drawCourts();pushLive();fsHint();
 }
 function drawCourts(){
   var m=S.match,g=S.game,w=wins(),n=need();
@@ -586,7 +597,43 @@ function liveSnapshot(extra){
   return Object.assign({kind:m.kind,matchId:m.id,teamA:teamName(m.teamA),teamB:teamName(m.teamB),scoreA:g.a,scoreB:g.b,servingSide:g.serve,serverHand:g.mode==='sideout'?g.hand:1,
     displayLabel:m.stage,gameCount:g.bo,gameIndex:g.games.length,gamesWonA:w.a,gamesWonB:w.b,completed:false},extra||{});
 }
-function setSync(st){S.liveState=st;var el=$('#sync');if(el)el.className='sync '+(st||'');}
+function setSync(st){S.liveState=st;['#sync','#sync2'].forEach(function(id){var el=$(id);if(el)el.className='sync '+(st||'');});}
+/* Chạm chắc chắn trên iPhone/iPad: xử lý ngay khi nhấc tay (touchend), không chờ click; vẫn nhận click chuột trên máy tính */
+function tapBind(el,fn){
+  if(!el)return;var sx=0,sy=0,moved=false,last=0;
+  el.addEventListener('touchstart',function(e){var t=e.changedTouches[0];sx=t.clientX;sy=t.clientY;moved=false;},{passive:true});
+  el.addEventListener('touchmove',function(e){var t=e.changedTouches[0];if(Math.abs(t.clientX-sx)>18||Math.abs(t.clientY-sy)>18)moved=true;},{passive:true});
+  el.addEventListener('touchend',function(e){if(moved)return;e.preventDefault();last=Date.now();fn(e);},{passive:false});
+  el.addEventListener('click',function(e){if(Date.now()-last<700)return;fn(e);});
+}
+/* Toàn màn hình khi xoay ngang: Android/iPad dùng Fullscreen API; iPhone Safari không cho phép -> hướng dẫn mở bằng icon trên màn hình chính */
+function isStandalone(){return (window.navigator.standalone===true)||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||(window.matchMedia&&matchMedia('(display-mode: fullscreen)').matches);}
+function fsApi(){var d=document.documentElement;return d.requestFullscreen||d.webkitRequestFullscreen||null;}
+function isFull(){return !!(document.fullscreenElement||document.webkitFullscreenElement);}
+function goFull(fromButton){
+  if(isStandalone()||isFull())return;
+  var f=fsApi();
+  if(f){try{var r=f.call(document.documentElement,{navigationUI:'hide'});if(r&&r.catch)r.catch(function(){});}catch(e){}return;}
+  if(fromButton)toast('iPhone không cho trang web tự ẩn thanh Safari. Hãy mở bằng icon "Trọng tài" trên màn hình chính để dùng toàn màn hình.',5000);
+}
+function exitFull(){try{if(isFull())(document.exitFullscreen||document.webkitExitFullscreen).call(document);}catch(e){}}
+function isLandscape(){return window.matchMedia?matchMedia('(orientation: landscape)').matches:innerWidth>innerHeight;}
+function fsHint(){
+  var old=document.getElementById('fsHint');if(old)old.remove();
+  if(!document.body.classList.contains('scoring')||!isLandscape()||isStandalone()||isFull())return;
+  if(fsApi()){ // Android/iPad: vào toàn màn hình ở lần chạm kế tiếp (trình duyệt yêu cầu có thao tác của người dùng)
+    var once=function(){document.removeEventListener('touchend',once,true);document.removeEventListener('click',once,true);if(isLandscape()&&document.body.classList.contains('scoring'))goFull(false);};
+    document.addEventListener('touchend',once,true);document.addEventListener('click',once,true);return;
+  }
+  if(LS.get('fsHintOff',false))return;
+  var h=document.createElement('div');h.id='fsHint';h.className='fs-hint';
+  h.innerHTML='<b>Muốn toàn màn hình?</b> Trên iPhone: bấm <b>Chia sẻ ⬆ → Thêm vào MH chính</b>, rồi mở bằng icon <b>Trọng tài</b> – sẽ không còn thanh Safari.<button type="button">Đã hiểu</button>';
+  document.body.appendChild(h);
+  tapBind(h.querySelector('button'),function(){LS.set('fsHintOff',true);h.remove();});
+  setTimeout(function(){if(h.parentNode)h.remove();},9000);
+}
+window.addEventListener('orientationchange',function(){setTimeout(fsHint,350);});
+if(window.matchMedia)try{matchMedia('(orientation: landscape)').addEventListener('change',function(){setTimeout(fsHint,350);});}catch(e){}
 function pushLive(now,extra){
   if(!S.game||!S.game.live){setSync('');return;}
   clearTimeout(S.liveTimer);
