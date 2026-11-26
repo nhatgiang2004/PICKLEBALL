@@ -7,8 +7,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Trọng tài PB">
-<link rel="icon" href="./icon/icon-192.png">
-<link rel="apple-touch-icon" href="./icon/icon-180.png">
+<link rel="icon" href="./icon/huongdo-192.png">
+<link rel="apple-touch-icon" href="./icon/huongdo-180.png">
 <title>Trọng tài Pickleball</title>
 <style>
 :root{
@@ -28,8 +28,8 @@ input,select{font:inherit;font-size:16px}
 .bar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;padding:calc(10px + var(--safe-t)) 14px 10px;background:var(--navy);color:#fff}
 .bar h1{font-size:17px;margin:0;line-height:1.2;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bar small{display:block;font-size:12px;font-weight:500;color:#94a3b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.icon-btn{width:40px;height:40px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,.1);color:#fff;font-size:18px;flex:0 0 auto}
-.icon-btn:active{transform:scale(.94)}
+.huongdo-btn{width:40px;height:40px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,.1);color:#fff;font-size:18px;flex:0 0 auto}
+.huongdo-btn:active{transform:scale(.94)}
 /* ---------- Generic ---------- */
 .wrap{padding:14px;max-width:760px;width:100%;margin:0 auto}
 .card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);border:1px solid #e8edf4}
@@ -274,7 +274,7 @@ function loadList(showSpinner){
 }
 function barHtml(title,sub,left){
   return '<header class="bar">'+(left||'')+'<h1>'+esc(title)+(sub?'<small>'+esc(sub)+'</small>':'')+'</h1>'+
-    '<button class="icon-btn" id="btnReload" title="Tải lại">⟳</button><button class="icon-btn" id="btnOut" title="Kết nối dữ liệu">⚙</button></header>';
+    '<button class="huongdo-btn" id="btnReload" title="Tải lại">⟳</button><button class="huongdo-btn" id="btnOut" title="Kết nối dữ liệu">⚙</button></header>';
 }
 function renderList(){
   stopLive();
@@ -332,7 +332,7 @@ function renderSetup(m){
   var bo=bestOf(m),r0=gameRule(m,0),first='A',mode=LS.get('mode','sideout'),live=LS.get('live',true);
   var rules=[];for(var i=0;i<bo;i++)rules.push(ruleText(gameRule(m,i)));
   var draw=function(){
-    app.innerHTML='<header class="bar"><button class="icon-btn" id="back">←</button><h1>Chuẩn bị trận<small>'+esc(m.label)+'</small></h1></header>'+
+    app.innerHTML='<header class="bar"><button class="huongdo-btn" id="back">←</button><h1>Chuẩn bị trận<small>'+esc(m.label)+'</small></h1></header>'+
     '<div class="wrap"><div class="card setup" style="padding:16px">'+
       '<h3>Chọn đội giao bóng trước</h3><div class="muted" style="font-size:13.5px">Bấm vào đội giao bóng đầu tiên của Game 1.</div>'+
       '<div class="vs"><button class="t ta '+(first==='A'?'sel':'')+'" data-s="A">'+esc(teamName(m.teamA))+'<small>'+(first==='A'?'🏓 Giao trước':'Đỡ giao')+'</small></button><em>VS</em><button class="t tb '+(first==='B'?'sel':'')+'" data-s="B">'+esc(teamName(m.teamB))+'<small>'+(first==='B'?'🏓 Giao trước':'Đỡ giao')+'</small></button></div>'+
@@ -364,7 +364,7 @@ function snapshot(){var g=S.game;return {a:g.a,b:g.b,serve:g.serve,hand:g.hand,g
 function renderScore(){
   var m=S.match,g=S.game;
   app.className='screen score-screen';
-  app.innerHTML='<header class="bar"><button class="icon-btn" id="back">←</button><h1>'+esc(m.label)+'<small id="gInfo"></small></h1><span class="sync" id="sync" title="Trạng thái Live"></span></header>'+
+  app.innerHTML='<header class="bar"><button class="huongdo-btn" id="back">←</button><h1>'+esc(m.label)+'<small id="gInfo"></small></h1><span class="sync" id="sync" title="Trạng thái Live"></span></header>'+
     '<div class="call"><div class="cv" id="callV"></div><div class="cl" id="callL"></div></div>'+
     '<div class="courts" id="courts"></div>'+
     '<div class="dock"><button id="undo"><span>↶</span>Hoàn tác</button><button id="fix"><span>✎</span>Chỉnh điểm</button><button id="swap"><span>⇅</span>Đổi sân</button><button id="end"><span>⏹</span>Kết thúc</button></div>';
