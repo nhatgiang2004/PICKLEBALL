@@ -161,7 +161,7 @@ details.conn{margin:4px 0 0;font-size:13.5px}details.conn summary{cursor:pointer
 <script>
 /* =====================================================================
    MODULE TRỌNG TÀI ĐẾM ĐIỂM – chạy trên GitHub Pages, dữ liệu ở Google Sheet qua Web App
-   Link: trongtai.html?apiUrl=<link Web App /exec>   (lần đầu nhập link 1 lần, máy sẽ nhớ)
+   Mở là dùng ngay, không cần đăng nhập. Đổi giải: trongtai.html?apiUrl=<link Web App /exec> hoặc nút ⚙
    ===================================================================== */
 (function(){
 'use strict';
@@ -203,7 +203,6 @@ function call(action,extra){
     .catch(function(){clearTimeout(timer);return jsonp(body);})
     .then(function(d){
       d=d||{ok:false,message:'Máy chủ không trả dữ liệu'};
-      if(d.auth===false){S.token='';LS.del('token');renderLogin(d.message);throw new Error(d.message||'Hết phiên');}
       return d;
     });
 }
@@ -270,12 +269,12 @@ function loadList(showSpinner){
   }).catch(function(err){
     var c=LS.get('cache',null);
     if(c){S.data=c;renderList();toast('Mất kết nối – đang dùng dữ liệu đã lưu trên máy',3500);}
-    else if(S.token)app.innerHTML=barHtml('Lỗi tải dữ liệu','')+'<div class="wrap"><div class="msg err">'+esc(err.message||err)+'</div><button class="btn block" id="retry">Thử lại</button></div>',$('#retry')&&($('#retry').onclick=function(){loadList(true);});
+    else{app.innerHTML=barHtml('Lỗi tải dữ liệu','')+'<div class="wrap"><div class="msg err">'+esc(err.message||err)+'<br>Kiểm tra mạng hoặc link Web App (nút ⚙).</div><button class="btn block" id="retry">Thử lại</button></div>';$('#retry').onclick=function(){loadList(true);};$('#btnReload').onclick=function(){loadList(true);};$('#btnOut').onclick=openConnection;}
   });
 }
 function barHtml(title,sub,left){
   return '<header class="bar">'+(left||'')+'<h1>'+esc(title)+(sub?'<small>'+esc(sub)+'</small>':'')+'</h1>'+
-    '<button class="icon-btn" id="btnReload" title="Tải lại">⟳</button><button class="icon-btn" id="btnOut" title="Đăng xuất">⏻</button></header>';
+    '<button class="icon-btn" id="btnReload" title="Tải lại">⟳</button><button class="icon-btn" id="btnOut" title="Kết nối dữ liệu">⚙</button></header>';
 }
 function renderList(){
   stopLive();
@@ -286,7 +285,7 @@ function renderList(){
     .filter(function(m){return !q||(teamName(m.teamA)+' '+teamName(m.teamB)+' '+m.label).toLowerCase().indexOf(q)>=0;})
     .sort(function(a,b){var la=statusOf(a)==='live'?0:1,lb=statusOf(b)==='live'?0:1;return la-lb||(a.sort<b.sort?-1:a.sort>b.sort?1:0);});
   var pend=LS.get('outbox',[]);
-  var html=barHtml(S.data.tournament.name||'Giải Pickleball','👤 '+((S.user&&S.user.fullName)||'Trọng tài'))+
+  var html=barHtml(S.data.tournament.name||'Giải Pickleball','🏓 Trọng tài đếm điểm')+
     '<div class="tools"><div class="seg" id="seg">'+[['pending','Chưa đấu'],['live','Đang đấu'],['done','Đã đấu'],['all','Tất cả']].map(function(x){return '<button data-f="'+x[0]+'" class="'+(f===x[0]?'on':'')+'">'+x[1]+'<b>'+cnt[x[0]]+'</b></button>';}).join('')+'</div>'+
     '<input class="search" id="search" placeholder="Tìm tên VĐV, bảng, vòng…" value="'+esc(S.q)+'" type="search"></div>'+
     (pend.length?'<div class="wrap" style="padding-bottom:0"><div class="msg warn">⚠ Có '+pend.length+' kết quả chưa gửi được lên Google Sheet. <button class="btn ghost" id="sendPend" style="min-height:36px;margin-top:8px">Gửi lại ngay</button></div></div>':'')+
@@ -304,13 +303,22 @@ function renderList(){
   html+='</div>';
   app.className='screen';app.innerHTML=html;
   $('#btnReload').onclick=function(){loadList(false).then(function(){toast('Đã cập nhật danh sách');});};
-  $('#btnOut').onclick=logout;
+  $('#btnOut').onclick=openConnection;
   $('#seg').onclick=function(e){var b=e.target.closest('button');if(!b)return;S.filter=b.dataset.f;LS.set('filter',S.filter);renderList();};
   var si=$('#search');si.oninput=function(){S.q=si.value;var pos=si.selectionStart;renderList();var n=$('#search');n.focus();try{n.setSelectionRange(pos,pos);}catch(e){}};
   $('#listWrap').onclick=function(e){var b=e.target.closest('.match');if(!b)return;openMatch(b.dataset.k,b.dataset.id);};
   if($('#sendPend'))$('#sendPend').onclick=flushOutbox;
 }
-function logout(){if(!confirm('Đăng xuất khỏi máy này?'))return;S.token='';LS.del('token');renderLogin('');}
+// Đổi link Web App (dữ liệu giải) – không cần đăng nhập
+function openConnection(){
+  sheet('<h3>Kết nối dữ liệu</h3><div class="muted" style="font-size:13.5px">Link Web App (/exec) của giải đang chạy.</div><label class="field" style="margin-top:12px"><span>Link Web App</span><input id="cfgApi" value="'+esc(API)+'" inputmode="url"></label><div class="actions"><button class="btn block" data-x="save">Lưu và tải lại</button><button class="btn ghost block" data-x="close">Đóng</button></div>',function(x,close){
+    if(x==='close'){close();return;}
+    if(x!=='save')return;
+    var v=document.getElementById('cfgApi').value.trim();
+    if(!/^https:\/\/script\.google(usercontent)?\.com\//i.test(v)){toast('Link phải có dạng https:\/\/script.google.com\/macros\/s\/...\/exec');return;}
+    API=v;LS.set('api',API);LS.del('cache');close();loadList(true);
+  });
+}
 
 /* ---------------- chuẩn bị trận ---------------- */
 function openMatch(kind,id){
@@ -457,8 +465,7 @@ function sendResult(p){
     if(d.conflict){if(confirm(d.message+'\n\nGhi đè bằng kết quả mới?')){p.overwrite=true;return sendResult(p);}throw new Error('Đã hủy lưu.');}
     throw new Error(d.message||'Không lưu được');
   },function(err){
-    if(S.token){var ob=LS.get('outbox',[]);ob.push(p);LS.set('outbox',ob);return {ok:true,queued:true};}
-    throw err;
+    var ob=LS.get('outbox',[]);ob.push(p);LS.set('outbox',ob);return {ok:true,queued:true};
   });
 }
 function flushOutbox(){
@@ -517,7 +524,7 @@ function releaseWake(){try{if(S.wake){S.wake.release();S.wake=null;}}catch(e){}}
 document.addEventListener('visibilitychange',function(){if(!document.hidden&&S.game&&app.classList.contains('score-screen'))keepAwake();});
 
 /* ---------------- khởi động ---------------- */
-if(S.token){var c=LS.get('cache',null);if(c){S.data=c;renderList();}loadList(!c);}else renderLogin('');
+(function(){var c=LS.get('cache',null);if(c){S.data=c;renderList();}loadList(!c);})();
 })();
 </script>
 </body>
