@@ -1,356 +1,84 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hường Đỗ Pickleball - Sân thể thao</title>
-    <style>
-        :root {
-            --primary-color: #d90000;
-            --secondary-color: #f1f1f1;
-            --text-color: #333;
-            --light-text-color: #666;
-            --border-color: #e0e0e0;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+  <title>Hường Đỗ Pickleball</title>
+  <meta name="theme-color" content="#0b4a87">
 
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            color: var(--text-color);
-        }
+  <!-- iPhone / iPad: hiện icon khi "Thêm vào Màn hình chính" -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Hường Đỗ Pickleball">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="apple-touch-icon" sizes="180x180" href="./icon/icon-180.png?v=7">
 
-       .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 50px;
-            background-color: #fff;
-            border-bottom: 1px solid var(--border-color);
-            flex-wrap: wrap;
-        }
+  <!-- Android / trình duyệt -->
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon/icon-192.png?v=7">
+  <link rel="icon" type="image/png" sizes="512x512" href="./icon/icon-512.png?v=7">
+  <link rel="manifest" href="./manifest-huongdo.json?v=7">
 
-       .header-left,.header-right {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-       .header-left.logo img {
-            height: 40px;
-        }
-
-       .header-left.hotline {
-            font-size: 14px;
-            color: var(--primary-color);
-            font-weight: bold;
-        }
-
-       .header-center {
-            text-align: center;
-            flex-grow: 1;
-        }
-
-       .header-center h1 {
-            font-size: 20px;
-            color: var(--primary-color);
-            margin: 0;
-        }
-
-       .header-right.search-box {
-            display: flex;
-            align-items: center;
-            border: 1px solid var(--border-color);
-            border-radius: 5px;
-            padding: 5px;
-        }
-
-       .header-right.search-box input {
-            border: none;
-            outline: none;
-            padding: 5px;
-        }
-
-       .header-right.search-box button {
-            background-color: transparent;
-            border: none;
-            cursor: pointer;
-            padding: 0 5px;
-        }
-
-       .header-right.actions {
-            display: flex;
-            gap: 15px;
-            font-size: 14px;
-        }
-
-       .navbar {
-            background-color: #fff;
-            padding: 10px 50px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-       .navbar ul {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-
-       .navbar a {
-            text-decoration: none;
-            color: var(--text-color);
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-       .navbar a:hover {
-            color: var(--primary-color);
-        }
-
-       .main-content {
-            display: flex;
-            max-width: 1200px;
-            margin: 20px auto;
-            border: 1px solid var(--border-color);
-            border-radius: 5px;
-            overflow: hidden;
-        }
-
-       .sidebar {
-            flex: 1;
-            padding: 20px;
-            background-color: #fff;
-            border-right: 1px solid var(--border-color);
-        }
-
-       .map-container {
-            flex: 2;
-        }
-
-       .map-container iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-       .location-filter {
-            margin-bottom: 20px;
-        }
-
-       .location-filter select {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 5px;
-            font-size: 14px;
-        }
-
-       .store-list.store-item {
-            border-bottom: 1px dashed var(--border-color);
-            padding: 15px 0;
-            cursor: pointer;
-        }
-
-       .store-list.store-item:hover {
-            background-color: #f9f9f9;
-        }
-
-       .store-list.store-item:last-child {
-            border-bottom: none;
-        }
-
-       .store-list.store-item h3 {
-            margin: 0 0 5px;
-            font-size: 16px;
-            color: var(--primary-color);
-        }
-
-       .store-list.store-item p {
-            margin: 0;
-            font-size: 13px;
-            line-height: 1.5;
-        }
-
-       .footer {
-            background-color: #fff;
-            padding: 40px 50px;
-            border-top: 1px solid var(--border-color);
-        }
-
-       .footer-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-            max-width: 1200px;
-            margin: auto;
-        }
-
-       .footer-section h4 {
-            font-size: 16px;
-            color: var(--primary-color);
-            margin-bottom: 15px;
-        }
-
-       .footer-section p,.footer-section ul {
-            font-size: 12px;
-            line-height: 1.6;
-            color: var(--light-text-color);
-        }
-
-       .footer-section ul {
-            list-style: none;
-            padding: 0;
-        }
-        
-        @media (max-width: 768px) {
-           .header {
-                flex-direction: column;
-                text-align: center;
-            }
-           .header-left,.header-right {
-                flex-direction: column;
-                gap: 10px;
-            }
-           .navbar ul {
-                flex-direction: column;
-                gap: 10px;
-            }
-           .main-content {
-                flex-direction: column;
-            }
-           .sidebar {
-                border-right: none;
-                border-bottom: 1px solid var(--border-color);
-            }
-           .footer-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+  <style>
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; background: #06172d; }
+    #app { position: fixed; inset: 0; width: 100%; height: 100%; border: 0; display: block; background: #f3f6f8; }
+    #splash {
+      position: fixed; inset: 0; z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      background: linear-gradient(145deg, #06172d 0%, #0b4a87 55%, #0877be 100%);
+      color: #fff; font-family: Arial, Helvetica, sans-serif; text-align: center; padding: 24px;
+      transition: opacity .35s ease;
+    }
+    #splash.hide { opacity: 0; pointer-events: none; }
+    #splash img { width: 96px; height: 96px; border-radius: 22px; box-shadow: 0 12px 35px rgba(0,0,0,.28); }
+    #splash .t { margin-top: 18px; font-size: 20px; font-weight: 700; }
+    #splash .s { margin-top: 6px; font-size: 14px; opacity: .85; }
+    #splash .spin { width: 32px; height: 32px; margin-top: 22px; border: 4px solid rgba(255,255,255,.25); border-top-color: #fff; border-radius: 50%; animation: spin .8s linear infinite; }
+    #splash a { display: none; margin-top: 22px; background: #fff; color: #0b4a87; text-decoration: none; font-weight: 700; padding: 13px 22px; border-radius: 12px; }
+    #splash.slow a { display: inline-block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
 </head>
 <body>
+  <!-- Màn hình chờ trong lúc trang đăng nhập đang tải (tự ẩn) -->
+  <div id="splash">
+    <img src="./icon/icon-180.png?v=7" alt="">
+    <div class="t">Hường Đỗ Pickleball</div>
+    <div class="s" id="msg">Đang mở hệ thống…</div>
+    <div class="spin"></div>
+    <a id="direct" href="#">Mở trực tiếp</a>
+  </div>
+  <iframe id="app" title="Hường Đỗ Pickleball" allow="clipboard-read; clipboard-write; camera; fullscreen"></iframe>
 
-    <div class="header">
-        <div class="header-left">
-            <div class="logo">
-                <img src="https://i.ibb.co/6y4tW64/vnb-logo.png" alt="VNB Sports">
-            </div>
-            <div class="hotline">
-                HOTLINE: 0977508430 | 0338000308
-            </div>
-        </div>
-        <div class="header-center">
-            <h1>HỆ THỐNG SÂN</h1>
-        </div>
-        <div class="header-right">
-            <div class="search-box">
-                <input type="text" placeholder="Tìm sản phẩm...">
-                <button>🔎</button>
-            </div>
-            <div class="actions">
-                <span>TRA CỨU</span>
-                <span>GIỎ HÀNG</span>
-                <span>TÀI KHOẢN</span>
-                <span>ĐĂNG NHẬP</span>
-            </div>
-        </div>
-    </div>
+  <script>
+    /*
+    ==========================================================
+    CHỈ THAY ĐOẠN NÀY KHI GOOGLE APPS SCRIPT ĐỔI LINK
+    ==========================================================
+    */
+    const APP_URL =
+      "https://script.google.com/macros/s/AKfycbx0Uya3scy_a-lO7SG8Nhwwf7Me7GXxsIexiRfsuLxFghSwklUDmqUffS2Vzwgy0NhI/exec";
 
-    <div class="navbar">
-        <ul>
-            <li><a href="#">TRANG CHỦ</a></li>
-            <li><a href="#">SẢN PHẨM</a></li>
-            <li><a href="#">SALE OFF</a></li>
-            <li><a href="#">TIN TỨC</a></li>
-            <li><a href="#">CHÍNH SÁCH NHƯỢNG QUYỀN</a></li>
-            <li><a href="#">HƯỚNG DẪN</a></li>
-            <li><a href="#">GIỚI THIỆU</a></li>
-            <li><a href="#">LIÊN HỆ</a></li>
-        </ul>
-    </div>
+    /* ===== KHÔNG CẦN SỬA PHẦN BÊN DƯỚI ===== */
+    const splash = document.getElementById("splash");
+    const msg = document.getElementById("msg");
+    const frame = document.getElementById("app");
+    const direct = document.getElementById("direct");
 
-    <div class="main-content">
-        <div class="sidebar">
-            <div class="location-filter">
-                <select>
-                    <option>Chọn tỉnh/thành</option>
-                </select>
-                <select>
-                    <option>Chọn quận/huyện</option>
-                </select>
-            </div>
-            <div class="store-list">
-                <div class="store-item">
-                    <h3>VNB Super Center</h3>
-                    <p>📍 390/2 Hà Huy Giáp, Phường Thạnh Lộc, Quận 12<br>📞 0936155994</p>
-                </div>
-                <div class="store-item">
-                    <h3>VNB PREMIUM Quận 1</h3>
-                    <p>📍 20 Cao Bá Nhã, Phường Nguyễn Cư Trinh, TPHCM<br>📞 0931823614</p>
-                </div>
-                <div class="store-item">
-                    <h3>VNB PREMIUM Quận 11</h3>
-                    <p>📍 209 Âu Cơ, Phường 5, Quận 11, Tp.HCM<br>📞 0828833323</p>
-                </div>
-                <div class="store-item">
-                    <h3>VNB PREMIUM Bình Thạnh</h3>
-                    <p>📍 284 Xô Viết Nghệ Tĩnh, P21, Quận Bình Thạnh, Tp.HCM<br>📞 0862521779</p>
-                </div>
-                <div class="store-item">
-                    <h3>VNB PREMIUM TP Thủ Đức</h3>
-                    <p>📍 916 Kha Vạn Cân, Phường Trường Thọ TP Thủ Đức<br>📞 0767306363</p>
-                </div>
-                <div class="store-item">
-                    <h3>VNB PREMIUM Ninh Kiều Cần Thơ</h3>
-                    <p>📍 96/1 Trần Hưng Đạo, P.An Cư, Q.Ninh Kiều, TP Cần Thơ<br>📞 0825316316</p>
-                </div>
-            </div>
-        </div>
-        <div class="map-container">
-           <iframe src="https://www.google.com/maps/@19.8154587,105.7823002,17z?hl=en&entry=ttu&g_ep=EgoyMDI1MDkyMS4wIKXMDSoASAFQAw%3D%3D" width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
-
-        </div>
-    </div>
-
-    <div class="footer">
-        <div class="footer-grid">
-            <div class="footer-section">
-                <h4>THÔNG TIN CHUNG</h4>
-                <p>VNB Sports là hệ thống cửa hàng cầu lông với hơn 50 chi nhánh trên toàn quốc, cung cấp sỉ và lẻ các mặt hàng dụng cụ cầu lông từ phong trào đến chuyên nghiệp.</p>
-            </div>
-            <div class="footer-section">
-                <h4>HỆ THỐNG LIÊN HỆ</h4>
-                <p>Hệ thống cửa hàng: 1 Super Center, 5 shop Premium và 75 cửa hàng trên toàn quốc.</p>
-                <p>Xem toàn bộ cửa hàng VNB.</p>
-            </div>
-            <div class="footer-section">
-                <h4>CHÍNH SÁCH</h4>
-                <ul>
-                    <li>Thông tin về vận chuyển và giao nhận</li>
-                    <li>Chính sách đổi trả, hoàn tiền</li>
-                    <li>Chính sách bảo hành</li>
-                    <li>Bảo mật thông tin khách hàng</li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>HƯỚNG DẪN</h4>
-                <ul>
-                    <li>Danh sách số tài khoản chính thức của các shop trong hệ thống VNB Sports</li>
-                    <li>Hướng dẫn cách chọn vợt cầu lông cho người mới</li>
-                    <li>Vá mút vợt cầu lông</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
+    const ok = typeof APP_URL === "string" && APP_URL.startsWith("https://script.google.com/macros/s/") && APP_URL.includes("/exec");
+    if (!ok) {
+      msg.textContent = "Link hệ thống chưa đúng. Vui lòng kiểm tra APP_URL.";
+      document.querySelector("#splash .spin").style.display = "none";
+    } else {
+      const url = APP_URL + (APP_URL.includes("?") ? "&" : "?") + "_v=" + Date.now();
+      direct.href = url;
+      /* Trang đăng nhập hiện ngay trong khung, địa chỉ vẫn là hotel.html nên icon trên màn hình chính giữ nguyên */
+      frame.addEventListener("load", function () { setTimeout(function () { splash.classList.add("hide"); }, 400); });
+      frame.src = url;
+      /* Mạng chậm hoặc trình duyệt chặn khung: hiện nút mở trực tiếp */
+      setTimeout(function () {
+        if (!splash.classList.contains("hide")) { splash.classList.add("slow"); msg.textContent = "Mạng chậm? Bấm để mở trực tiếp."; }
+      }, 12000);
+    }
+  </script>
 </body>
 </html>
-
-
-
-
