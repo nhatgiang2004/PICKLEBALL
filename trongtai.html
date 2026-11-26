@@ -25,7 +25,7 @@
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%}
 body{background:var(--bg);color:var(--ink);font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased;overscroll-behavior:none}
-button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none}
 input,select{font:inherit;font-size:16px}
 [hidden]{display:none!important}
 .screen{min-height:100%;display:flex;flex-direction:column}
@@ -153,9 +153,11 @@ details.conn{margin:4px 0 0;font-size:13.5px}details.conn summary{cursor:pointer
 @media (orientation:landscape){
   .score-screen{display:grid;grid-template-columns:minmax(0,1fr) clamp(190px,27vw,300px) minmax(0,1fr);grid-template-rows:auto auto 1fr;
     grid-template-areas:"a bar b" "a call b" "a dock b";column-gap:8px;padding:8px max(8px,env(safe-area-inset-right,0px)) max(8px,env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px))}
-  .courts{display:contents}
-  .courts>.team:first-child{grid-area:a}.courts>.team:last-child{grid-area:b}
-  .score-screen .bar{grid-area:bar;position:static;padding:0 0 6px;border:0;background:transparent;gap:6px}
+  .courts{grid-area:1/1/-1/-1;display:grid;grid-template-rows:none;grid-template-columns:minmax(0,1fr) clamp(190px,27vw,300px) minmax(0,1fr);column-gap:8px;padding:0;position:relative;z-index:1;pointer-events:none;min-height:0}
+  .courts>.team{pointer-events:auto;grid-row:1}
+  .courts>.team:first-child{grid-column:1}.courts>.team:last-child{grid-column:3}
+  .score-screen .bar,.call,.dock{position:relative;z-index:3}
+  .score-screen .bar{grid-area:bar;padding:0 0 6px;border:0;background:transparent;gap:6px}
   .score-screen .bar h1{font-size:13px}.score-screen .bar small{font-size:11px}
   .score-screen .bar .icon-btn{width:34px;height:34px;border-radius:10px;font-size:16px}
   .call{grid-area:call;flex-direction:column;align-items:stretch;gap:6px;padding:8px;border-radius:16px;background:#111a2e;flex-wrap:nowrap}
@@ -480,7 +482,7 @@ function rally(winner,el){
 // Bấm tay: chọn Tay 1 / Tay 2 cho đội đang giao, hoặc đổi giao sang đội kia (bắt đầu Tay 1)
 function setHand(h){
   var g=S.game;if(!g||document.querySelector('.sheet-bg'))return;
-  if(h!=='x'&&String(g.hand)===h)return;
+  if(h!=='x'&&String(g.hand)===h){toast('Đang là Tay '+h,900);buzz(6);return;}
   g.hist.push(snapshot());buzz(12);
   if(h==='x'){g.serve=g.serve==='A'?'B':'A';g.hand=1;toast('Đổi giao bóng ➜ '+teamName(g.serve==='A'?S.match.teamA:S.match.teamB),1500);}
   else g.hand=Number(h);
