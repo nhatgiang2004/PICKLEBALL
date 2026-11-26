@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#0f172a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Trọng tài PB">
+<link rel="icon" href="./icon/icon-192.png">
+<link rel="apple-touch-icon" href="./icon/icon-180.png">
+<title>Trọng tài Pickleball</title>
+<style>
+:root{
+  --bg:#eef2f7;--card:#fff;--ink:#0f172a;--muted:#64748b;--line:#e2e8f0;--navy:#0f172a;
+  --a:#2563eb;--a-soft:#dbeafe;--b:#ea580c;--b-soft:#ffedd5;--ok:#16a34a;--ok-soft:#dcfce7;--warn:#d97706;--danger:#dc2626;
+  --r:18px;--shadow:0 1px 2px rgba(15,23,42,.06),0 10px 28px rgba(15,23,42,.07);
+  --safe-b:env(safe-area-inset-bottom,0px);--safe-t:env(safe-area-inset-top,0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased;overscroll-behavior:none}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+input,select{font:inherit;font-size:16px}
+[hidden]{display:none!important}
+.screen{min-height:100%;display:flex;flex-direction:column}
+/* ---------- Top bar ---------- */
+.bar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;padding:calc(10px + var(--safe-t)) 14px 10px;background:var(--navy);color:#fff}
+.bar h1{font-size:17px;margin:0;line-height:1.2;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar small{display:block;font-size:12px;font-weight:500;color:#94a3b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.icon-btn{width:40px;height:40px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,.1);color:#fff;font-size:18px;flex:0 0 auto}
+.icon-btn:active{transform:scale(.94)}
+/* ---------- Generic ---------- */
+.wrap{padding:14px;max-width:760px;width:100%;margin:0 auto}
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);border:1px solid #e8edf4}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 18px;border-radius:14px;font-weight:800;font-size:16px;background:var(--a);color:#fff;transition:transform .08s,opacity .2s}
+.btn:active{transform:scale(.97)}
+.btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.btn.ok{background:var(--ok)}.btn.danger{background:var(--danger)}.btn.dark{background:var(--navy)}
+.btn.block{width:100%}
+.btn[disabled]{opacity:.5;pointer-events:none}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:800;white-space:nowrap}
+.chip.pending{background:#f1f5f9;color:#475569}.chip.live{background:#fef3c7;color:#b45309}.chip.done{background:var(--ok-soft);color:#166534}
+.muted{color:var(--muted)}
+.field{display:block;margin:0 0 14px}
+.field span{display:block;font-weight:700;font-size:14px;margin:0 0 6px}
+.field input,.field select{width:100%;min-height:50px;border:1px solid #cbd5e1;border-radius:14px;padding:0 14px;background:#fff;color:var(--ink);outline:none}
+.field input:focus,.field select:focus{border-color:var(--a);box-shadow:0 0 0 4px rgba(37,99,235,.15)}
+.msg{padding:12px 14px;border-radius:14px;font-weight:600;font-size:14px;margin:0 0 14px}
+.msg.err{background:#fee2e2;color:#991b1b}.msg.info{background:#e0f2fe;color:#075985}.msg.warn{background:#fef3c7;color:#92400e}
+.toast{pointer-events:none;position:fixed;left:50%;bottom:calc(20px + var(--safe-b));transform:translateX(-50%) translateY(20px);opacity:0;background:var(--navy);color:#fff;padding:12px 18px;border-radius:14px;font-weight:700;z-index:100;transition:.25s;max-width:calc(100% - 32px);text-align:center;box-shadow:0 12px 30px rgba(0,0,0,.25)}
+.score-screen~.toast{bottom:calc(84px + var(--safe-b))}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* ---------- Login ---------- */
+.login{flex:1;display:flex;align-items:center;justify-content:center;padding:24px 16px calc(24px + var(--safe-b));background:radial-gradient(1200px 600px at 50% -10%,#1e3a8a 0,#0f172a 55%,#020617 100%)}
+.login .card{width:100%;max-width:420px;padding:26px 22px}
+.brand{display:flex;align-items:center;gap:12px;margin:0 0 20px}
+.brand-logo{width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,#22c55e,#16a34a);display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 8px 20px rgba(22,163,74,.35)}
+.brand h2{margin:0;font-size:22px;line-height:1.15}.brand p{margin:2px 0 0;color:var(--muted);font-size:13.5px}
+details.conn{margin:4px 0 0;font-size:13.5px}details.conn summary{cursor:pointer;color:var(--muted);font-weight:700;padding:6px 0}
+/* ---------- List ---------- */
+.tools{position:sticky;top:calc(60px + var(--safe-t));z-index:10;background:var(--bg);padding:12px 14px 8px;max-width:760px;margin:0 auto;width:100%}
+.seg{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}.seg::-webkit-scrollbar{display:none}
+.seg button{flex:0 0 auto;padding:9px 14px;border-radius:999px;background:#fff;border:1px solid var(--line);font-weight:800;font-size:14px;color:#334155}
+.seg button.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.seg b{font-weight:800;opacity:.65;margin-left:4px}
+.search{margin-top:10px;width:100%;min-height:46px;border:1px solid #cbd5e1;border-radius:14px;padding:0 14px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='none' stroke='%2394a3b8' stroke-width='2.2'%3E%3Ccircle cx='8' cy='8' r='6'/%3E%3Cpath d='m13 13 4 4'/%3E%3C/svg%3E") no-repeat 14px center;padding-left:40px;outline:none}
+.sec-title{margin:18px 2px 8px;font-size:12.5px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;color:#475569;display:flex;justify-content:space-between}
+.match{display:block;width:100%;text-align:left;padding:14px;margin:0 0 10px;position:relative;overflow:hidden}
+.match:active{transform:scale(.99)}
+.match .top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
+.match .label{font-size:12.5px;font-weight:800;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.match .row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:4px 0}
+.match .tname{font-weight:800;font-size:16px;display:flex;align-items:center;gap:8px;min-width:0}
+.match .tname i{width:10px;height:10px;border-radius:50%;flex:0 0 auto}
+.match .tname span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.match .sc{font-weight:900;font-size:18px;min-width:28px;text-align:right}
+.match .w{color:var(--ok)}
+.match.is-live{box-shadow:0 0 0 2px #fbbf24,var(--shadow)}
+.empty{text-align:center;padding:40px 16px;color:var(--muted)}
+.pending-bar{margin:0 14px 10px;max-width:732px}
+/* ---------- Setup ---------- */
+.setup h3{margin:0 0 4px;font-size:18px}
+.vs{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;margin:14px 0}
+.vs .t{padding:14px 10px;border-radius:16px;text-align:center;font-weight:900;font-size:16px;line-height:1.25;border:2px solid transparent}
+.vs .t.ta{background:var(--a-soft);color:#1e3a8a}.vs .t.tb{background:var(--b-soft);color:#9a3412}
+.vs .t.sel{border-color:currentColor;box-shadow:0 0 0 4px rgba(15,23,42,.06)}
+.vs .t small{display:block;font-size:12px;font-weight:700;opacity:.75;margin-top:4px}
+.vs em{font-style:normal;font-weight:900;color:var(--muted)}
+.opt{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.opt b{display:block}.opt small{color:var(--muted)}
+.switch{position:relative;width:52px;height:30px;flex:0 0 auto}
+.switch input{opacity:0;width:0;height:0}
+.switch span{position:absolute;inset:0;background:#cbd5e1;border-radius:999px;transition:.2s}
+.switch span::after{content:"";position:absolute;left:3px;top:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.switch input:checked+span{background:var(--ok)}.switch input:checked+span::after{transform:translateX(22px)}
+.mode{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0 4px}
+.mode button{padding:12px 10px;border-radius:14px;border:2px solid var(--line);background:#fff;font-weight:800;text-align:left;font-size:14px;line-height:1.3}
+.mode button small{display:block;font-weight:600;color:var(--muted);font-size:12px}
+.mode button.on{border-color:var(--a);background:#eff6ff}
+/* ---------- Scoring ---------- */
+.score-screen{background:#0b1220;color:#fff;height:100%;min-height:100%;display:flex;flex-direction:column;overflow:hidden}
+.score-screen .bar{background:#0b1220;border-bottom:1px solid rgba(255,255,255,.08)}
+.call{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 14px;background:#111a2e}
+.call .cv{font-size:30px;font-weight:900;letter-spacing:.04em;font-variant-numeric:tabular-nums}
+.call .cl{font-size:12px;color:#94a3b8;font-weight:700;text-align:right;line-height:1.3}
+.sync{width:9px;height:9px;border-radius:50%;background:#64748b;display:inline-block;margin-right:6px;vertical-align:middle}
+.sync.on{background:#22c55e;box-shadow:0 0 0 4px rgba(34,197,94,.2)}.sync.busy{background:#f59e0b}.sync.err{background:#ef4444}
+.courts{flex:1;display:grid;grid-template-rows:1fr 1fr;gap:10px;padding:10px;min-height:0}
+.team{position:relative;border-radius:24px;padding:14px 16px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;min-height:0;transition:transform .08s,filter .2s;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+.team:active{transform:scale(.985)}
+.team.ta{background:linear-gradient(145deg,#1d4ed8,#1e3a8a)}
+.team.tb{background:linear-gradient(145deg,#ea580c,#9a3412)}
+.team .nm{font-size:18px;font-weight:900;line-height:1.2;padding-right:90px;text-shadow:0 1px 2px rgba(0,0,0,.2)}
+.team .pts{font-size:clamp(84px,24vh,180px);font-weight:900;line-height:.9;font-variant-numeric:tabular-nums;letter-spacing:-.03em;text-align:center}
+.team .foot{display:flex;justify-content:space-between;align-items:flex-end;gap:8px}
+.team .games{display:flex;gap:5px}.team .games i{width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.25)}.team .games i.w{background:#fde047}
+.team .hint{font-size:12px;font-weight:800;opacity:.75}
+.serve{position:absolute;top:12px;right:12px;display:none;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:#fde047;color:#111827;font-weight:900;font-size:13px;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.team.serving .serve{display:inline-flex}
+.team.serving{box-shadow:inset 0 0 0 3px #fde047}
+.team:not(.serving){filter:saturate(.85)}
+.flash{animation:flash .35s ease-out}
+@keyframes flash{0%{filter:brightness(1.6)}100%{filter:none}}
+.dock{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:8px 10px calc(10px + var(--safe-b));background:#0b1220}
+.dock button{min-height:52px;border-radius:14px;background:#1e293b;color:#e2e8f0;font-weight:800;font-size:12.5px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;line-height:1.1}
+.dock button span{font-size:18px}
+.dock button:active{background:#334155}
+.dock button[disabled]{opacity:.4}
+@media (orientation:landscape) and (max-height:560px){
+  .courts{grid-template-rows:none;grid-template-columns:1fr 1fr}
+  .team .pts{font-size:clamp(72px,30vh,150px)}
+  .call{padding:4px 14px}.call .cv{font-size:24px}
+  .dock{grid-template-columns:repeat(4,1fr)}
+}
+/* ---------- Sheet / modal ---------- */
+.sheet-bg{position:fixed;inset:0;background:rgba(2,6,23,.6);z-index:50;display:flex;align-items:flex-end;justify-content:center;animation:fade .2s}
+.sheet{background:#fff;color:var(--ink);width:100%;max-width:520px;border-radius:24px 24px 0 0;padding:18px 18px calc(18px + var(--safe-b));max-height:92vh;overflow:auto;animation:up .25s ease-out}
+@media (min-width:600px){.sheet-bg{align-items:center}.sheet{border-radius:24px}}
+.sheet h3{margin:0 0 6px;font-size:20px}
+.sheet .grab{width:44px;height:5px;border-radius:9px;background:#cbd5e1;margin:-6px auto 12px}
+.sheet .actions{display:grid;gap:10px;margin-top:16px}
+.result-big{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;margin:14px 0;text-align:center}
+.result-big .n{font-weight:800;font-size:14px;line-height:1.25}
+.result-big .s{font-size:44px;font-weight:900;font-variant-numeric:tabular-nums}
+.games-list{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:4px 0}
+.games-list span{background:#f1f5f9;border-radius:10px;padding:4px 10px;font-weight:800;font-size:13px}
+.adj{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.adj .col{background:#f8fafc;border-radius:16px;padding:10px;text-align:center}
+.adj .col b{display:block;font-size:13px;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.adj .row{display:flex;gap:8px;justify-content:center}
+.adj .row button{width:52px;height:46px;border-radius:12px;background:#e2e8f0;font-weight:900;font-size:20px}
+.adj .row button.sv{width:auto;padding:0 12px;font-size:13px}
+@keyframes up{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+</style>
+</head>
+<body>
+<div id="app" class="screen"></div>
+<div id="toast" class="toast"></div>
+<script>
+/* =====================================================================
+   MODULE TRỌNG TÀI ĐẾM ĐIỂM – chạy trên GitHub Pages, dữ liệu ở Google Sheet qua Web App
+   Link: trongtai.html?apiUrl=<link Web App /exec>   (lần đầu nhập link 1 lần, máy sẽ nhớ)
+   ===================================================================== */
+(function(){
+'use strict';
+var DEFAULT_API_URL='https:\/\/script.google.com\/macros\/s\/AKfycbyn5qtFeeh5PXr0Fh8e52GAvNzXvAGd8BYYaHRHpL8T2wfhULQ3HWT6jjpJGNBHk8i7\/exec';
+var Q=new URLSearchParams(location.search);
+var LS={get:function(k,d){try{var v=localStorage.getItem('pbRef:'+k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set:function(k,v){try{localStorage.setItem('pbRef:'+k,JSON.stringify(v));}catch(e){}},del:function(k){try{localStorage.removeItem('pbRef:'+k);}catch(e){}}};
+var API=String(Q.get('apiUrl')||LS.get('api','')||DEFAULT_API_URL).trim();
+if(Q.get('apiUrl'))LS.set('api',API);
+var S={token:LS.get('token',''),user:LS.get('user',null),data:null,filter:LS.get('filter','pending'),q:'',match:null,game:null,liveTimer:null,liveState:'',wake:null};
+var app=document.getElementById('app');
+var KO_ROUNDS=['Vòng 1/32','Vòng 1/16','Tứ kết','Bán kết','Chung kết','Tranh ba'];
+
+/* ---------------- tiện ích ---------------- */
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function toast(t,ms){var el=document.getElementById('toast');el.textContent=t;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(function(){el.classList.remove('show');},ms||2600);}
+function buzz(ms){try{if(navigator.vibrate)navigator.vibrate(ms||18);}catch(e){}}
+function $(sel,root){return (root||document).querySelector(sel);}
+
+/* ---------------- kết nối Web App ---------------- */
+// Ưu tiên POST (dữ liệu không nằm trên địa chỉ); nếu trình duyệt chặn thì dùng JSONP qua GET.
+var seq=0;
+function jsonp(body,timeout){
+  return new Promise(function(resolve,reject){
+    var cb='__pbRef'+Date.now()+'_'+(++seq),s=document.createElement('script'),done=false;
+    var clean=function(){try{delete window[cb];}catch(e){window[cb]=undefined;}s.remove();};
+    var t=setTimeout(function(){if(done)return;done=true;clean();reject(new Error('Hết thời gian chờ máy chủ'));},timeout||20000);
+    window[cb]=function(d){if(done)return;done=true;clearTimeout(t);clean();resolve(d);};
+    s.onerror=function(){if(done)return;done=true;clearTimeout(t);clean();reject(new Error('Không kết nối được Web App'));};
+    s.src=API+(API.indexOf('?')>=0?'&':'?')+'api=ref&callback='+cb+'&payload='+encodeURIComponent(JSON.stringify(body))+'&_='+Date.now();
+    document.head.appendChild(s);
+  });
+}
+function call(action,extra){
+  var body=Object.assign({action:action,token:S.token},extra||{});
+  var ctl=typeof AbortController!=='undefined'?new AbortController():null;
+  var timer=ctl?setTimeout(function(){ctl.abort();},20000):0;
+  return fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body),redirect:'follow',signal:ctl?ctl.signal:undefined})
+    .then(function(r){clearTimeout(timer);if(!r.ok)throw new Error('HTTP '+r.status);return r.json();})
+    .catch(function(){clearTimeout(timer);return jsonp(body);})
+    .then(function(d){
+      d=d||{ok:false,message:'Máy chủ không trả dữ liệu'};
+      if(d.auth===false){S.token='';LS.del('token');renderLogin(d.message);throw new Error(d.message||'Hết phiên');}
+      return d;
+    });
+}
+
+/* ---------------- dữ liệu trận ---------------- */
+function teamName(id){var t=(S.data.teams||[]).find(function(x){return x.id===id;});return t?t.name:'Chưa xác định';}
+function groupName(id){var g=(S.data.groups||[]).find(function(x){return x.id===id;});return g?g.name:'Bảng';}
+function koRound(m){if(m.isThirdPlace||m.roundName==='Tranh ba')return 'Tranh ba';return m.roundName||((S.data.knockout&&S.data.knockout.rounds)||[])[m.roundIndex]||'Knock-out';}
+function roundCfg(name){return ((S.data.tournament&&S.data.tournament.knockoutRoundConfig)||[]).find(function(r){return r.round===name;})||{};}
+function allMatches(){
+  var d=S.data,out=[];if(!d)return out;
+  (d.matches||[]).forEach(function(m){out.push(Object.assign({},m,{kind:'gm',stage:groupName(m.groupId),label:groupName(m.groupId)+' • Lượt '+(m.round||1),sort:'0|'+groupName(m.groupId)+'|'+String(m.round||0).padStart(3,'0')}));});
+  ((d.knockout&&d.knockout.matches)||[]).forEach(function(m){var r=koRound(m);var bo=bestOf(Object.assign({kind:'ko'},m));out.push(Object.assign({},m,{kind:'ko',stage:r,label:r+(r==='Tranh ba'||r==='Chung kết'?'':' • Trận '+(m.matchNo||1))+(bo>1?' • BO'+bo:''),sort:'1|'+KO_ROUNDS.indexOf(r)+'|'+String(m.matchNo||0).padStart(3,'0')}));});
+  return out.filter(function(m){return m.teamA&&m.teamB;});
+}
+function bestOf(m){if(m.kind!=='ko')return 1;var n=Number(roundCfg(koRound(m)).games||1);return [1,3,5].indexOf(n)>=0?n:1;}
+// Luật của từng game: điểm chạm, cách biệt, trần điểm
+function gameRule(m,i){
+  var t=S.data.tournament||{},T=Math.max(1,Number(t.pointsToWin||11)),W=Math.max(1,Number(t.winBy||1)),cap=t.allowOverTarget?Math.max(0,Number(t.scoreCap||0)):0;
+  if(m.kind==='ko'){
+    var n=bestOf(m),c=roundCfg(koRound(m)),last=n>1&&i===n-1,gr=n>1&&Array.isArray(c.gameRules)?c.gameRules[i]:null;
+    if(gr&&(Number(gr.target)>0||Number(gr.winBy)>0)){T=Number(gr.target)>0?Number(gr.target):T;W=Number(gr.winBy)>0?Number(gr.winBy):W;}
+    else if(last){if(Number(c.decidingTarget)>0)T=Number(c.decidingTarget);if(Number(c.decidingWinBy)>0)W=Number(c.decidingWinBy);}
+  }
+  return {target:T,winBy:W,cap:cap};
+}
+function ruleText(r){return 'Chạm '+r.target+(r.winBy>1?', cách '+r.winBy:'')+(r.cap>0?', trần '+r.cap:'');}
+function gameOver(a,b,r){var hi=Math.max(a,b),lo=Math.min(a,b);return (hi>=r.target&&hi-lo>=r.winBy)||(r.cap>0&&hi>=r.cap&&hi>lo);}
+function statusOf(m){if(m.completed)return 'done';var L=S.data.live||{};if(L.active&&L.matchId===m.id&&L.kind===m.kind)return 'live';if(LS.get('game:'+m.kind+':'+m.id,null))return 'live';return 'pending';}
+
+/* ---------------- màn hình: đăng nhập ---------------- */
+function renderLogin(msg){
+  stopLive();
+  app.className='screen';
+  app.innerHTML='<div class="login"><form class="card" id="loginForm" autocomplete="on">'+
+    '<div class="brand"><div class="brand-logo">🏓</div><div><h2>Trọng tài</h2><p>Đếm điểm trận đấu Pickleball</p></div></div>'+
+    (msg?'<div class="msg err">'+esc(msg)+'</div>':'')+
+    '<label class="field"><span>Tên đăng nhập</span><input id="lgU" name="username" autocomplete="username" autocapitalize="none" required value="'+esc((S.user&&S.user.username)||'')+'"></label>'+
+    '<label class="field"><span>Mật khẩu</span><input id="lgP" name="password" type="password" autocomplete="current-password" required></label>'+
+    '<button class="btn block" id="lgBtn" type="submit">Đăng nhập</button>'+
+    '<details class="conn"><summary>⚙ Kết nối dữ liệu</summary><label class="field" style="margin-top:8px"><span>Link Web App (/exec)</span><input id="lgApi" value="'+esc(API)+'" inputmode="url"></label></details>'+
+    '</form></div>';
+  var f=$('#loginForm');setTimeout(function(){($('#lgU').value?$('#lgP'):$('#lgU')).focus();},50);
+  f.onsubmit=function(e){
+    e.preventDefault();
+    var api=$('#lgApi').value.trim();
+    if(!/^https:\/\/script\.google(usercontent)?\.com\//i.test(api)){toast('Link Web App phải có dạng https:\/\/script.google.com\/macros\/s\/...\/exec');return;}
+    API=api;LS.set('api',API);
+    var btn=$('#lgBtn');btn.disabled=true;btn.textContent='Đang đăng nhập…';
+    call('login',{username:$('#lgU').value.trim(),password:$('#lgP').value}).then(function(d){
+      if(!d.ok)throw new Error(d.message||'Đăng nhập không thành công');
+      document.getElementById('toast').classList.remove('show');S.token=d.token;S.user=d.user;LS.set('token',d.token);LS.set('user',d.user);
+      loadList(true);
+    }).catch(function(err){btn.disabled=false;btn.textContent='Đăng nhập';toast(err.message||String(err),3500);});
+  };
+}
+
+/* ---------------- màn hình: danh sách trận ---------------- */
+function loadList(showSpinner){
+  if(showSpinner){app.className='screen';app.innerHTML=barHtml('Đang tải…','')+'<div class="empty">⏳ Đang tải danh sách trận…</div>';}
+  return call('list').then(function(d){
+    if(!d.ok)throw new Error(d.message||'Không tải được dữ liệu');
+    S.data=d;LS.set('cache',d);renderList();
+  }).catch(function(err){
+    var c=LS.get('cache',null);
+    if(c){S.data=c;renderList();toast('Mất kết nối – đang dùng dữ liệu đã lưu trên máy',3500);}
+    else if(S.token)app.innerHTML=barHtml('Lỗi tải dữ liệu','')+'<div class="wrap"><div class="msg err">'+esc(err.message||err)+'</div><button class="btn block" id="retry">Thử lại</button></div>',$('#retry')&&($('#retry').onclick=function(){loadList(true);});
+  });
+}
+function barHtml(title,sub,left){
+  return '<header class="bar">'+(left||'')+'<h1>'+esc(title)+(sub?'<small>'+esc(sub)+'</small>':'')+'</h1>'+
+    '<button class="icon-btn" id="btnReload" title="Tải lại">⟳</button><button class="icon-btn" id="btnOut" title="Đăng xuất">⏻</button></header>';
+}
+function renderList(){
+  stopLive();
+  var all=allMatches();
+  var cnt={pending:0,live:0,done:0,all:all.length};all.forEach(function(m){var s=statusOf(m);cnt[s]++;if(s==='live')cnt.pending++;});
+  var f=S.filter,q=S.q.trim().toLowerCase();
+  var list=all.filter(function(m){var s=statusOf(m);return f==='all'||(f==='pending'?s!=='done':s===f);})
+    .filter(function(m){return !q||(teamName(m.teamA)+' '+teamName(m.teamB)+' '+m.label).toLowerCase().indexOf(q)>=0;})
+    .sort(function(a,b){var la=statusOf(a)==='live'?0:1,lb=statusOf(b)==='live'?0:1;return la-lb||(a.sort<b.sort?-1:a.sort>b.sort?1:0);});
+  var pend=LS.get('outbox',[]);
+  var html=barHtml(S.data.tournament.name||'Giải Pickleball','👤 '+((S.user&&S.user.fullName)||'Trọng tài'))+
+    '<div class="tools"><div class="seg" id="seg">'+[['pending','Chưa đấu'],['live','Đang đấu'],['done','Đã đấu'],['all','Tất cả']].map(function(x){return '<button data-f="'+x[0]+'" class="'+(f===x[0]?'on':'')+'">'+x[1]+'<b>'+cnt[x[0]]+'</b></button>';}).join('')+'</div>'+
+    '<input class="search" id="search" placeholder="Tìm tên VĐV, bảng, vòng…" value="'+esc(S.q)+'" type="search"></div>'+
+    (pend.length?'<div class="wrap" style="padding-bottom:0"><div class="msg warn">⚠ Có '+pend.length+' kết quả chưa gửi được lên Google Sheet. <button class="btn ghost" id="sendPend" style="min-height:36px;margin-top:8px">Gửi lại ngay</button></div></div>':'')+
+    '<div class="wrap" id="listWrap">';
+  if(!list.length)html+='<div class="empty">'+(all.length?'Không có trận phù hợp bộ lọc.':'Chưa có trận đấu. BTC cần chia bảng / tạo lịch trước.')+'</div>';
+  var stage='';
+  list.forEach(function(m){
+    if(m.stage!==stage){stage=m.stage;html+='<div class="sec-title"><span>'+esc(stage)+'</span></div>';}
+    var s=statusOf(m),aw=m.completed&&Number(m.scoreA)>Number(m.scoreB),bw=m.completed&&Number(m.scoreB)>Number(m.scoreA);
+    html+='<button class="card match '+(s==='live'?'is-live':'')+'" data-k="'+m.kind+'" data-id="'+esc(m.id)+'">'+
+      '<div class="top"><span class="label">'+esc(m.label)+'</span><span class="chip '+s+'">'+(s==='done'?'✓ Đã đấu':s==='live'?'● Đang đấu':'Chưa đấu')+'</span></div>'+
+      '<div class="row"><div class="tname '+(aw?'w':'')+'"><i style="background:var(--a)"></i><span>'+esc(teamName(m.teamA))+'</span></div><div class="sc '+(aw?'w':'')+'">'+(m.completed?esc(m.scoreA):'')+'</div></div>'+
+      '<div class="row"><div class="tname '+(bw?'w':'')+'"><i style="background:var(--b)"></i><span>'+esc(teamName(m.teamB))+'</span></div><div class="sc '+(bw?'w':'')+'">'+(m.completed?esc(m.scoreB):'')+'</div></div></button>';
+  });
+  html+='</div>';
+  app.className='screen';app.innerHTML=html;
+  $('#btnReload').onclick=function(){loadList(false).then(function(){toast('Đã cập nhật danh sách');});};
+  $('#btnOut').onclick=logout;
+  $('#seg').onclick=function(e){var b=e.target.closest('button');if(!b)return;S.filter=b.dataset.f;LS.set('filter',S.filter);renderList();};
+  var si=$('#search');si.oninput=function(){S.q=si.value;var pos=si.selectionStart;renderList();var n=$('#search');n.focus();try{n.setSelectionRange(pos,pos);}catch(e){}};
+  $('#listWrap').onclick=function(e){var b=e.target.closest('.match');if(!b)return;openMatch(b.dataset.k,b.dataset.id);};
+  if($('#sendPend'))$('#sendPend').onclick=flushOutbox;
+}
+function logout(){if(!confirm('Đăng xuất khỏi máy này?'))return;S.token='';LS.del('token');renderLogin('');}
+
+/* ---------------- chuẩn bị trận ---------------- */
+function openMatch(kind,id){
+  var m=allMatches().find(function(x){return x.kind===kind&&String(x.id)===String(id);});if(!m)return;
+  var saved=LS.get('game:'+kind+':'+id,null);
+  if(saved&&!m.completed){S.match=m;S.game=saved;return renderScore();}
+  if(m.completed&&!confirm('Trận này đã có kết quả '+m.scoreA+'-'+m.scoreB+'. Bạn muốn đếm lại và ghi đè?'))return;
+  renderSetup(m);
+}
+function renderSetup(m){
+  var bo=bestOf(m),r0=gameRule(m,0),first='A',mode=LS.get('mode','sideout'),live=LS.get('live',true);
+  var rules=[];for(var i=0;i<bo;i++)rules.push(ruleText(gameRule(m,i)));
+  var draw=function(){
+    app.innerHTML='<header class="bar"><button class="icon-btn" id="back">←</button><h1>Chuẩn bị trận<small>'+esc(m.label)+'</small></h1></header>'+
+    '<div class="wrap"><div class="card setup" style="padding:16px">'+
+      '<h3>Chọn đội giao bóng trước</h3><div class="muted" style="font-size:13.5px">Bấm vào đội giao bóng đầu tiên của Game 1.</div>'+
+      '<div class="vs"><button class="t ta '+(first==='A'?'sel':'')+'" data-s="A">'+esc(teamName(m.teamA))+'<small>'+(first==='A'?'🏓 Giao trước':'Đỡ giao')+'</small></button><em>VS</em><button class="t tb '+(first==='B'?'sel':'')+'" data-s="B">'+esc(teamName(m.teamB))+'<small>'+(first==='B'?'🏓 Giao trước':'Đỡ giao')+'</small></button></div>'+
+      '<div class="opt" style="display:block"><b>Cách tính điểm</b><div class="mode" id="mode">'+
+        '<button data-m="sideout" class="'+(mode==='sideout'?'on':'')+'">Giao bóng truyền thống<small>Chỉ bên giao được điểm • Tay 1 / Tay 2 • Mở đầu 0-0-2</small></button>'+
+        '<button data-m="rally" class="'+(mode==='rally'?'on':'')+'">Rally scoring<small>Thắng pha bóng là được điểm và giành giao</small></button></div></div>'+
+      '<div class="opt"><div><b>Phát lên màn hình Live</b><small>Tỷ số cập nhật ngay lên bảng điểm Live Stream</small></div><label class="switch"><input type="checkbox" id="liveSw" '+(live?'checked':'')+'><span></span></label></div>'+
+      '<div class="opt"><div><b>Thể thức</b><small>'+(bo>1?'BO'+bo+' – thắng '+(Math.floor(bo/2)+1)+' game':'1 game')+'<br>'+esc(rules.map(function(t,i){return bo>1?'G'+(i+1)+': '+t:t;}).join(' • '))+'</small></div></div>'+
+      '<button class="btn ok block" id="start" style="margin-top:12px;min-height:56px;font-size:18px">▶ Bắt đầu trận</button>'+
+    '</div></div>';
+    $('#back').onclick=renderList;
+    app.querySelectorAll('.vs .t').forEach(function(b){b.onclick=function(){first=b.dataset.s;draw();};});
+    $('#mode').onclick=function(e){var b=e.target.closest('button');if(!b)return;mode=b.dataset.m;LS.set('mode',mode);draw();};
+    $('#liveSw').onchange=function(){live=this.checked;LS.set('live',live);};
+    $('#start').onclick=function(){
+      S.match=m;
+      S.game={kind:m.kind,id:m.id,bo:bo,mode:mode,live:live,games:[],a:0,b:0,serve:first,hand:mode==='sideout'?2:1,firstServe:first,swap:false,hist:[],startedAt:Date.now()};
+      persist();renderScore();toast('Bắt đầu Game 1 – '+(mode==='sideout'?'gọi 0-0-2':'0-0'));
+    };
+  };
+  app.className='screen';draw();
+}
+
+/* ---------------- màn hình đếm điểm ---------------- */
+function persist(){if(S.game)LS.set('game:'+S.game.kind+':'+S.game.id,S.game);}
+function wins(){var w={a:0,b:0};S.game.games.forEach(function(g){if(g.a>g.b)w.a++;else w.b++;});return w;}
+function need(){return Math.floor(S.game.bo/2)+1;}
+function snapshot(){var g=S.game;return {a:g.a,b:g.b,serve:g.serve,hand:g.hand,games:g.games.slice()};}
+function renderScore(){
+  var m=S.match,g=S.game;
+  app.className='screen score-screen';
+  app.innerHTML='<header class="bar"><button class="icon-btn" id="back">←</button><h1>'+esc(m.label)+'<small id="gInfo"></small></h1><span class="sync" id="sync" title="Trạng thái Live"></span></header>'+
+    '<div class="call"><div class="cv" id="callV"></div><div class="cl" id="callL"></div></div>'+
+    '<div class="courts" id="courts"></div>'+
+    '<div class="dock"><button id="undo"><span>↶</span>Hoàn tác</button><button id="fix"><span>✎</span>Chỉnh điểm</button><button id="swap"><span>⇅</span>Đổi sân</button><button id="end"><span>⏹</span>Kết thúc</button></div>';
+  $('#back').onclick=function(){renderList();};
+  $('#undo').onclick=undo;$('#fix').onclick=openAdjust;$('#swap').onclick=function(){g.swap=!g.swap;persist();drawCourts();};
+  $('#end').onclick=function(){finishPrompt(true);};
+  keepAwake();drawCourts();pushLive();
+}
+function drawCourts(){
+  var m=S.match,g=S.game,w=wins(),n=need();
+  var side=function(k){
+    var isA=k==='A',pts=isA?g.a:g.b,gw=isA?w.a:w.b,dots='';for(var i=0;i<n;i++)dots+='<i class="'+(i<gw?'w':'')+'"></i>';
+    return '<div class="team '+(isA?'ta':'tb')+' '+(g.serve===k?'serving':'')+'" data-side="'+k+'"><div class="serve">🏓 '+(g.mode==='sideout'?'Tay '+g.hand:'Giao')+'</div>'+
+      '<div class="nm">'+esc(teamName(isA?m.teamA:m.teamB))+'</div><div class="pts">'+pts+'</div>'+
+      '<div class="foot"><div class="games">'+(g.bo>1?dots:'')+'</div><div class="hint">'+'Chạm khi đội này thắng pha bóng'+'</div></div></div>';
+  };
+  $('#courts').innerHTML=g.swap?side('B')+side('A'):side('A')+side('B');
+  var sv=g.serve==='A'?g.a:g.b,rc=g.serve==='A'?g.b:g.a;
+  $('#callV').textContent=g.mode==='sideout'?(sv+' – '+rc+' – '+g.hand):(g.a+' – '+g.b);
+  var r=gameRule(m,g.games.length);
+  $('#callL').innerHTML=(g.mode==='sideout'?'Điểm giao – nhận – tay':'Rally scoring')+'<br>'+esc(ruleText(r));
+  $('#gInfo').textContent=(g.bo>1?'Game '+Math.min(g.games.length+1,g.bo)+'/'+g.bo+' • Tổng '+w.a+'-'+w.b+' • ':'')+(g.live?'Đang phát Live':'Không phát Live');
+  $('#undo').disabled=!g.hist.length;
+  $('#courts').querySelectorAll('.team').forEach(function(el){el.onclick=function(){rally(el.dataset.side,el);};});
+}
+// Một pha bóng kết thúc: winner = đội thắng pha bóng
+function rally(winner,el){
+  var g=S.game;
+  if(document.querySelector('.sheet-bg'))return;
+  // Game đã đủ điều kiện kết thúc: không cộng thêm, hỏi xác nhận kết thúc game
+  if(gameOver(g.a,g.b,gameRule(S.match,g.games.length))){gameEndPrompt();return;}
+  g.hist.push(snapshot());if(g.hist.length>200)g.hist.shift();
+  buzz();
+  if(g.mode==='rally'){
+    if(winner==='A')g.a++;else g.b++;
+    g.serve=winner;g.hand=1;
+  }else if(winner===g.serve){
+    if(winner==='A')g.a++;else g.b++;
+  }else{
+    // Bên giao mất pha bóng: Tay 1 -> Tay 2; Tay 2 -> đổi giao sang đội kia (Tay 1)
+    if(g.hand===1){g.hand=2;toast('Đổi sang Tay 2',1200);}
+    else{g.serve=winner;g.hand=1;toast('Đổi giao bóng ➜ '+teamName(winner==='A'?S.match.teamA:S.match.teamB),1500);}
+  }
+  persist();drawCourts();
+  if(el){var t=$('#courts .team[data-side="'+winner+'"]');if(t){t.classList.add('flash');setTimeout(function(){t.classList.remove('flash');},350);}}
+  pushLive();
+  if(gameOver(g.a,g.b,gameRule(S.match,g.games.length)))gameEndPrompt();
+}
+function undo(){var g=S.game,h=g.hist.pop();if(!h)return;g.a=h.a;g.b=h.b;g.serve=h.serve;g.hand=h.hand;g.games=h.games;persist();drawCourts();pushLive();buzz(8);}
+function gameEndPrompt(){
+  if(document.querySelector('.sheet-bg'))return;
+  var g=S.game,m=S.match,idx=g.games.length,wa=g.a>g.b;
+  sheet('<h3>Kết thúc Game '+(idx+1)+'?</h3><div class="muted">'+esc(ruleText(gameRule(m,idx)))+'</div>'+
+    '<div class="result-big"><div class="n">'+esc(teamName(m.teamA))+'</div><div class="s">'+g.a+' – '+g.b+'</div><div class="n">'+esc(teamName(m.teamB))+'</div></div>'+
+    '<div class="msg info">🏆 '+esc(teamName(wa?m.teamA:m.teamB))+' thắng game này.</div>'+
+    '<div class="actions"><button class="btn ok block" data-x="ok">Xác nhận kết thúc game</button><button class="btn ghost block" data-x="undo">↶ Hoàn tác điểm cuối</button></div>',
+    function(x,close){
+      if(x==='undo'){close();undo();return;}
+      if(x!=='ok')return;
+      close();
+      g.hist.push(snapshot());
+      g.games.push({a:g.a,b:g.b});
+      var w=wins();
+      if(w.a>=need()||w.b>=need()||g.games.length>=g.bo){persist();drawCourts();finishPrompt(false);return;}
+      // Game mới: đội thua game trước giao trước (BTC có thể bấm Chỉnh điểm để đổi)
+      g.a=0;g.b=0;g.serve=wa?'B':'A';g.hand=g.mode==='sideout'?2:1;g.swap=!g.swap;
+      persist();drawCourts();pushLive();toast('Bắt đầu Game '+(g.games.length+1)+' – đã đổi sân',2200);
+    });
+}
+function finishPrompt(manual){
+  var g=S.game,m=S.match,games=g.games.slice();
+  if(manual&&(g.a||g.b)){games.push({a:g.a,b:g.b});}
+  var wa=0,wb=0;games.forEach(function(x){if(x.a>x.b)wa++;else if(x.b>x.a)wb++;});
+  var fa,fb;if(g.bo>1){fa=wa;fb=wb;}else{var last=games[games.length-1]||{a:g.a,b:g.b};fa=last.a;fb=last.b;}
+  var ok=fa!==fb&&(g.bo===1?gameOver(fa,fb,gameRule(m,0)):(wa>=need()||wb>=need()));
+  sheet('<h3>'+(ok?'Kết thúc trận':'Kết thúc sớm?')+'</h3>'+
+    '<div class="result-big"><div class="n">'+esc(teamName(m.teamA))+'</div><div class="s">'+fa+' – '+fb+'</div><div class="n">'+esc(teamName(m.teamB))+'</div></div>'+
+    (g.bo>1?'<div class="games-list">'+games.map(function(x,i){return '<span>G'+(i+1)+': '+x.a+'-'+x.b+'</span>';}).join('')+'</div>':'')+
+    (ok?'<div class="msg info">🏆 '+esc(teamName(fa>fb?m.teamA:m.teamB))+' thắng trận. Bấm Lưu để ghi vào Google Sheet.</div>':'<div class="msg warn">Tỷ số chưa đủ điều kiện kết thúc theo luật ('+esc(ruleText(gameRule(m,Math.min(games.length,g.bo-1))))+'). Chỉ lưu khi BTC đồng ý (bỏ cuộc, chấn thương…).</div>')+
+    '<div class="actions"><button class="btn ok block" data-x="save" '+(fa===fb?'disabled':'')+'>💾 Lưu kết quả lên Google Sheet</button><button class="btn ghost block" data-x="back">Tiếp tục đếm điểm</button></div>',
+    function(x,close){
+      if(x==='back'){close();if(!manual){/* quay lại: bỏ game vừa chốt */var h=g.hist.pop();if(h){g.a=h.a;g.b=h.b;g.serve=h.serve;g.hand=h.hand;g.games=h.games;persist();drawCourts();}}return;}
+      if(x!=='save')return;
+      var payload={kind:m.kind,matchId:m.id,scoreA:fa,scoreB:fb,bestOf:g.bo,games:games.map(function(x){return {scoreA:x.a,scoreB:x.b};}),overwrite:!!m.completed};
+      var btn=document.querySelector('.sheet [data-x="save"]');btn.disabled=true;btn.textContent='Đang lưu…';
+      sendResult(payload).then(function(res){
+        close();
+        if(g.live)pushLive(true,{completed:true,scoreA:g.bo>1?(games[games.length-1]||{}).a:fa,scoreB:g.bo>1?(games[games.length-1]||{}).b:fb});
+        LS.del('game:'+m.kind+':'+m.id);S.game=null;releaseWake();
+        toast(res.queued?'Chưa gửi được – kết quả đã lưu trên máy, sẽ gửi lại sau':'✅ Đã lưu kết quả '+fa+'-'+fb,3500);
+        loadList(false);
+      }).catch(function(err){btn.disabled=false;btn.textContent='💾 Lưu kết quả lên Google Sheet';toast(err.message||String(err),4000);});
+    });
+}
+function sendResult(p){
+  return call('save',p).then(function(d){
+    if(d.ok)return d;
+    if(d.conflict){if(confirm(d.message+'\n\nGhi đè bằng kết quả mới?')){p.overwrite=true;return sendResult(p);}throw new Error('Đã hủy lưu.');}
+    throw new Error(d.message||'Không lưu được');
+  },function(err){
+    if(S.token){var ob=LS.get('outbox',[]);ob.push(p);LS.set('outbox',ob);return {ok:true,queued:true};}
+    throw err;
+  });
+}
+function flushOutbox(){
+  var ob=LS.get('outbox',[]);if(!ob.length)return;
+  var p=ob[0];
+  call('save',Object.assign({},p,{overwrite:true})).then(function(d){
+    if(!d.ok)throw new Error(d.message);
+    ob.shift();LS.set('outbox',ob);toast('Đã gửi 1 kết quả còn tồn');if(ob.length)flushOutbox();else loadList(false);
+  }).catch(function(err){toast('Vẫn chưa gửi được: '+(err.message||err),3500);});
+}
+function openAdjust(){
+  var g=S.game,m=S.match;
+  var draw=function(){
+    return '<h3>Chỉnh điểm thủ công</h3><div class="muted" style="font-size:13.5px">Dùng khi bấm nhầm hoặc cần sửa quyền giao.</div><div class="adj">'+
+      ['A','B'].map(function(k){var pts=k==='A'?g.a:g.b;return '<div class="col"><b>'+esc(teamName(k==='A'?m.teamA:m.teamB))+'</b><div style="font-size:40px;font-weight:900">'+pts+'</div><div class="row"><button data-x="dec'+k+'">−</button><button data-x="inc'+k+'">+</button></div><div class="row" style="margin-top:8px"><button class="sv" data-x="srv'+k+'1">🏓 Tay 1</button><button class="sv" data-x="srv'+k+'2">Tay 2</button></div></div>';}).join('')+
+      '</div><div class="muted" style="text-align:center;margin-top:10px">Đang giao: <b>'+esc(teamName(g.serve==='A'?m.teamA:m.teamB))+'</b> – Tay '+g.hand+'</div>'+
+      '<div class="actions"><button class="btn block" data-x="close">Xong</button><button class="btn ghost block" data-x="mode">Đổi cách tính: '+(g.mode==='sideout'?'→ Rally scoring':'→ Giao bóng truyền thống')+'</button><button class="btn ghost block" data-x="live">'+(g.live?'⏸ Tạm dừng phát Live':'▶ Phát lên Live')+'</button><button class="btn danger block" data-x="reset">Hủy trận này (xóa điểm đang đếm)</button></div>';
+  };
+  sheet(draw(),function(x,close,el){
+    if(x==='close'){close();return;}
+    g.hist.push(snapshot());
+    if(x==='incA')g.a++;if(x==='decA')g.a=Math.max(0,g.a-1);if(x==='incB')g.b++;if(x==='decB')g.b=Math.max(0,g.b-1);
+    if(/^srv/.test(x)){g.serve=x[3];g.hand=Number(x[4]);}
+    if(x==='mode'){g.mode=g.mode==='sideout'?'rally':'sideout';LS.set('mode',g.mode);}
+    if(x==='live'){g.live=!g.live;LS.set('live',g.live);if(!g.live)call('liveoff').catch(function(){});}
+    if(x==='reset'){if(!confirm('Xóa toàn bộ điểm đang đếm của trận này?')){g.hist.pop();return;}LS.del('game:'+g.kind+':'+g.id);S.game=null;close();if(g.live)call('liveoff').catch(function(){});renderList();return;}
+    persist();drawCourts();pushLive();el.innerHTML='<div class="grab"></div>'+draw();
+  });
+}
+function sheet(html,onAction){
+  var bg=document.createElement('div');bg.className='sheet-bg';
+  bg.innerHTML='<div class="sheet"><div class="grab"></div>'+html+'</div>';
+  document.body.appendChild(bg);
+  var el=bg.querySelector('.sheet');
+  var close=function(){bg.remove();};
+  bg.addEventListener('click',function(e){if(e.target===bg){close();return;}var b=e.target.closest('[data-x]');if(b)onAction(b.dataset.x,close,el);});
+  return close;
+}
+
+/* ---------------- Live ---------------- */
+function liveSnapshot(extra){
+  var m=S.match,g=S.game,w=wins();
+  return Object.assign({kind:m.kind,matchId:m.id,teamA:teamName(m.teamA),teamB:teamName(m.teamB),scoreA:g.a,scoreB:g.b,servingSide:g.serve,serverHand:g.mode==='sideout'?g.hand:1,
+    displayLabel:m.stage,gameCount:g.bo,gameIndex:g.games.length,gamesWonA:w.a,gamesWonB:w.b,completed:false},extra||{});
+}
+function setSync(st){S.liveState=st;var el=$('#sync');if(el)el.className='sync '+(st||'');}
+function pushLive(now,extra){
+  if(!S.game||!S.game.live){setSync('');return;}
+  clearTimeout(S.liveTimer);
+  var go=function(){setSync('busy');call('live',{snapshot:liveSnapshot(extra)}).then(function(d){setSync(d.ok?'on':'err');}).catch(function(){setSync('err');});};
+  if(now)go();else S.liveTimer=setTimeout(go,350);
+}
+function stopLive(){clearTimeout(S.liveTimer);releaseWake();}
+function keepAwake(){try{if(navigator.wakeLock&&!S.wake)navigator.wakeLock.request('screen').then(function(l){S.wake=l;l.addEventListener&&l.addEventListener('release',function(){S.wake=null;});}).catch(function(){});}catch(e){}}
+function releaseWake(){try{if(S.wake){S.wake.release();S.wake=null;}}catch(e){}}
+document.addEventListener('visibilitychange',function(){if(!document.hidden&&S.game&&app.classList.contains('score-screen'))keepAwake();});
+
+/* ---------------- khởi động ---------------- */
+if(S.token){var c=LS.get('cache',null);if(c){S.data=c;renderList();}loadList(!c);}else renderLogin('');
+})();
+</script>
+</body>
+</html>
