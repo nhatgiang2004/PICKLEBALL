@@ -423,7 +423,7 @@ function renderList(){
   var pend=LS.get('outbox',[]);
   var sb=String(S.data.serverBuild||''),sv=(sb.match(/V(\d+)\.(\d+)/)||[0,0,0]),oldSrv=!sb||(Number(sv[1])*100+Number(sv[2]))<908;
   var warn=oldSrv?'<div class="srv-warn">⚠ Link máy chủ <b>'+esc(apiId(API))+'</b> đang chạy '+(sb?'bản cũ ('+esc(sb)+')':'bản cũ')+' – điểm có thể <b>không lên Live</b>. Trên điện thoại hãy mở link trọng tài lấy từ nút <b>Trọng tài</b> trong App (máy tính), hoặc bấm ⚙ nhập đúng link Web App /exec mới.<br><button class="btn ghost" id="btnConn2" type="button">⚙ Đổi link máy chủ</button></div>':'';
-  var html=barHtml(S.data.tournament.name||'Giải Pickleball','🏓 Trọng tài • bản 10.3 • máy chủ '+apiId(API)+(S.data.loadedAt?' • cập nhật '+new Date(S.data.loadedAt).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit',second:'2-digit'}):''))+
+  var html=barHtml(S.data.tournament.name||'Giải Pickleball','🏓 Trọng tài • bản 10.4 • máy chủ '+apiId(API)+(S.data.loadedAt?' • cập nhật '+new Date(S.data.loadedAt).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit',second:'2-digit'}):''))+
     warn+grpHtml+'<div class="tools"><div class="seg" id="seg">'+[['pending','Chưa đấu'],['live','Đang đấu'],['done','Đã đấu'],['all','Tất cả']].map(function(x){return '<button data-f="'+x[0]+'" class="'+(f===x[0]?'on':'')+'">'+x[1]+'<b>'+cnt[x[0]]+'</b></button>';}).join('')+'</div>'+
     '<input class="search" id="search" placeholder="Tìm tên VĐV, bảng, vòng…" value="'+esc(S.q)+'" type="search"></div>'+
     (pend.length?'<div class="wrap" style="padding-bottom:0"><div class="msg warn">⚠ Có '+pend.length+' kết quả chưa gửi được lên Google Sheet. <button class="btn ghost" id="sendPend" style="min-height:36px;margin-top:8px">Gửi lại ngay</button></div></div>':'')+
@@ -487,12 +487,13 @@ function copyLink(){
 function openMatch(kind,id){
   var m=allMatches().find(function(x){return x.kind===kind&&String(x.id)===String(id);});if(!m)return;
   var saved=LS.get('game:'+kind+':'+id,null);
-  if(saved&&!m.completed){S.match=m;S.game=saved;return renderScore();}
+  if(saved&&!m.completed){S.match=m;S.game=saved;S.game.live=true;return renderScore();}
   if(m.completed&&!confirm('Trận này đã có kết quả '+m.scoreA+'-'+m.scoreB+'. Bạn muốn đếm lại và ghi đè?'))return;
   renderSetup(m);
 }
 function renderSetup(m){
-  var bo=bestOf(m),r0=gameRule(m,0),first='A',mode=LS.get('mode','sideout'),live=LS.get('live',true);
+  var bo=bestOf(m),r0=gameRule(m,0),first='A',mode=LS.get('mode','sideout'),live=true;
+  S.game=null;S.match=m;S.liveOn=true;S.liveOkAt=0;S.liveErr='';
   var rules=[];for(var i=0;i<bo;i++)rules.push(ruleText(gameRule(m,i)));
   var draw=function(){
     app.innerHTML='<header class="bar"><button class="icon-btn" id="back">←</button><h1>Chuẩn bị trận<small>'+esc(m.label)+'</small></h1></header>'+
@@ -504,19 +505,22 @@ function renderSetup(m){
         '<button data-m="rally" class="'+(mode==='rally'?'on':'')+'">Rally scoring<small>Thắng pha bóng là được điểm và giành giao</small></button></div></div>'+
       '<div class="opt"><div><b>Phát lên màn hình Live</b><small>Tỷ số cập nhật ngay lên bảng điểm Live Stream</small></div><label class="switch"><input type="checkbox" id="liveSw" '+(live?'checked':'')+'><span></span></label></div>'+
       '<div class="opt"><div><b>Thể thức</b><small>'+(bo>1?'BO'+bo+' – thắng '+(Math.floor(bo/2)+1)+' game':'1 game')+'<br>'+esc(rules.map(function(t,i){return bo>1?'G'+(i+1)+': '+t:t;}).join(' • '))+'</small></div></div>'+
+      '<span id="liveMsg" class="live-msg" style="margin-top:10px;text-align:center"></span>'+
       '<button class="btn ok block" id="start" style="margin-top:12px;min-height:56px;font-size:18px">▶ Bắt đầu trận</button>'+
     '</div></div>';
     $('#back').onclick=renderList;
-    app.querySelectorAll('.vs .t').forEach(function(b){b.onclick=function(){first=b.dataset.s;draw();};});
-    $('#mode').onclick=function(e){var b=e.target.closest('button');if(!b)return;mode=b.dataset.m;LS.set('mode',mode);draw();};
-    $('#liveSw').onchange=function(){live=this.checked;LS.set('live',live);};
+    app.querySelectorAll('.vs .t').forEach(function(b){b.onclick=function(){first=b.dataset.s;draw();previewLive(m,first,mode);};});
+    $('#mode').onclick=function(e){var b=e.target.closest('button');if(!b)return;mode=b.dataset.m;LS.set('mode',mode);draw();previewLive(m,first,mode);};
+    $('#liveSw').onchange=function(){live=this.checked;S.liveOn=live;liveInfo();if(live)previewLive(m,first,mode);else call('liveoff').catch(function(){});};
+    tapBind($('#liveMsg'),function(){if(!S.liveOn){S.liveOn=live=true;var sw=$('#liveSw');if(sw)sw.checked=true;}S.liveErr='';previewLive(m,first,mode);liveInfo();});
+    liveInfo();
     $('#start').onclick=function(){
       S.match=m;
       S.game={kind:m.kind,id:m.id,bo:bo,mode:mode,live:live,games:[],a:0,b:0,serve:first,hand:mode==='sideout'?2:1,firstServe:first,swap:false,hist:[],startedAt:Date.now()};
       persist();renderScore();toast('Bắt đầu Game 1 – '+(mode==='sideout'?'gọi 0-0-2':'0-0'));
     };
   };
-  app.className='screen';draw();
+  app.className='screen';draw();previewLive(m,first,mode);
 }
 
 /* ---------------- màn hình đếm điểm ---------------- */
@@ -536,7 +540,7 @@ function renderScore(){
   app.querySelectorAll('#hands [data-h]').forEach(function(b){tapBind(b,function(){setHand(b.dataset.h);});});
   tapBind($('#undo'),undo);tapBind($('#fix'),openAdjust);tapBind($('#swap'),function(){g.swap=!g.swap;persist();drawCourts();});
   tapBind($('#end'),function(){finishPrompt(true);});
-  tapBind($('#liveMsg'),function(){if(S.game&&S.game.live){S.liveErr='';liveInfo();pushLive(true);}});
+  tapBind($('#liveMsg'),function(){if(!S.game)return;if(!S.game.live){S.game.live=true;persist();}S.liveErr='';liveInfo();pushLive(true);});
   document.body.classList.add('scoring');S.liveOkAt=0;S.liveErr='';
   keepAwake();drawCourts();pushLive(true);fsHint();liveInfo();
 }
@@ -670,7 +674,7 @@ function openAdjust(){
     if(x==='incA')g.a++;if(x==='decA')g.a=Math.max(0,g.a-1);if(x==='incB')g.b++;if(x==='decB')g.b=Math.max(0,g.b-1);
     if(/^srv/.test(x)){g.serve=x[3];g.hand=Number(x[4]);}
     if(x==='mode'){g.mode=g.mode==='sideout'?'rally':'sideout';LS.set('mode',g.mode);}
-    if(x==='live'){g.live=!g.live;LS.set('live',g.live);if(!g.live)call('liveoff').catch(function(){});}
+    if(x==='live'){g.live=!g.live;if(!g.live)call('liveoff').catch(function(){});}
     if(x==='reset'){if(!confirm('Xóa toàn bộ điểm đang đếm của trận này?')){g.hist.pop();return;}LS.del('game:'+g.kind+':'+g.id);S.game=null;close();if(g.live)call('liveoff').catch(function(){});renderList();return;}
     persist();drawCourts();pushLive();el.innerHTML='<div class="grab"></div>'+draw();
   });
@@ -731,10 +735,21 @@ if(window.matchMedia)try{matchMedia('(orientation: landscape)').addEventListener
 function devId(){var d=LS.get('dev','');if(!d){d='D'+Math.random().toString(36).slice(2,10);LS.set('dev',d);}return d;}
 // Gửi Live: mỗi lúc chỉ 1 lượt gọi, luôn gửi tỷ số MỚI NHẤT (mạng di động chậm không bị dồn/đảo thứ tự)
 var liveBusy=false,liveNext=null;
+function liveOn(){return S.game?!!S.game.live:!!S.liveOn;}
 function pushLive(now,extra){
-  if(!S.game||!S.game.live){setSync('');return;}
+  if(!S.game||!S.game.live){setSync('');liveInfo();return;}
+  sendLive(liveSnapshot(extra),now);
+}
+// Vừa chọn trận (màn hình Chuẩn bị) là đưa ngay tên 2 cặp + tỷ số 0-0 lên Live, chưa cần bấm Bắt đầu
+function previewLive(m,first,mode){
+  if(!S.liveOn)return;
+  var bo=bestOf(m);
+  sendLive({kind:m.kind,matchId:m.id,teamA:teamName(m.teamA),teamB:teamName(m.teamB),scoreA:0,scoreB:0,servingSide:first,serverHand:mode==='sideout'?2:1,
+    displayLabel:m.stage,roundLabel:m.label,gameCount:bo,gameIndex:0,gamesWonA:0,gamesWonB:0,completed:false},true);
+}
+function sendLive(snap,now){
   clearTimeout(S.liveTimer);
-  var snap=liveSnapshot(extra);snap.refTs=Date.now();snap.refDev=devId();
+  snap.refTs=Date.now();snap.refDev=devId();
   var go=function(){
     if(liveBusy){liveNext=snap;return;}
     liveBusy=true;setSync('busy');
@@ -755,7 +770,7 @@ function pushLive(now,extra){
 }
 function liveInfo(){
   var el=document.getElementById('liveMsg');if(!el)return;
-  if(!S.game||!S.game.live){el.textContent='';el.className='live-msg';return;}
+  if(!liveOn()){el.textContent='○ Live đang TẮT – chạm vào đây để bật';el.className='live-msg err';return;}
   if(S.liveErr){el.textContent='Live lỗi: '+S.liveErr+' – chạm để gửi lại';el.className='live-msg err';}
   else if(S.liveOkAt){var st=S.liveStored;el.textContent='● Live đã nhận '+(st&&st.scoreA!=null?st.scoreA+'-'+st.scoreB+' ':'')+'lúc '+new Date(S.liveOkAt).toLocaleTimeString('vi-VN');el.className='live-msg ok';}
   else{el.textContent='Đang kết nối Live…';el.className='live-msg';}
