@@ -10,10 +10,10 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="application-name" content="Trọng tài">
 <!-- Icon riêng cho module Trọng tài khi "Thêm vào màn hình chính" -->
-<link rel="manifest" href="./manifest-trongtai.json?v=1">
-<link rel="icon" type="image/png" sizes="192x192" href="./icon/trongtai-192.png?v=1">
-<link rel="icon" type="image/png" sizes="512x512" href="./icon/trongtai-512.png?v=1">
-<link rel="apple-touch-icon" sizes="180x180" href="./icon/trongtai-180.png?v=1">
+<link rel="manifest" href="./manifest-trongtai.json?v=3">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon/trongtai-192.png?v=2">
+<link rel="icon" type="image/png" sizes="512x512" href="./icon/trongtai-512.png?v=2">
+<link rel="apple-touch-icon" sizes="180x180" href="./icon/trongtai-180.png?v=2">
 <title>Trọng tài Pickleball</title>
 <style>
 :root{
@@ -129,6 +129,9 @@ details.conn{margin:4px 0 0;font-size:13.5px}details.conn summary{cursor:pointer
 body.scoring{overflow:hidden;position:fixed;inset:0;width:100%;height:100%}
 .fs-hint{position:fixed;left:50%;top:calc(10px + var(--safe-t));transform:translateX(-50%);z-index:90;width:min(560px,calc(100% - 24px));background:#fde047;color:#111827;border-radius:14px;padding:10px 12px;font-size:13px;line-height:1.35;box-shadow:0 10px 30px rgba(0,0,0,.35)}
 .fs-hint button{display:block;margin:8px 0 0 auto;background:#111827;color:#fff;border-radius:10px;padding:6px 12px;font-weight:800}
+.live-msg{display:block;font-size:11.5px;font-weight:800;color:#94a3b8;margin-top:2px;cursor:pointer}.live-msg.ok{color:#4ade80}.live-msg.err{color:#f87171}
+.srv-warn{margin:10px 12px 0;padding:10px 12px;border-radius:12px;background:#fef2f2;border:1px solid #fca5a5;color:#991b1b;font-size:13px;line-height:1.45}
+.srv-warn button{margin-top:6px}
 .load-pill{font-size:11.5px;font-weight:800;color:#fde047;background:rgba(253,224,71,.12);padding:5px 9px;border-radius:999px;white-space:nowrap;animation:fade .3s}
 .hands-who{font-size:11px;color:#94a3b8;font-weight:800;text-align:right;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px}
 .sync{width:9px;height:9px;border-radius:50%;background:#64748b;display:inline-block;margin-right:6px;vertical-align:middle}
@@ -241,6 +244,10 @@ var Q=new URLSearchParams(location.search);
 var LS={get:function(k,d){try{var v=localStorage.getItem('pbRef:'+k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set:function(k,v){try{localStorage.setItem('pbRef:'+k,JSON.stringify(v));}catch(e){}},del:function(k){try{localStorage.removeItem('pbRef:'+k);}catch(e){}}};
 var API=String(Q.get('apiUrl')||LS.get('api','')||DEFAULT_API_URL).trim();
 if(Q.get('apiUrl'))LS.set('api',API);
+// Ghi link máy chủ vào địa chỉ trang: "Thêm vào MH chính" trên điện thoại sẽ nhớ đúng giải (iPhone dùng bộ nhớ riêng cho icon)
+function syncUrl(){try{var u=new URL(location.href);if(u.searchParams.get('apiUrl')!==API){u.searchParams.set('apiUrl',API);history.replaceState(null,'',u.toString());}}catch(e){}}
+syncUrl();
+function apiId(u){var m=String(u||'').match(/\/s\/([^\/]+)/);return m?'…'+m[1].slice(-6):'(?)';}
 var S={token:LS.get('token',''),user:LS.get('user',null),data:null,filter:LS.get('filter','pending'),q:'',match:null,game:null,liveTimer:null,liveState:'',wake:null};
 var app=document.getElementById('app');
 var KO_ROUNDS=['Vòng 1/32','Vòng 1/16','Tứ kết','Bán kết','Chung kết','Tranh ba'];
@@ -274,11 +281,11 @@ function post(body){
 // Đọc danh sách: dùng GET (JSONP) – chỉ 1 lượt gọi máy chủ. Ghi kết quả/Live: dùng cách đã chạy được lần trước (POST hoặc JSONP)
 function call(action,extra){
   var body=Object.assign({action:action,token:S.token},extra||{});
-  var pref=action==='list'?'jsonp':LS.get('transport','post');
+  var pref=LS.get('transport2','jsonp');
   var first=pref==='jsonp'?jsonp(body,25000):post(body);
   return first.then(function(d){return d;},function(){
     var alt=pref==='jsonp'?post(body):jsonp(body,25000);
-    return alt.then(function(d){if(action!=='list')LS.set('transport',pref==='jsonp'?'post':'jsonp');return d;});
+    return alt.then(function(d){if(d&&d.ok)LS.set('transport2',pref==='jsonp'?'post':'jsonp');return d;});
   }).then(function(d){return d||{ok:false,message:'Máy chủ không trả dữ liệu'};});
 }
 
@@ -368,8 +375,10 @@ function renderList(){
     .filter(function(m){return !q||(teamName(m.teamA)+' '+teamName(m.teamB)+' '+m.label).toLowerCase().indexOf(q)>=0;})
     .sort(function(a,b){var la=statusOf(a)==='live'?0:1,lb=statusOf(b)==='live'?0:1;return la-lb||(a.sort<b.sort?-1:a.sort>b.sort?1:0);});
   var pend=LS.get('outbox',[]);
-  var html=barHtml(S.data.tournament.name||'Giải Pickleball','🏓 Trọng tài • bản 9.7'+(S.data.loadedAt?' • cập nhật '+new Date(S.data.loadedAt).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit',second:'2-digit'}):''))+
-    '<div class="tools"><div class="seg" id="seg">'+[['pending','Chưa đấu'],['live','Đang đấu'],['done','Đã đấu'],['all','Tất cả']].map(function(x){return '<button data-f="'+x[0]+'" class="'+(f===x[0]?'on':'')+'">'+x[1]+'<b>'+cnt[x[0]]+'</b></button>';}).join('')+'</div>'+
+  var sb=String(S.data.serverBuild||''),sv=(sb.match(/V(\d+)\.(\d+)/)||[0,0,0]),oldSrv=!sb||(Number(sv[1])*100+Number(sv[2]))<908;
+  var warn=oldSrv?'<div class="srv-warn">⚠ Link máy chủ <b>'+esc(apiId(API))+'</b> đang chạy '+(sb?'bản cũ ('+esc(sb)+')':'bản cũ')+' – điểm có thể <b>không lên Live</b>. Trên điện thoại hãy mở link trọng tài lấy từ nút <b>Trọng tài</b> trong App (máy tính), hoặc bấm ⚙ nhập đúng link Web App /exec mới.<br><button class="btn ghost" id="btnConn2" type="button">⚙ Đổi link máy chủ</button></div>':'';
+  var html=barHtml(S.data.tournament.name||'Giải Pickleball','🏓 Trọng tài • bản 9.8 • máy chủ '+apiId(API)+(S.data.loadedAt?' • cập nhật '+new Date(S.data.loadedAt).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit',second:'2-digit'}):''))+
+    warn+'<div class="tools"><div class="seg" id="seg">'+[['pending','Chưa đấu'],['live','Đang đấu'],['done','Đã đấu'],['all','Tất cả']].map(function(x){return '<button data-f="'+x[0]+'" class="'+(f===x[0]?'on':'')+'">'+x[1]+'<b>'+cnt[x[0]]+'</b></button>';}).join('')+'</div>'+
     '<input class="search" id="search" placeholder="Tìm tên VĐV, bảng, vòng…" value="'+esc(S.q)+'" type="search"></div>'+
     (pend.length?'<div class="wrap" style="padding-bottom:0"><div class="msg warn">⚠ Có '+pend.length+' kết quả chưa gửi được lên Google Sheet. <button class="btn ghost" id="sendPend" style="min-height:36px;margin-top:8px">Gửi lại ngay</button></div></div>':'')+
     '<div class="wrap" id="listWrap">';
@@ -385,6 +394,7 @@ function renderList(){
   });
   html+='</div>';
   app.className='screen';app.innerHTML=html;
+  if($('#btnConn2'))$('#btnConn2').onclick=openConnection;
   $('#btnReload').onclick=function(){loadList(false).then(function(){if(!S.loading)toast('Đã cập nhật danh sách');});};
   clearTimeout(listTimer);listTimer=setTimeout(function(){if(!document.hidden&&$('#listWrap'))loadList(false);},30000);
   $('#btnOut').onclick=openConnection;
@@ -395,13 +405,20 @@ function renderList(){
 }
 // Đổi link Web App (dữ liệu giải) – không cần đăng nhập
 function openConnection(){
-  sheet('<h3>Kết nối dữ liệu</h3><div class="muted" style="font-size:13.5px">Link Web App (/exec) của giải đang chạy.</div><label class="field" style="margin-top:12px"><span>Link Web App</span><input id="cfgApi" value="'+esc(API)+'" inputmode="url"></label><div class="actions"><button class="btn block" data-x="save">Lưu và tải lại</button><button class="btn ghost block" data-x="close">Đóng</button></div>',function(x,close){
+  sheet('<h3>Kết nối dữ liệu</h3><div class="muted" style="font-size:13.5px">Link Web App (/exec) của giải đang chạy.</div><label class="field" style="margin-top:12px"><span>Link Web App</span><input id="cfgApi" value="'+esc(API)+'" inputmode="url"></label><div class="muted" style="font-size:12.5px;margin-top:6px">Máy chủ: <b>'+esc(apiId(API))+'</b> • '+esc((S.data&&S.data.serverBuild)||'chưa rõ phiên bản')+'</div><div class="actions"><button class="btn block" data-x="save">Lưu và tải lại</button><button class="btn ghost block" data-x="copy">📋 Sao chép link trọng tài (gửi sang điện thoại)</button><button class="btn ghost block" data-x="close">Đóng</button></div>',function(x,close){
     if(x==='close'){close();return;}
+    if(x==='copy'){copyLink();return;}
     if(x!=='save')return;
     var v=document.getElementById('cfgApi').value.trim();
     if(!/^https:\/\/script\.google(usercontent)?\.com\//i.test(v)){toast('Link phải có dạng https:\/\/script.google.com\/macros\/s\/...\/exec');return;}
-    API=v;LS.set('api',API);LS.del('cache');close();loadList(true);
+    API=v;LS.set('api',API);LS.del('cache');syncUrl();close();loadList(true);
   });
+}
+function copyLink(){
+  syncUrl();var url=location.href;
+  var ok=function(){toast('Đã sao chép link trọng tài – gửi link này sang điện thoại',3500);};
+  try{if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(url).then(ok,function(){prompt('Sao chép link:',url);});return;}}catch(e){}
+  prompt('Sao chép link:',url);
 }
 
 /* ---------------- chuẩn bị trận ---------------- */
@@ -449,7 +466,7 @@ function renderScore(){
   var m=S.match,g=S.game;
   app.className='screen score-screen';
   app.innerHTML='<header class="bar"><button class="icon-btn" id="back">←</button><h1>'+esc(m.label)+'<small id="gInfo"></small></h1><span class="sync" id="sync" title="Trạng thái Live"></span></header>'+
-    '<div class="call"><div class="mini"><button class="icon-btn" id="back2" aria-label="Quay lại">←</button><span class="mini-t">'+esc(m.label)+'</span><button class="icon-btn" id="fsBtn" aria-label="Toàn màn hình">⛶</button><span class="sync" id="sync2"></span></div><div class="cv" id="callV"></div><div class="cl" id="callL"></div><div id="handBox"><div class="hands" id="hands"><button data-h="1">Tay 1</button><button data-h="2">Tay 2</button><button class="sw" data-h="x" title="Đổi quyền giao sang đội kia">⇄ Đổi giao</button></div><div class="hands-who" id="handsWho"></div></div></div>'+
+    '<div class="call"><div class="mini"><button class="icon-btn" id="back2" aria-label="Quay lại">←</button><span class="mini-t">'+esc(m.label)+'</span><button class="icon-btn" id="fsBtn" aria-label="Toàn màn hình">⛶</button><span class="sync" id="sync2"></span></div><div class="cv" id="callV"></div><div class="cl" id="callL"></div><div id="handBox"><div class="hands" id="hands"><button data-h="1">Tay 1</button><button data-h="2">Tay 2</button><button class="sw" data-h="x" title="Đổi quyền giao sang đội kia">⇄ Đổi giao</button></div><div class="hands-who" id="handsWho"></div></div><span id="liveMsg" class="live-msg"></span></div>'+
     '<div class="courts" id="courts"></div>'+
     '<div class="dock"><button id="undo"><span>↶</span>Hoàn tác</button><button id="fix"><span>✎</span>Chỉnh điểm</button><button id="swap"><span>⇅</span>Đổi sân</button><button id="end"><span>⏹</span>Kết thúc</button></div>';
   var back=function(){exitFull();document.body.classList.remove('scoring');renderList();};
@@ -457,8 +474,9 @@ function renderScore(){
   app.querySelectorAll('#hands [data-h]').forEach(function(b){tapBind(b,function(){setHand(b.dataset.h);});});
   tapBind($('#undo'),undo);tapBind($('#fix'),openAdjust);tapBind($('#swap'),function(){g.swap=!g.swap;persist();drawCourts();});
   tapBind($('#end'),function(){finishPrompt(true);});
-  document.body.classList.add('scoring');
-  keepAwake();drawCourts();pushLive();fsHint();
+  tapBind($('#liveMsg'),function(){if(S.game&&S.game.live){S.liveErr='';liveInfo();pushLive(true);}});
+  document.body.classList.add('scoring');S.liveOkAt=0;S.liveErr='';
+  keepAwake();drawCourts();pushLive(true);fsHint();liveInfo();
 }
 function drawCourts(){
   var m=S.match,g=S.game,w=wins(),n=need();
@@ -609,7 +627,7 @@ function sheet(html,onAction){
 function liveSnapshot(extra){
   var m=S.match,g=S.game,w=wins();
   return Object.assign({kind:m.kind,matchId:m.id,teamA:teamName(m.teamA),teamB:teamName(m.teamB),scoreA:g.a,scoreB:g.b,servingSide:g.serve,serverHand:g.mode==='sideout'?g.hand:1,
-    displayLabel:m.stage,gameCount:g.bo,gameIndex:g.games.length,gamesWonA:w.a,gamesWonB:w.b,completed:false},extra||{});
+    displayLabel:m.stage,roundLabel:m.label,gameCount:g.bo,gameIndex:g.games.length,gamesWonA:w.a,gamesWonB:w.b,completed:false},extra||{});
 }
 function setSync(st){S.liveState=st;['#sync','#sync2'].forEach(function(id){var el=$(id);if(el)el.className='sync '+(st||'');});}
 /* Chạm chắc chắn trên iPhone/iPad: xử lý ngay khi nhấc tay (touchend), không chờ click; vẫn nhận click chuột trên máy tính */
@@ -648,11 +666,33 @@ function fsHint(){
 }
 window.addEventListener('orientationchange',function(){setTimeout(fsHint,350);});
 if(window.matchMedia)try{matchMedia('(orientation: landscape)').addEventListener('change',function(){setTimeout(fsHint,350);});}catch(e){}
+// Gửi Live: mỗi lúc chỉ 1 lượt gọi, luôn gửi tỷ số MỚI NHẤT (mạng di động chậm không bị dồn/đảo thứ tự)
+var liveBusy=false,liveNext=null;
 function pushLive(now,extra){
   if(!S.game||!S.game.live){setSync('');return;}
   clearTimeout(S.liveTimer);
-  var go=function(){setSync('busy');call('live',{snapshot:liveSnapshot(extra)}).then(function(d){setSync(d.ok?'on':'err');}).catch(function(){setSync('err');});};
-  if(now)go();else S.liveTimer=setTimeout(go,350);
+  var snap=liveSnapshot(extra);snap.refTs=Date.now();
+  var go=function(){
+    if(liveBusy){liveNext=snap;return;}
+    liveBusy=true;setSync('busy');
+    call('live',{snapshot:snap}).then(function(d){
+      liveBusy=false;
+      if(d&&d.ok){S.liveOkAt=Date.now();S.liveErr='';setSync('on');}else{S.liveErr=(d&&d.message)||'Máy chủ từ chối';setSync('err');}
+      liveInfo();
+      if(liveNext){snap=liveNext;liveNext=null;go();}
+    },function(err){
+      liveBusy=false;S.liveErr=(err&&err.message)||'Mất kết nối';setSync('err');liveInfo();
+      if(liveNext){snap=liveNext;liveNext=null;setTimeout(go,800);}
+    });
+  };
+  if(now)go();else S.liveTimer=setTimeout(go,250);
+}
+function liveInfo(){
+  var el=document.getElementById('liveMsg');if(!el)return;
+  if(!S.game||!S.game.live){el.textContent='';el.className='live-msg';return;}
+  if(S.liveErr){el.textContent='Live lỗi: '+S.liveErr+' – chạm để gửi lại';el.className='live-msg err';}
+  else if(S.liveOkAt){el.textContent='● Live đã cập nhật '+new Date(S.liveOkAt).toLocaleTimeString('vi-VN');el.className='live-msg ok';}
+  else{el.textContent='Đang kết nối Live…';el.className='live-msg';}
 }
 function stopLive(){clearTimeout(S.liveTimer);releaseWake();}
 function keepAwake(){try{if(navigator.wakeLock&&!S.wake)navigator.wakeLock.request('screen').then(function(l){S.wake=l;l.addEventListener&&l.addEventListener('release',function(){S.wake=null;});}).catch(function(){});}catch(e){}}
