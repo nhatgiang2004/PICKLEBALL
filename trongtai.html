@@ -138,6 +138,11 @@ body.scoring{overflow:hidden;position:fixed;inset:0;width:100%;height:100%}
 .grp button{min-height:52px;border-radius:14px;background:#fff;border:1.5px solid var(--line);color:var(--ink);font-weight:900;font-size:15px;padding:6px 6px;line-height:1.15;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 1px 2px rgba(15,23,42,.05)}
 .grp button small{font-size:11px;font-weight:700;color:#ea580c;margin-top:3px}
 .grp button.done small{color:#16a34a}
+.grp button em{font-style:normal;font-size:10.5px;font-weight:700;color:#475569;margin-top:2px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.grp button.on em{color:#cbd5e1}
+.grp button.mine{border-color:#f59e0b;box-shadow:0 0 0 2px rgba(245,158,11,.25)}
+.me-row{display:flex;align-items:center;gap:8px;margin:0 2px 10px;font-weight:800;font-size:14px;color:var(--ink)}
+.me-row select{flex:1;min-height:44px;border-radius:12px;border:1.5px solid var(--line);padding:0 10px;font-size:15px;font-weight:700;background:#fff;color:var(--ink)}
 .grp button.on{background:#0f172a;border-color:#0f172a;color:#fff}
 .grp button.on small{color:#fde047}
 .grp button:active{transform:scale(.97)}
@@ -266,7 +271,7 @@ if(qApi)LS.set('api',API);
 function syncUrl(){try{var u=new URL(location.href);if(u.searchParams.get('apiUrl')!==API){u.searchParams.set('apiUrl',API);history.replaceState(null,'',u.toString());}}catch(e){}}
 syncUrl();
 function apiId(u){var m=String(u||'').match(/\/s\/([^\/]+)/);return m?'…'+m[1].slice(-6):'(?)';}
-var S={grp:LS.get('grp',''),token:LS.get('token',''),user:LS.get('user',null),data:null,filter:LS.get('filter','pending'),q:'',match:null,game:null,liveTimer:null,liveState:'',wake:null};
+var S={me:LS.get('me',''),grp:LS.get('grp',''),token:LS.get('token',''),user:LS.get('user',null),data:null,filter:LS.get('filter','pending'),q:'',match:null,game:null,liveTimer:null,liveState:'',wake:null};
 var app=document.getElementById('app');
 var KO_ROUNDS=['Vòng 1/32','Vòng 1/16','Tứ kết','Bán kết','Chung kết','Tranh ba'];
 
@@ -390,13 +395,25 @@ function renderList(){
   // Nút chọn bảng: theo đúng các bảng BTC đã chia (+ Knock-out nếu có) – mỗi trọng tài chọn bảng mình phụ trách
   var groups=(S.data.groups||[]).filter(function(g){return every.some(function(m){return m.kind==='gm'&&m.groupId===g.id;});});
   var hasKo=every.some(function(m){return m.kind==='ko';});
-  if(S.grp&&S.grp!=='KO'&&!groups.some(function(g){return g.id===S.grp;}))S.grp='';
+  // Phân công trọng tài (sheet TRONG_TAI): "Tôi là trọng tài…" → nút "Bảng của tôi"
+  var refs=S.data.referees||[],asg=S.data.refAssign||[];
+  if(S.me&&!refs.some(function(r){return r.id===S.me;}))S.me='';
+  var scopeKey=function(m){return m.kind==='ko'?'K|'+m.stage:'G|'+m.groupId;};
+  var asgOf=function(key,label){return asg.filter(function(a){return a.key===key;})[0]||asg.filter(function(a){return label&&a.label===label;})[0]||null;};
+  var refNm=function(id){var r=refs.filter(function(x){return x.id===id;})[0];return r?r.name:'';};
+  var namesFor=function(key,label){var a=asgOf(key,label);return a?[a.r1,a.r2].map(refNm).filter(Boolean):[];};
+  var mine=function(m){if(!S.me)return false;var a=asgOf(scopeKey(m),m.kind==='gm'?groupName(m.groupId):(m.stage==='Tranh ba'?'Tranh hạng Ba':m.stage));return !!a&&(a.r1===S.me||a.r2===S.me);};
+  if(S.grp==='ME'&&!S.me)S.grp='';
+  if(S.grp&&S.grp!=='KO'&&S.grp!=='ME'&&!groups.some(function(g){return g.id===S.grp;}))S.grp='';
   if(S.grp==='KO'&&!hasKo)S.grp='';
-  var inGrp=function(m,g){return !g||(g==='KO'?m.kind==='ko':(m.kind==='gm'&&m.groupId===g));};
+  var inGrp=function(m,g){return !g||(g==='ME'?mine(m):g==='KO'?m.kind==='ko':(m.kind==='gm'&&m.groupId===g));};
   var left=function(g){return every.filter(function(m){return inGrp(m,g)&&!m.completed;}).length;};
-  var grpBtns=[{id:'',name:'Tất cả'}].concat(groups.map(function(g){return {id:g.id,name:g.name};})).concat(hasKo?[{id:'KO',name:'Knock-out'}]:[]);
-  var grpHtml=groups.length>1||hasKo?'<div class="grp-bar"><div class="grp-t">Chọn bảng phụ trách</div><div class="grp" id="grp">'+grpBtns.map(function(g){var n=left(g.id);
-    return '<button type="button" data-g="'+esc(g.id)+'" class="'+(S.grp===g.id?'on':'')+(n?'':' done')+'">'+esc(g.name)+'<small>'+(n?n+' trận chờ':'✓ xong')+'</small></button>';}).join('')+'</div></div>':'';
+  var koTT=[];every.forEach(function(m){if(m.kind==='ko'){namesFor('K|'+m.stage,m.stage==='Tranh ba'?'Tranh hạng Ba':m.stage).forEach(function(n){if(koTT.indexOf(n)<0)koTT.push(n);});}});
+  var grpBtns=(S.me?[{id:'ME',name:'⭐ Bảng của tôi',tt:[]}]:[]).concat([{id:'',name:'Tất cả',tt:[]}]).concat(groups.map(function(g){return {id:g.id,name:g.name,tt:namesFor('G|'+g.id,g.name)};})).concat(hasKo?[{id:'KO',name:'Knock-out',tt:koTT}]:[]);
+  var meSel=refs.length?'<label class="me-row"><span>🧑‍⚖️ Tôi là</span><select id="meSel"><option value="">— Chọn tên trọng tài —</option>'+refs.map(function(r){return '<option value="'+esc(r.id)+'" '+(S.me===r.id?'selected':'')+'>'+esc(r.name)+'</option>';}).join('')+'</select></label>':'';
+  var grpHtml=groups.length>1||hasKo||refs.length?'<div class="grp-bar">'+meSel+'<div class="grp-t">Chọn bảng phụ trách</div><div class="grp" id="grp">'+grpBtns.map(function(g){var n=left(g.id);
+    var isMine=S.me&&g.id&&g.id!=='ME'&&every.some(function(m){return inGrp(m,g.id)&&mine(m);});
+    return '<button type="button" data-g="'+esc(g.id)+'" class="'+(S.grp===g.id?'on':'')+(n?'':' done')+(isMine||g.id==='ME'?' mine':'')+'">'+esc(g.name)+'<small>'+(n?n+' trận chờ':'✓ xong')+'</small>'+(g.tt&&g.tt.length?'<em>'+esc(g.tt.join(', '))+'</em>':'')+'</button>';}).join('')+'</div></div>':'';
   var all=every.filter(function(m){return inGrp(m,S.grp);});
   var cnt={pending:0,live:0,done:0,all:all.length};all.forEach(function(m){var s=statusOf(m);cnt[s]++;if(s==='live')cnt.pending++;});
   var f=S.filter,q=S.q.trim().toLowerCase();
@@ -406,7 +423,7 @@ function renderList(){
   var pend=LS.get('outbox',[]);
   var sb=String(S.data.serverBuild||''),sv=(sb.match(/V(\d+)\.(\d+)/)||[0,0,0]),oldSrv=!sb||(Number(sv[1])*100+Number(sv[2]))<908;
   var warn=oldSrv?'<div class="srv-warn">⚠ Link máy chủ <b>'+esc(apiId(API))+'</b> đang chạy '+(sb?'bản cũ ('+esc(sb)+')':'bản cũ')+' – điểm có thể <b>không lên Live</b>. Trên điện thoại hãy mở link trọng tài lấy từ nút <b>Trọng tài</b> trong App (máy tính), hoặc bấm ⚙ nhập đúng link Web App /exec mới.<br><button class="btn ghost" id="btnConn2" type="button">⚙ Đổi link máy chủ</button></div>':'';
-  var html=barHtml(S.data.tournament.name||'Giải Pickleball','🏓 Trọng tài • bản 10.1 • máy chủ '+apiId(API)+(S.data.loadedAt?' • cập nhật '+new Date(S.data.loadedAt).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit',second:'2-digit'}):''))+
+  var html=barHtml(S.data.tournament.name||'Giải Pickleball','🏓 Trọng tài • bản 10.2 • máy chủ '+apiId(API)+(S.data.loadedAt?' • cập nhật '+new Date(S.data.loadedAt).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit',second:'2-digit'}):''))+
     warn+grpHtml+'<div class="tools"><div class="seg" id="seg">'+[['pending','Chưa đấu'],['live','Đang đấu'],['done','Đã đấu'],['all','Tất cả']].map(function(x){return '<button data-f="'+x[0]+'" class="'+(f===x[0]?'on':'')+'">'+x[1]+'<b>'+cnt[x[0]]+'</b></button>';}).join('')+'</div>'+
     '<input class="search" id="search" placeholder="Tìm tên VĐV, bảng, vòng…" value="'+esc(S.q)+'" type="search"></div>'+
     (pend.length?'<div class="wrap" style="padding-bottom:0"><div class="msg warn">⚠ Có '+pend.length+' kết quả chưa gửi được lên Google Sheet. <button class="btn ghost" id="sendPend" style="min-height:36px;margin-top:8px">Gửi lại ngay</button></div></div>':'')+
@@ -427,6 +444,7 @@ function renderList(){
   $('#btnReload').onclick=function(){loadList(false).then(function(){if(!S.loading)toast('Đã cập nhật danh sách');});};
   clearTimeout(listTimer);listTimer=setTimeout(function(){if(!document.hidden&&$('#listWrap'))loadList(false);},30000);
   $('#btnOut').onclick=openConnection;
+  if($('#meSel'))$('#meSel').onchange=function(){S.me=this.value;LS.set('me',S.me);S.grp=S.me?'ME':'';LS.set('grp',S.grp);renderList();if(S.me)toast('Đang hiển thị các bảng được phân công cho bạn');};
   if($('#grp'))$('#grp').onclick=function(e){var b=e.target.closest('button');if(!b)return;S.grp=b.dataset.g;LS.set('grp',S.grp);renderList();window.scrollTo(0,0);};
   $('#seg').onclick=function(e){var b=e.target.closest('button');if(!b)return;S.filter=b.dataset.f;LS.set('filter',S.filter);renderList();};
   var si=$('#search');si.oninput=function(){S.q=si.value;var pos=si.selectionStart;renderList();var n=$('#search');n.focus();try{n.setSelectionRange(pos,pos);}catch(e){}};
