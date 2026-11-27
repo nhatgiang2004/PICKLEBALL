@@ -1,707 +1,1439 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
-<meta name="theme-color" content="#0f172a">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Trọng tài">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="application-name" content="Trọng tài">
-<!-- Icon riêng cho module Trọng tài khi "Thêm vào màn hình chính" -->
-<link rel="manifest" href="./manifest-trongtai.json?v=3">
-<link rel="icon" type="image/png" sizes="192x192" href="./icon/trongtai-192.png?v=2">
-<link rel="icon" type="image/png" sizes="512x512" href="./icon/trongtai-512.png?v=2">
-<link rel="apple-touch-icon" sizes="180x180" href="./icon/trongtai-180.png?v=2">
-<title>Trọng tài Pickleball</title>
-<style>
-:root{
-  --bg:#eef2f7;--card:#fff;--ink:#0f172a;--muted:#64748b;--line:#e2e8f0;--navy:#0f172a;
-  --a:#2563eb;--a-soft:#dbeafe;--b:#ea580c;--b-soft:#ffedd5;--ok:#16a34a;--ok-soft:#dcfce7;--warn:#d97706;--danger:#dc2626;
-  --r:18px;--shadow:0 1px 2px rgba(15,23,42,.06),0 10px 28px rgba(15,23,42,.07);
-  --safe-b:env(safe-area-inset-bottom,0px);--safe-t:env(safe-area-inset-top,0px);
-}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;height:100%}
-body{background:var(--bg);color:var(--ink);font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased;overscroll-behavior:none}
-button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none}
-input,select{font:inherit;font-size:16px}
-[hidden]{display:none!important}
-.screen{min-height:100%;display:flex;flex-direction:column}
-/* ---------- Top bar ---------- */
-.bar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;padding:calc(10px + var(--safe-t)) 14px 10px;background:var(--navy);color:#fff}
-.bar h1{font-size:17px;margin:0;line-height:1.2;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.bar small{display:block;font-size:12px;font-weight:500;color:#94a3b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.icon-btn{width:40px;height:40px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,.1);color:#fff;font-size:18px;flex:0 0 auto}
-.icon-btn:active{transform:scale(.94)}
-/* ---------- Generic ---------- */
-.wrap{padding:14px;max-width:760px;width:100%;margin:0 auto}
-.card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);border:1px solid #e8edf4}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 18px;border-radius:14px;font-weight:800;font-size:16px;background:var(--a);color:#fff;transition:transform .08s,opacity .2s}
-.btn:active{transform:scale(.97)}
-.btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
-.btn.ok{background:var(--ok)}.btn.danger{background:var(--danger)}.btn.dark{background:var(--navy)}
-.btn.block{width:100%}
-.btn[disabled]{opacity:.5;pointer-events:none}
-.chip{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:800;white-space:nowrap}
-.chip.pending{background:#f1f5f9;color:#475569}.chip.live{background:#fef3c7;color:#b45309}.chip.done{background:var(--ok-soft);color:#166534}
-.muted{color:var(--muted)}
-.field{display:block;margin:0 0 14px}
-.field span{display:block;font-weight:700;font-size:14px;margin:0 0 6px}
-.field input,.field select{width:100%;min-height:50px;border:1px solid #cbd5e1;border-radius:14px;padding:0 14px;background:#fff;color:var(--ink);outline:none}
-.field input:focus,.field select:focus{border-color:var(--a);box-shadow:0 0 0 4px rgba(37,99,235,.15)}
-.msg{padding:12px 14px;border-radius:14px;font-weight:600;font-size:14px;margin:0 0 14px}
-.msg.err{background:#fee2e2;color:#991b1b}.msg.info{background:#e0f2fe;color:#075985}.msg.warn{background:#fef3c7;color:#92400e}
-.toast{pointer-events:none;position:fixed;left:50%;bottom:calc(20px + var(--safe-b));transform:translateX(-50%) translateY(20px);opacity:0;background:var(--navy);color:#fff;padding:12px 18px;border-radius:14px;font-weight:700;z-index:100;transition:.25s;max-width:calc(100% - 32px);text-align:center;box-shadow:0 12px 30px rgba(0,0,0,.25)}
-.score-screen~.toast{bottom:calc(84px + var(--safe-b))}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-/* ---------- Login ---------- */
-.login{flex:1;display:flex;align-items:center;justify-content:center;padding:24px 16px calc(24px + var(--safe-b));background:radial-gradient(1200px 600px at 50% -10%,#1e3a8a 0,#0f172a 55%,#020617 100%)}
-.login .card{width:100%;max-width:420px;padding:26px 22px}
-.brand{display:flex;align-items:center;gap:12px;margin:0 0 20px}
-.brand-logo{width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,#22c55e,#16a34a);display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 8px 20px rgba(22,163,74,.35)}
-.brand h2{margin:0;font-size:22px;line-height:1.15}.brand p{margin:2px 0 0;color:var(--muted);font-size:13.5px}
-details.conn{margin:4px 0 0;font-size:13.5px}details.conn summary{cursor:pointer;color:var(--muted);font-weight:700;padding:6px 0}
-/* ---------- List ---------- */
-.tools{position:sticky;top:calc(60px + var(--safe-t));z-index:10;background:var(--bg);padding:12px 14px 8px;max-width:760px;margin:0 auto;width:100%}
-.seg{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}.seg::-webkit-scrollbar{display:none}
-.seg button{flex:0 0 auto;padding:9px 14px;border-radius:999px;background:#fff;border:1px solid var(--line);font-weight:800;font-size:14px;color:#334155}
-.seg button.on{background:var(--navy);border-color:var(--navy);color:#fff}
-.seg b{font-weight:800;opacity:.65;margin-left:4px}
-.search{margin-top:10px;width:100%;min-height:46px;border:1px solid #cbd5e1;border-radius:14px;padding:0 14px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='none' stroke='%2394a3b8' stroke-width='2.2'%3E%3Ccircle cx='8' cy='8' r='6'/%3E%3Cpath d='m13 13 4 4'/%3E%3C/svg%3E") no-repeat 14px center;padding-left:40px;outline:none}
-.sec-title{margin:18px 2px 8px;font-size:12.5px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;color:#475569;display:flex;justify-content:space-between}
-.match{display:block;width:100%;text-align:left;padding:14px;margin:0 0 10px;position:relative;overflow:hidden}
-.match:active{transform:scale(.99)}
-.match .top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
-.match .label{font-size:12.5px;font-weight:800;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.match .row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:4px 0}
-.match .tname{font-weight:800;font-size:16px;display:flex;align-items:center;gap:8px;min-width:0}
-.match .tname i{width:10px;height:10px;border-radius:50%;flex:0 0 auto}
-.match .tname span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.match .sc{font-weight:900;font-size:18px;min-width:28px;text-align:right}
-.match .w{color:var(--ok)}
-.match.is-live{box-shadow:0 0 0 2px #fbbf24,var(--shadow)}
-.empty{text-align:center;padding:40px 16px;color:var(--muted)}
-.pending-bar{margin:0 14px 10px;max-width:732px}
-/* ---------- Setup ---------- */
-.setup h3{margin:0 0 4px;font-size:18px}
-.vs{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;margin:14px 0}
-.vs .t{padding:14px 10px;border-radius:16px;text-align:center;font-weight:900;font-size:16px;line-height:1.25;border:2px solid transparent}
-.vs .t.ta{background:var(--a-soft);color:#1e3a8a}.vs .t.tb{background:var(--b-soft);color:#9a3412}
-.vs .t.sel{border-color:currentColor;box-shadow:0 0 0 4px rgba(15,23,42,.06)}
-.vs .t small{display:block;font-size:12px;font-weight:700;opacity:.75;margin-top:4px}
-.vs em{font-style:normal;font-weight:900;color:var(--muted)}
-.opt{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
-.opt b{display:block}.opt small{color:var(--muted)}
-.switch{position:relative;width:52px;height:30px;flex:0 0 auto}
-.switch input{opacity:0;width:0;height:0}
-.switch span{position:absolute;inset:0;background:#cbd5e1;border-radius:999px;transition:.2s}
-.switch span::after{content:"";position:absolute;left:3px;top:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
-.switch input:checked+span{background:var(--ok)}.switch input:checked+span::after{transform:translateX(22px)}
-.mode{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0 4px}
-.mode button{padding:12px 10px;border-radius:14px;border:2px solid var(--line);background:#fff;font-weight:800;text-align:left;font-size:14px;line-height:1.3}
-.mode button small{display:block;font-weight:600;color:var(--muted);font-size:12px}
-.mode button.on{border-color:var(--a);background:#eff6ff}
-/* ---------- Scoring ---------- */
-.score-screen{background:#0b1220;color:#fff;position:fixed;inset:0;height:100vh;height:100dvh;min-height:0;display:flex;flex-direction:column;overflow:hidden;padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
-.score-screen .bar{background:#0b1220;border-bottom:1px solid rgba(255,255,255,.08)}
-.call{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 14px;background:#111a2e}
-.call .cv{font-size:30px;font-weight:900;letter-spacing:.04em;font-variant-numeric:tabular-nums}
-.call .cl{font-size:12px;color:#94a3b8;font-weight:700;text-align:right;line-height:1.3}
-/* Nút Tay 1 / Tay 2 / Đổi giao ngay trên màn hình đếm điểm */
-.hands{display:flex;gap:6px;align-items:center}
-.hands button{min-width:64px;height:44px;padding:0 12px;border-radius:12px;background:#1e293b;color:#cbd5e1;font-weight:900;font-size:15px;border:2px solid #334155;display:inline-flex;align-items:center;justify-content:center;gap:4px}
-.hands button.on{background:#fde047;border-color:#fde047;color:#111827;box-shadow:0 0 0 3px rgba(253,224,71,.25)}
-.hands button.sw{min-width:0;color:#fff;background:#334155;border-color:#475569;font-size:14px}
-.hands button:active{transform:scale(.95)}
-.call .cv,.hands button{white-space:nowrap}
-@media (max-width:560px){
-  .call{flex-wrap:wrap;row-gap:6px;padding:8px 10px 10px}
-  .call .cv{font-size:28px}
-  #handBox{flex:1 1 100%}
-  .hands button{flex:1 1 0;height:50px;font-size:17px}
-  .hands button.sw{flex:1.3 1 0;font-size:16px}
-  .hands-who{text-align:left;max-width:none;margin-top:6px;font-size:12px}
-  .team .hint{display:none}
-}
-.mini{display:none}
-body.scoring{overflow:hidden;position:fixed;inset:0;width:100%;height:100%}
-.fs-hint{position:fixed;left:50%;top:calc(10px + var(--safe-t));transform:translateX(-50%);z-index:90;width:min(560px,calc(100% - 24px));background:#fde047;color:#111827;border-radius:14px;padding:10px 12px;font-size:13px;line-height:1.35;box-shadow:0 10px 30px rgba(0,0,0,.35)}
-.fs-hint button{display:block;margin:8px 0 0 auto;background:#111827;color:#fff;border-radius:10px;padding:6px 12px;font-weight:800}
-.live-msg{display:block;font-size:11.5px;font-weight:800;color:#94a3b8;margin-top:2px;cursor:pointer}.live-msg.ok{color:#4ade80}.live-msg.err{color:#f87171}
-.srv-warn{margin:10px 12px 0;padding:10px 12px;border-radius:12px;background:#fef2f2;border:1px solid #fca5a5;color:#991b1b;font-size:13px;line-height:1.45}
-.srv-warn button{margin-top:6px}
-.load-pill{font-size:11.5px;font-weight:800;color:#fde047;background:rgba(253,224,71,.12);padding:5px 9px;border-radius:999px;white-space:nowrap;animation:fade .3s}
-.hands-who{font-size:11px;color:#94a3b8;font-weight:800;text-align:right;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px}
-.sync{width:9px;height:9px;border-radius:50%;background:#64748b;display:inline-block;margin-right:6px;vertical-align:middle}
-.sync.on{background:#22c55e;box-shadow:0 0 0 4px rgba(34,197,94,.2)}.sync.busy{background:#f59e0b}.sync.err{background:#ef4444}
-.courts{flex:1;display:grid;grid-template-rows:1fr 1fr;gap:10px;padding:10px;min-height:0}
-.team{position:relative;border-radius:24px;padding:14px 16px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;min-height:0;transition:transform .08s,filter .2s;user-select:none;-webkit-user-select:none;touch-action:manipulation}
-.team:active{transform:scale(.985)}
-.team.ta{background:linear-gradient(145deg,#1d4ed8,#1e3a8a)}
-.team.tb{background:linear-gradient(145deg,#ea580c,#9a3412)}
-.team .nm{font-size:18px;font-weight:900;line-height:1.2;padding-right:90px;text-shadow:0 1px 2px rgba(0,0,0,.2)}
-.team .pts{font-size:clamp(84px,24vh,180px);font-weight:900;line-height:.9;font-variant-numeric:tabular-nums;letter-spacing:-.03em;text-align:center}
-.team .foot{display:flex;justify-content:space-between;align-items:flex-end;gap:8px}
-.team .games{display:flex;gap:5px}.team .games i{width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.25)}.team .games i.w{background:#fde047}
-.team .hint{font-size:12px;font-weight:800;opacity:.75}
-.serve{position:absolute;top:12px;right:12px;display:none;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:#fde047;color:#111827;font-weight:900;font-size:13px;box-shadow:0 4px 14px rgba(0,0,0,.25)}
-.team.serving .serve{display:inline-flex}
-.team.serving{box-shadow:inset 0 0 0 3px #fde047}
-.team:not(.serving){filter:saturate(.85)}
-.flash{animation:flash .35s ease-out}
-@keyframes flash{0%{filter:brightness(1.6)}100%{filter:none}}
-.dock{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:8px 10px calc(10px + var(--safe-b));background:#0b1220}
-.dock button{min-height:52px;border-radius:14px;background:#1e293b;color:#e2e8f0;font-weight:800;font-size:12.5px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;line-height:1.1}
-.dock button span{font-size:18px}
-.dock button:active{background:#334155}
-.dock button[disabled]{opacity:.4}
-/* ---------- Màn hình NGANG: 2 đội hai bên, bảng điều khiển ở giữa ---------- */
-@media (orientation:landscape){
-  .score-screen{display:grid;grid-template-columns:minmax(0,1fr) clamp(190px,27vw,300px) minmax(0,1fr);grid-template-rows:auto auto 1fr;
-    grid-template-areas:"a bar b" "a call b" "a dock b";column-gap:8px;padding:8px max(8px,env(safe-area-inset-right,0px)) max(8px,env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px))}
-  .courts{grid-area:1/1/-1/-1;display:grid;grid-template-rows:none;grid-template-columns:minmax(0,1fr) clamp(190px,27vw,300px) minmax(0,1fr);column-gap:8px;padding:0;position:relative;z-index:1;pointer-events:none;min-height:0}
-  .courts>.team{pointer-events:auto;grid-row:1}
-  .courts>.team:first-child{grid-column:1}.courts>.team:last-child{grid-column:3}
-  .score-screen .bar,.call,.dock{position:relative;z-index:3}
-  .score-screen .bar{display:none!important}
-  .mini{display:flex;align-items:center;gap:6px}
-  .mini .icon-btn{width:32px;height:32px;border-radius:10px;font-size:15px;background:#1e293b}
-  .mini-t{flex:1;min-width:0;font-size:12px;font-weight:800;color:#cbd5e1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .mini .sync{margin:0 2px 0 0}
-  .score-screen .bar-unused{grid-area:bar;padding:0 0 6px;border:0;background:transparent;gap:6px}
-  .score-screen .bar h1{font-size:13px}.score-screen .bar small{font-size:11px}
-  .score-screen .bar .icon-btn{width:34px;height:34px;border-radius:10px;font-size:16px}
-  .call{grid-area:call;flex-direction:column;align-items:stretch;gap:6px;padding:8px;border-radius:16px;background:#111a2e;flex-wrap:nowrap}
-  .call .cv{font-size:clamp(22px,7vh,34px);text-align:center;letter-spacing:.02em}
-  .call .cl{text-align:center}
-  #handBox{flex:none}
-  .hands{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-  .hands button{min-width:0;height:clamp(34px,10vh,46px);font-size:15px;padding:0 6px}
-  .hands button.sw{grid-column:1/-1}
-  .hands-who{text-align:center;max-width:none;font-size:11px;margin-top:4px}
-  .dock{grid-area:dock;align-self:end;grid-template-columns:1fr 1fr;gap:6px;padding:8px 0 0;background:transparent}
-  .dock button{min-height:0;height:clamp(36px,11vh,50px);flex-direction:row;gap:6px;font-size:12.5px}
-  .dock button span{font-size:15px}
-  .team{border-radius:22px;padding:12px 14px}
-  .team .nm{font-size:clamp(15px,4.2vh,22px);padding-right:84px}
-  .team .pts{font-size:clamp(70px,46vh,230px);line-height:.85}
-  .team .hint{display:none}
-  .serve{top:10px;right:10px}
-  .score-screen~.toast{top:calc(8px + var(--safe-t));bottom:auto;font-size:14px;padding:8px 14px}
-}
-/* Ngang và thấp (điện thoại xoay ngang, có thanh Safari): gọn thêm */
-@media (orientation:landscape) and (max-height:420px){
-  .score-screen .bar small{display:none}
-  .call{padding:6px;gap:4px}
-  .hands-who{display:none}
-  .dock button{font-size:11.5px;gap:4px}.dock button span{font-size:15px}
-  .team .pts{font-size:clamp(56px,44vh,200px)}
-}
-@media (orientation:landscape) and (max-height:300px){
-  .score-screen{padding-top:6px;padding-bottom:6px}
-  .score-screen .bar{padding-bottom:4px}.score-screen .bar .icon-btn{width:30px;height:30px}
-  .call{padding:5px;gap:4px}.call .cv{font-size:20px}
-  .hands button{height:30px;font-size:13px}
-  .dock{padding-top:4px;gap:4px}.dock button{height:30px;border-radius:10px;font-size:10.5px}
-  .team{padding:8px 10px;border-radius:16px}.team .nm{font-size:14px}
-}
-/* ---------- Sheet / modal ---------- */
-.sheet-bg{position:fixed;inset:0;background:rgba(2,6,23,.6);z-index:50;display:flex;align-items:flex-end;justify-content:center;animation:fade .2s}
-.sheet{background:#fff;color:var(--ink);width:100%;max-width:520px;border-radius:24px 24px 0 0;padding:18px 18px calc(18px + var(--safe-b));max-height:92vh;overflow:auto;animation:up .25s ease-out}
-@media (min-width:600px){.sheet-bg{align-items:center}.sheet{border-radius:24px}}
-.sheet h3{margin:0 0 6px;font-size:20px}
-.sheet .grab{width:44px;height:5px;border-radius:9px;background:#cbd5e1;margin:-6px auto 12px}
-.sheet .actions{display:grid;gap:10px;margin-top:16px}
-.result-big{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;margin:14px 0;text-align:center}
-.result-big .n{font-weight:800;font-size:14px;line-height:1.25}
-.result-big .s{font-size:44px;font-weight:900;font-variant-numeric:tabular-nums}
-.games-list{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:4px 0}
-.games-list span{background:#f1f5f9;border-radius:10px;padding:4px 10px;font-weight:800;font-size:13px}
-.adj{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
-.adj .col{background:#f8fafc;border-radius:16px;padding:10px;text-align:center}
-.adj .col b{display:block;font-size:13px;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.adj .row{display:flex;gap:8px;justify-content:center}
-.adj .row button{width:52px;height:46px;border-radius:12px;background:#e2e8f0;font-weight:900;font-size:20px}
-.adj .row button.sv{width:auto;padding:0 12px;font-size:13px}
-@keyframes up{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
-@keyframes fade{from{opacity:0}to{opacity:1}}
-</style>
-</head>
-<body>
-<div id="app" class="screen"></div>
-<div id="toast" class="toast"></div>
-<script>
-/* =====================================================================
-   MODULE TRỌNG TÀI ĐẾM ĐIỂM – chạy trên GitHub Pages, dữ liệu ở Google Sheet qua Web App
-   Mở là dùng ngay, không cần đăng nhập. Đổi giải: trongtai.html?apiUrl=<link Web App /exec> hoặc nút ⚙
-   ===================================================================== */
-(function(){
-'use strict';
-var DEFAULT_API_URL='https:\/\/script.google.com\/macros\/s\/AKfycbyn5qtFeeh5PXr0Fh8e52GAvNzXvAGd8BYYaHRHpL8T2wfhULQ3HWT6jjpJGNBHk8i7\/exec';
-var Q=new URLSearchParams(location.search);
-var LS={get:function(k,d){try{var v=localStorage.getItem('pbRef:'+k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set:function(k,v){try{localStorage.setItem('pbRef:'+k,JSON.stringify(v));}catch(e){}},del:function(k){try{localStorage.removeItem('pbRef:'+k);}catch(e){}}};
-var API=String(Q.get('apiUrl')||LS.get('api','')||DEFAULT_API_URL).trim();
-if(Q.get('apiUrl'))LS.set('api',API);
-// Ghi link máy chủ vào địa chỉ trang: "Thêm vào MH chính" trên điện thoại sẽ nhớ đúng giải (iPhone dùng bộ nhớ riêng cho icon)
-function syncUrl(){try{var u=new URL(location.href);if(u.searchParams.get('apiUrl')!==API){u.searchParams.set('apiUrl',API);history.replaceState(null,'',u.toString());}}catch(e){}}
-syncUrl();
-function apiId(u){var m=String(u||'').match(/\/s\/([^\/]+)/);return m?'…'+m[1].slice(-6):'(?)';}
-var S={token:LS.get('token',''),user:LS.get('user',null),data:null,filter:LS.get('filter','pending'),q:'',match:null,game:null,liveTimer:null,liveState:'',wake:null};
-var app=document.getElementById('app');
-var KO_ROUNDS=['Vòng 1/32','Vòng 1/16','Tứ kết','Bán kết','Chung kết','Tranh ba'];
+// =====================================================================
+// PICKLEBALL TOURNAMENT – Code.gs (V9.2 – HD-PB V9.8 2026-11-27)
+// Thay TOÀN BỘ Code.gs bằng file này.
+//
+// Nguyên tắc:
+//  - Google Sheet là nguồn dữ liệu DUY NHẤT (không _APP_STATE, không localStorage).
+//  - "Mã cặp" là khóa cố định của một cặp đấu. Bảng đấu, lịch đấu, knock-out
+//    chỉ lưu Mã cặp => đổi tên VĐV trong sheet VĐV không ảnh hưởng chia bảng/kết quả.
+//  - Cột tên cặp ở các sheet BẢNG ĐẤU / LỊCH ĐẤU / LOẠI TRỰC TIẾP được ghi dạng GIÁ TRỊ
+//    (KHÔNG dùng công thức) nên không bị lỗi dấu "," / ";".
+//
+// Lần đầu cài đặt: chạy hàm migrateToNormalizedSchema() một lần trong trình
+// soạn thảo Apps Script (nên File > Tạo bản sao Google Sheet trước khi chạy).
+// =====================================================================
 
-/* ---------------- tiện ích ---------------- */
-function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
-function toast(t,ms){var el=document.getElementById('toast');el.textContent=t;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(function(){el.classList.remove('show');},ms||2600);}
-function buzz(ms){try{if(navigator.vibrate)navigator.vibrate(ms||18);}catch(e){}}
-function $(sel,root){return (root||document).querySelector(sel);}
+// Không còn ID cố định trong code. Link Google Sheet dữ liệu được lưu trong
+// Script Properties (khóa DATA_SPREADSHEET_ID) và đổi được trong Cấu hình > Dữ liệu.
+// Nếu chưa cấu hình mà script gắn với 1 Google Sheet thì dùng chính file đó.
+const DATA_PROP = 'DATA_SPREADSHEET_ID';
+const SERVER_BUILD = 'HD-PB V9.8 2026-11-27';
 
-/* ---------------- kết nối Web App ---------------- */
-// Ưu tiên POST (dữ liệu không nằm trên địa chỉ); nếu trình duyệt chặn thì dùng JSONP qua GET.
-var seq=0;
-function jsonp(body,timeout){
-  return new Promise(function(resolve,reject){
-    var cb='__pbRef'+Date.now()+'_'+(++seq),s=document.createElement('script'),done=false;
-    var clean=function(){try{delete window[cb];}catch(e){window[cb]=undefined;}s.remove();};
-    var t=setTimeout(function(){if(done)return;done=true;clean();reject(new Error('Hết thời gian chờ máy chủ'));},timeout||20000);
-    window[cb]=function(d){if(done)return;done=true;clearTimeout(t);clean();resolve(d);};
-    s.onerror=function(){if(done)return;done=true;clearTimeout(t);clean();reject(new Error('Không kết nối được Web App'));};
-    s.src=API+(API.indexOf('?')>=0?'&':'?')+'api=ref&callback='+cb+'&payload='+encodeURIComponent(JSON.stringify(body))+'&_='+Date.now();
-    document.head.appendChild(s);
+// Phát hiện file .gs cũ còn sót trong dự án (các hàm này chỉ có ở bản cũ, bản cũ ghi công thức vào sheet).
+function legacyCodeFound_() {
+  const names = ['lookupFormula_', 'syncReadableSheets_', 'bootstrapAppData', 'loadTournamentState', 'mergeConfigIntoState_', 'saveKnockoutPairingConfigHDV3', 'saveKnockoutRuntimeStateHDV3', 'rebuildRankingSheet'];
+  return names.filter(function (n) { try { return typeof globalThis[n] === 'function'; } catch (e) { return false; } });
+}
+function getServerBuild() { return { build: SERVER_BUILD, legacy: legacyCodeFound_() }; }
+
+const SH = {
+  CONFIG: 'CẤU HÌNH',
+  ACCOUNT: 'TAI KHOAN',
+  MENU: 'MENU',
+  VDV: 'VĐV',
+  GROUPS: 'BẢNG ĐẤU',
+  SCHEDULE: 'LỊCH ĐẤU',
+  KO_CONFIG: 'CẤU HÌNH KNOCKOUT',
+  KO_PAIRING: 'SƠ ĐỒ KNOCKOUT',
+  KO: 'LOẠI TRỰC TIẾP',
+  LIVE: '_LIVE_STATE'
+};
+
+// Sheet thừa / trùng lặp – sẽ bị xóa khi chạy migrateToNormalizedSchema()
+const OBSOLETE_SHEETS = ['_APP_STATE', 'KẾT QUẢ', 'HẠNG BA', 'BẢNG XẾP HẠNG', 'Bảng xếp hạng', 'BXH',
+  'KNOCKOUT STATE', 'KO_CẤU HÌNH V4', 'KO_SƠ ĐỒ GHÉP V4'];
+
+const HEAD = {
+  VDV: ['Mã cặp', 'Cặp VĐV', 'Ghi chú'],
+  GROUPS: ['Mã bảng', 'Tên bảng', 'Vị trí', 'Mã cặp', 'Cặp VĐV'],
+  SCHEDULE: ['Mã trận', 'Mã bảng', 'Lượt', 'Mã cặp A', 'Mã cặp B', 'Điểm A', 'Điểm B', 'Trạng thái', 'Bảng', 'Cặp A', 'Cặp B', 'Cập nhật lúc'],
+  KO: ['Mã trận', 'Vòng', 'Trận số', 'Mã cặp A', 'Mã cặp B', 'Điểm A', 'Điểm B', 'Chi tiết game', 'Trạng thái', 'Cặp A', 'Cặp B', 'Cập nhật lúc'],
+  KO_CONFIG: ['Thứ tự', 'Vòng đấu', 'Áp dụng', 'Số game', 'Điểm trận quyết định', 'Cách biệt trận quyết định', 'Chi tiết từng game'],
+  KO_PAIRING: ['Vòng đấu', 'Trận', 'Nguồn đội A', 'Nguồn đội B'],
+  CONFIG: ['Tên cấu hình', 'Giá trị', 'Mô tả'],
+  MENU: ['Mã menu', 'Tên menu', 'Biểu tượng', 'Thứ tự', 'Hiển thị', 'Mobile'],
+  ACCOUNT: ['Tên đăng nhập', 'Họ tên', 'Mật khẩu', 'Cấp quyền', 'Trạng thái']
+};
+
+// Vòng 1/32 = 32 đội (16 trận) → Vòng 1/16 = 16 đội (8 trận) → Tứ kết = 8 đội (4 trận). Tên cũ "Vòng 1/8" chính là Tứ kết: đọc dữ liệu cũ sẽ tự đổi sang Tứ kết.
+const KO_ROUNDS = ['Vòng 1/32', 'Vòng 1/16', 'Tứ kết', 'Bán kết', 'Chung kết', 'Tranh ba'];
+const KO_LEGACY_18 = 'Vòng 1/8';
+function koLegacySource_(src) {
+  const a = encodeURIComponent(KO_LEGACY_18), b = encodeURIComponent('Tứ kết');
+  return String(src || '').split(a).join(b).split(KO_LEGACY_18).join('Tứ kết');
+}
+const DEFAULT_LIVE_ROUNDS = ['Trực tiếp', 'Vòng bảng', 'Vòng 1/32', 'Vòng 1/16', 'Tứ kết', 'Bán kết', 'Tranh ba', 'Chung kết'];
+
+// [Tên cấu hình, khóa trong state.tournament, kiểu, mô tả]
+const CONFIG_FIELDS = [
+  ['Tên chủ sân / đơn vị tổ chức', 'ownerName', 'str', 'Dòng đầu của bản in'],
+  ['Chế độ logo', 'logoMode', 'str', 'default | url | none'],
+  ['Đường dẫn logo', 'logoUrl', 'str', 'URL ảnh logo khi Chế độ logo = url'],
+  ['Tên giải', 'name', 'str', 'Tên chính thức của giải'],
+  ['Nội dung thi đấu', 'eventCategory', 'str', 'Ví dụ ĐÔI NAM 5.0'],
+  ['Địa điểm / tên sân', 'venue', 'str', ''],
+  ['Ngày thi đấu', 'eventDate', 'str', ''],
+  ['Tiêu đề vòng bảng', 'printGroupTitle', 'str', 'Tiêu đề bản in vòng bảng'],
+  ['Ghi chú cuối bản in', 'printFooter', 'str', ''],
+  ['Số đội mục tiêu mỗi bảng', 'targetGroupSize', 'num', ''],
+  ['Số đội tối thiểu mỗi bảng', 'minGroupSize', 'num', ''],
+  ['Số đội tối đa mỗi bảng', 'maxGroupSize', 'num', ''],
+  ['Số bảng muốn chia', 'requestedGroupCount', 'num', '0 = tự động'],
+  ['Số đội lấy mỗi bảng', 'qualifyPerGroup', 'num', ''],
+  ['Cho phép lấy hạng Ba', 'allowThirdWildcards', 'bool', 'Có / Không'],
+  ['Vòng knock-out', 'knockoutMode', 'str', 'auto | 8 | 16 | 32'],
+  ['Điểm mục tiêu', 'pointsToWin', 'num', ''],
+  ['Cách biệt tối thiểu', 'winBy', 'num', ''],
+  ['Cho phép kéo dài quá điểm mục tiêu', 'allowOverTarget', 'bool', 'Có / Không'],
+  ['Điểm trần', 'scoreCap', 'num', '0 = không giới hạn'],
+  ['Nội dung hiển thị Live', 'liveRoundLabels', 'list', 'Các nhãn cách nhau bởi dấu |'],
+  ['Vị trí Kết quả Live', 'liveResultPosition', 'str', 'current | bottom-center'],
+  ['Link Live html', 'liveHtmlUrl', 'str', 'Trang Live chạy trên GitHub Pages (livehuongdo.html)']
+];
+// [Tên cấu hình, khóa trong state.database]
+const KO_META = { size: 'Knock-out: số đội', rounds: 'Knock-out: các vòng' };
+const DATA_FIELDS = [
+  ['Tên nguồn dữ liệu', 'sourceName'],
+  ['Ghi chú dữ liệu', 'note'],
+  ['Đồng bộ lần cuối', 'lastSync']
+];
+
+// ===================== WEB APP =====================
+
+function doGet(e) {
+  const params = (e && e.parameter) || {};
+  if (String(params.api || '').toLowerCase() === 'live') return getLiveJsonp_(params.callback);
+  if (String(params.api || '').toLowerCase() === 'ref') {
+    let body = {};
+    try { body = JSON.parse(String(params.payload || '{}')); } catch (err) { body = {}; }
+    return refOutput_(refApi_(body), params.callback);
+  }
+  if (String(params.asset || '').toLowerCase() === 'manifest') return getAppManifest_();
+
+  if (String(params.view || '').toLowerCase() === 'diag') return diagnosePage_();
+  const file = String(params.view || '').toLowerCase() === 'live' ? 'Live' : 'Index';
+  const tpl = HtmlService.createTemplateFromFile(file);
+  let brand = { name: 'Pickleball Tournament Online', logoMode: 'default' };
+  try { brand = getLoginBranding(); } catch (e) {}
+  tpl.APP_NAME = brand.name || 'Pickleball Tournament Online';
+  tpl.APP_ICON_URL = brandIconUrl_(brand);
+  tpl.WEB_APP_URL = ScriptApp.getService().getUrl() || '';
+  tpl.INITIAL_PAGE = String(params.page || '').replace(/[^A-Za-z]/g, '').slice(0, 40);
+  return tpl.evaluate()
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1, viewport-fit=cover')
+    .setTitle(brand.name || 'Pickleball Tournament Online')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+function brandIconUrl_(brand) {
+  const u = String(brand.logoUrl || '').trim();
+  return brand.logoMode === 'url' && /^https?:\/\//i.test(u) ? u : '';
+}
+
+function getAppManifest_() {
+  let brand = { name: 'Pickleball', logoMode: 'default' };
+  try { brand = getLoginBranding(); } catch (e) {}
+  const iconUrl = brandIconUrl_(brand);
+  const manifest = {
+    name: brand.name || 'Pickleball Tournament Online',
+    short_name: String(brand.name || 'Pickleball').slice(0, 28),
+    start_url: ScriptApp.getService().getUrl() || './',
+    display: 'standalone', background_color: '#0f172a', theme_color: '#0f172a', orientation: 'any'
+  };
+  if (iconUrl) manifest.icons = [
+    { src: iconUrl, sizes: '192x192', type: 'image/png', purpose: 'any maskable' },
+    { src: iconUrl, sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
+  ];
+  return ContentService.createTextOutput(JSON.stringify(manifest)).setMimeType(ContentService.MimeType.JSON);
+}
+
+function include(filename) { return HtmlService.createHtmlOutputFromFile(filename).getContent(); }
+function getWebAppUrl() { return ScriptApp.getService().getUrl() || ''; }
+
+// ===================== TIỆN ÍCH SHEET =====================
+
+let SS_CACHE_ = null;
+function spreadsheetIdFromUrl_(text) {
+  const t = String(text || '').trim();
+  const m = t.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/) || t.match(/^([a-zA-Z0-9-_]{20,})$/);
+  return m ? m[1] : '';
+}
+function getDataSpreadsheetId_() {
+  const id = PropertiesService.getScriptProperties().getProperty(DATA_PROP);
+  if (id) return id;
+  try { const a = SpreadsheetApp.getActiveSpreadsheet(); if (a) return a.getId(); } catch (e) {}
+  return '';
+}
+function getSpreadsheet_() {
+  if (SS_CACHE_) return SS_CACHE_;
+  const id = getDataSpreadsheetId_();
+  if (!id) throw new Error('Chưa cấu hình Link Google Sheet dữ liệu.');
+  SS_CACHE_ = SpreadsheetApp.openById(id);
+  return SS_CACHE_;
+}
+function sheetUrlOf_(id) { return id ? 'https://docs.google.com/spreadsheets/d/' + id + '/edit' : ''; }
+
+// Trạng thái nguồn dữ liệu (dùng ở màn hình đăng nhập khi cài lần đầu)
+function getDataSourceStatus() {
+  const id = getDataSpreadsheetId_();
+  if (!id) return { configured: false };
+  try { const ss = getSpreadsheet_(); return { configured: true, spreadsheetId: id, spreadsheetName: ss.getName() }; }
+  catch (e) { return { configured: false, spreadsheetId: id, message: 'Không mở được Google Sheet đang cấu hình: ' + (e && e.message ? e.message : e) }; }
+}
+
+// Chỉ dùng khi CHƯA có nguồn dữ liệu hoặc nguồn cũ không mở được (cài đặt lần đầu).
+function setupDataSpreadsheet(url) {
+  const st = getDataSourceStatus();
+  if (st.configured) throw new Error('Nguồn dữ liệu đã được cấu hình. Hãy đăng nhập ADMIN và đổi trong Cấu hình > Dữ liệu.');
+  return switchDataSpreadsheet_(url);
+}
+
+// Chạy tay trong trình soạn thảo Apps Script khi cần: setDataSpreadsheet('https://docs.google.com/...')
+function setDataSpreadsheet(url) { return switchDataSpreadsheet_(url); }
+
+function switchDataSpreadsheet_(url) {
+  const id = spreadsheetIdFromUrl_(url);
+  if (!id) throw new Error('Link Google Sheet không hợp lệ.');
+  let target;
+  try { target = SpreadsheetApp.openById(id); }
+  catch (e) { throw new Error('Không mở được Google Sheet này. Tài khoản chạy Web App cần có quyền chỉnh sửa file. Chi tiết: ' + (e && e.message ? e.message : e)); }
+  let old = null;
+  try { old = getSpreadsheet_(); } catch (e) {}
+  ensureSchema_(target);
+  // File mới chưa có tài khoản thì sao chép TAI KHOAN từ file cũ để không bị khóa ngoài.
+  const acc = target.getSheetByName(SH.ACCOUNT);
+  if (acc.getLastRow() < 2 && old && old.getId() !== id) {
+    const src = old.getSheetByName(SH.ACCOUNT);
+    if (src && src.getLastRow() >= 2) {
+      const v = src.getRange(1, 1, src.getLastRow(), src.getLastColumn()).getValues();
+      acc.getRange(1, 1, v.length, v[0].length).setValues(v);
+      acc.getRange(2, 1, v.length - 1, 1).setNumberFormat('@');
+    }
+  }
+  PropertiesService.getScriptProperties().setProperty(DATA_PROP, id);
+  SS_CACHE_ = target;
+  return { ok: true, spreadsheetId: id, spreadsheetName: target.getName(), sheetUrl: sheetUrlOf_(id) };
+}
+
+function normalizeKey_(v) {
+  return String(v || '').trim().toLowerCase().normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/\s+/g, ' ');
+}
+function normalizeVdvHeader_(v) { return normalizeKey_(v); }
+
+function numOrNull_(v) {
+  if (v === '' || v === null || v === undefined) return null;
+  const n = Number(v); return isFinite(n) ? n : null;
+}
+function notNo_(v) { return ['khong', 'no', 'false', '0', 'an', 'hide', 'tat'].indexOf(normalizeKey_(v)) < 0; }
+function yes_(v) { return ['co', 'yes', 'true', '1', 'x'].indexOf(normalizeKey_(v)) >= 0; }
+
+function ensureSheet_(ss, name, headers) {
+  let sh = ss.getSheetByName(name);
+  if (!sh) {
+    sh = ss.insertSheet(name);
+    if (headers) { sh.getRange(1, 1, 1, headers.length).setValues([headers]).setFontWeight('bold'); sh.setFrozenRows(1); }
+  }
+  return sh;
+}
+
+// Đọc bảng theo tên cột (không phụ thuộc vị trí cột)
+function readTable_(sh) {
+  if (!sh || sh.getLastRow() < 1 || sh.getLastColumn() < 1) return { headers: [], rows: [], col: function () { return -1; } };
+  const values = sh.getRange(1, 1, sh.getLastRow(), sh.getLastColumn()).getDisplayValues();
+  const headers = values[0].map(function (h) { return String(h || '').trim(); });
+  const norm = headers.map(normalizeKey_);
+  return {
+    headers: headers,
+    rows: values.slice(1).filter(function (r) { return r.some(function (c) { return String(c).trim() !== ''; }); }),
+    col: function (aliases) {
+      for (let i = 0; i < aliases.length; i++) { const k = norm.indexOf(normalizeKey_(aliases[i])); if (k >= 0) return k; }
+      return -1;
+    }
+  };
+}
+function cell_(row, idx) { return idx >= 0 ? String(row[idx] == null ? '' : row[idx]).trim() : ''; }
+
+function writeTable_(sh, headers, rows) {
+  const lastRow = Math.max(sh.getLastRow(), 1), lastCol = Math.max(sh.getLastColumn(), headers.length);
+  sh.getRange(1, 1, lastRow, lastCol).clearContent(); // xóa cả công thức cũ (kể cả công thức mảng)
+  sh.getRange(1, 1, 1, headers.length).setValues([headers]).setFontWeight('bold');
+  if (rows.length) sh.getRange(2, 1, rows.length, headers.length).setValues(rows);
+  sh.setFrozenRows(1);
+}
+
+// Cột tên hiển thị (Cặp VĐV, Cặp A/B, Bảng) được ghi dạng GIÁ TRỊ, không dùng công thức,
+// để không phụ thuộc dấu phân cách "," hay ";" theo ngôn ngữ của Google Sheet.
+// Mỗi lần app lưu, các cột này được làm mới theo Mã cặp nên luôn khớp tên mới nhất.
+
+function ensureSchema_(ss) {
+  ensureSheet_(ss, SH.CONFIG, HEAD.CONFIG);
+  ensureSheet_(ss, SH.ACCOUNT, HEAD.ACCOUNT);
+  ensureSheet_(ss, SH.MENU, HEAD.MENU);
+  ensureSheet_(ss, SH.VDV, HEAD.VDV);
+  ensureSheet_(ss, SH.GROUPS, HEAD.GROUPS);
+  ensureSheet_(ss, SH.SCHEDULE, HEAD.SCHEDULE);
+  ensureSheet_(ss, SH.KO_CONFIG, HEAD.KO_CONFIG);
+  ensureSheet_(ss, SH.KO_PAIRING, HEAD.KO_PAIRING);
+  ensureSheet_(ss, SH.KO, HEAD.KO);
+  const live = ensureSheet_(ss, SH.LIVE, ['Dữ liệu']);
+  try { live.hideSheet(); } catch (e) {}
+  return ss;
+}
+
+// ===================== TRẠNG THÁI MẶC ĐỊNH =====================
+
+function defaultKoRoundConfig_() {
+  return KO_ROUNDS.map(function (r, i) {
+    return { round: r, enabled: r !== 'Tranh ba' && r !== 'Vòng 1/32', games: 1, decidingTarget: 0, decidingWinBy: 0, order: (i + 1) * 10 };
   });
 }
-function post(body){
-  var ctl=typeof AbortController!=='undefined'?new AbortController():null;
-  var timer=ctl?setTimeout(function(){ctl.abort();},15000):0;
-  return fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body),redirect:'follow',signal:ctl?ctl.signal:undefined})
-    .then(function(r){clearTimeout(timer);if(!r.ok)throw new Error('HTTP '+r.status);return r.json();},function(e){clearTimeout(timer);throw e;});
-}
-// Đọc danh sách: dùng GET (JSONP) – chỉ 1 lượt gọi máy chủ. Ghi kết quả/Live: dùng cách đã chạy được lần trước (POST hoặc JSONP)
-function call(action,extra){
-  var body=Object.assign({action:action,token:S.token},extra||{});
-  var pref=LS.get('transport2','jsonp');
-  var first=pref==='jsonp'?jsonp(body,25000):post(body);
-  return first.then(function(d){return d;},function(){
-    var alt=pref==='jsonp'?post(body):jsonp(body,25000);
-    return alt.then(function(d){if(d&&d.ok)LS.set('transport2',pref==='jsonp'?'post':'jsonp');return d;});
-  }).then(function(d){return d||{ok:false,message:'Máy chủ không trả dữ liệu'};});
-}
 
-/* ---------------- dữ liệu trận ---------------- */
-function teamName(id){var t=(S.data.teams||[]).find(function(x){return x.id===id;});return t?t.name:'Chưa xác định';}
-function groupName(id){var g=(S.data.groups||[]).find(function(x){return x.id===id;});return g?g.name:'Bảng';}
-function koRound(m){if(m.isThirdPlace||m.roundName==='Tranh ba')return 'Tranh ba';return m.roundName||((S.data.knockout&&S.data.knockout.rounds)||[])[m.roundIndex]||'Knock-out';}
-function roundCfg(name){return ((S.data.tournament&&S.data.tournament.knockoutRoundConfig)||[]).find(function(r){return r.round===name;})||{};}
-function allMatches(){
-  var d=S.data,out=[];if(!d)return out;
-  (d.matches||[]).forEach(function(m){out.push(Object.assign({},m,{kind:'gm',stage:groupName(m.groupId),label:groupName(m.groupId)+' • Lượt '+(m.round||1),sort:'0|'+groupName(m.groupId)+'|'+String(m.round||0).padStart(3,'0')}));});
-  ((d.knockout&&d.knockout.matches)||[]).forEach(function(m){var r=koRound(m);var bo=bestOf(Object.assign({kind:'ko'},m));out.push(Object.assign({},m,{kind:'ko',stage:r,label:r+(r==='Tranh ba'||r==='Chung kết'?'':' • Trận '+(m.matchNo||1))+(bo>1?' • BO'+bo:''),sort:'1|'+KO_ROUNDS.indexOf(r)+'|'+String(m.matchNo||0).padStart(3,'0')}));});
-  return out.filter(function(m){return m.teamA&&m.teamB;});
-}
-function bestOf(m){if(m.kind!=='ko')return 1;var n=Number(roundCfg(koRound(m)).games||1);return [1,3,5].indexOf(n)>=0?n:1;}
-// Luật của từng game: điểm chạm, cách biệt, trần điểm
-function gameRule(m,i){
-  var t=S.data.tournament||{},T=Math.max(1,Number(t.pointsToWin||11)),W=Math.max(1,Number(t.winBy||1)),cap=t.allowOverTarget?Math.max(0,Number(t.scoreCap||0)):0;
-  if(m.kind==='ko'){
-    var n=bestOf(m),c=roundCfg(koRound(m)),last=n>1&&i===n-1,gr=n>1&&Array.isArray(c.gameRules)?c.gameRules[i]:null;
-    if(gr&&(Number(gr.target)>0||Number(gr.winBy)>0)){T=Number(gr.target)>0?Number(gr.target):T;W=Number(gr.winBy)>0?Number(gr.winBy):W;}
-    else if(last){if(Number(c.decidingTarget)>0)T=Number(c.decidingTarget);if(Number(c.decidingWinBy)>0)W=Number(c.decidingWinBy);}
-  }
-  return {target:T,winBy:W,cap:cap};
-}
-function ruleText(r){return 'Chạm '+r.target+(r.winBy>1?', cách '+r.winBy:'')+(r.cap>0?', trần '+r.cap:'');}
-function gameOver(a,b,r){var hi=Math.max(a,b),lo=Math.min(a,b);return (hi>=r.target&&hi-lo>=r.winBy)||(r.cap>0&&hi>=r.cap&&hi>lo);}
-function statusOf(m){if(m.completed)return 'done';var L=S.data.live||{};if(L.active&&L.matchId===m.id&&L.kind===m.kind)return 'live';if(LS.get('game:'+m.kind+':'+m.id,null))return 'live';return 'pending';}
-
-/* ---------------- màn hình: đăng nhập ---------------- */
-function renderLogin(msg){
-  stopLive();
-  app.className='screen';
-  app.innerHTML='<div class="login"><form class="card" id="loginForm" autocomplete="on">'+
-    '<div class="brand"><div class="brand-logo">🏓</div><div><h2>Trọng tài</h2><p>Đếm điểm trận đấu Pickleball</p></div></div>'+
-    (msg?'<div class="msg err">'+esc(msg)+'</div>':'')+
-    '<label class="field"><span>Tên đăng nhập</span><input id="lgU" name="username" autocomplete="username" autocapitalize="none" required value="'+esc((S.user&&S.user.username)||'')+'"></label>'+
-    '<label class="field"><span>Mật khẩu</span><input id="lgP" name="password" type="password" autocomplete="current-password" required></label>'+
-    '<button class="btn block" id="lgBtn" type="submit">Đăng nhập</button>'+
-    '<details class="conn"><summary>⚙ Kết nối dữ liệu</summary><label class="field" style="margin-top:8px"><span>Link Web App (/exec)</span><input id="lgApi" value="'+esc(API)+'" inputmode="url"></label></details>'+
-    '</form></div>';
-  var f=$('#loginForm');setTimeout(function(){($('#lgU').value?$('#lgP'):$('#lgU')).focus();},50);
-  f.onsubmit=function(e){
-    e.preventDefault();
-    var api=$('#lgApi').value.trim();
-    if(!/^https:\/\/script\.google(usercontent)?\.com\//i.test(api)){toast('Link Web App phải có dạng https:\/\/script.google.com\/macros\/s\/...\/exec');return;}
-    API=api;LS.set('api',API);
-    var btn=$('#lgBtn');btn.disabled=true;btn.textContent='Đang đăng nhập…';
-    call('login',{username:$('#lgU').value.trim(),password:$('#lgP').value}).then(function(d){
-      if(!d.ok)throw new Error(d.message||'Đăng nhập không thành công');
-      document.getElementById('toast').classList.remove('show');S.token=d.token;S.user=d.user;LS.set('token',d.token);LS.set('user',d.user);
-      loadList(true);
-    }).catch(function(err){btn.disabled=false;btn.textContent='Đăng nhập';toast(err.message||String(err),3500);});
+function directBaseState_() {
+  return {
+    version: 5, currentPage: 'dashboard', updatedAt: Date.now(),
+    tournament: {
+      name: 'HƯỜNG ĐỖ PICKLEBALL', ownerName: 'HỆ THỐNG SÂN PICKLEBALL HƯỜNG ĐỖ',
+      logoMode: 'default', logoUrl: '', eventCategory: '', venue: '', eventDate: '',
+      printGroupTitle: 'DANH SÁCH THI ĐẤU VÒNG LOẠI',
+      printFooter: 'Đề nghị các VĐV kiểm tra đúng tên/cặp thi đấu và theo dõi lịch thi đấu từ BTC.',
+      targetGroupSize: 4, minGroupSize: 3, maxGroupSize: 5, requestedGroupCount: 0,
+      qualifyPerGroup: 2, allowThirdWildcards: true, knockoutMode: 'auto', thirdPlaceMatch: false,
+      pointsToWin: 11, winBy: 2, scoreCap: 0, allowOverTarget: false,
+      knockoutGamesByRound: { 'Vòng 1/32': 1, 'Vòng 1/16': 1, 'Tứ kết': 1, 'Bán kết': 1, 'Chung kết': 1, 'Tranh ba': 1 },
+      knockoutRoundConfig: defaultKoRoundConfig_(),
+      knockoutPairingConfig: [],
+      liveRoundLabels: DEFAULT_LIVE_ROUNDS.slice(),
+      liveResultPosition: 'current',
+      liveHtmlUrl: 'https:\/\/nhatgiang2004.github.io\/QACODE\/livehuongdo.html'
+    },
+    database: {
+      sheetUrl: sheetUrlOf_(getDataSpreadsheetId_()),
+      spreadsheetId: getDataSpreadsheetId_(), sourceName: 'Dữ liệu giải Pickleball', note: '', lastSync: ''
+    },
+    vdvHeaders: HEAD.VDV.slice(),
+    teams: [], groups: [], matches: [], knockout: null,
+    liveStream: { kind: '', matchId: '', servingSide: '', displayLabel: 'Trực tiếp', updatedAt: 0 }
   };
 }
 
-/* ---------------- màn hình: danh sách trận ---------------- */
-var listBusy=false,listTimer=null;
-function setLoading(on){S.loading=on;var el=document.getElementById('loadPill');if(el)el.hidden=!on;}
-function loadList(showSpinner){
-  if(showSpinner){app.className='screen';app.innerHTML=barHtml('Đang tải…','')+'<div class="empty">⏳ Đang tải danh sách trận…<br><small>Lần đầu có thể mất vài giây</small></div>';}
-  if(listBusy)return Promise.resolve();
-  listBusy=true;setLoading(true);var t0=Date.now();
-  return call('list').then(function(d){
-    listBusy=false;setLoading(false);
-    if(!d.ok)throw new Error(d.message||'Không tải được dữ liệu');
-    d.loadedAt=Date.now();d.loadMs=Date.now()-t0;
-    S.data=d;LS.set('cache',d);
-    // Không cắt ngang khi trọng tài đang ở màn hình chuẩn bị/đếm điểm hoặc đang mở hộp thoại
-    if(!app.classList.contains('score-screen')&&!document.getElementById('start')&&!document.querySelector('.sheet-bg'))renderList();
-  }).catch(function(err){listBusy=false;setLoading(false);
-    var c=LS.get('cache',null);
-    if(c){S.data=c;renderList();toast('Mất kết nối – đang dùng dữ liệu đã lưu trên máy',3500);}
-    else{app.innerHTML=barHtml('Lỗi tải dữ liệu','')+'<div class="wrap"><div class="msg err">'+esc(err.message||err)+'<br>Kiểm tra mạng hoặc link Web App (nút ⚙).</div><button class="btn block" id="retry">Thử lại</button></div>';$('#retry').onclick=function(){loadList(true);};$('#btnReload').onclick=function(){loadList(true);};$('#btnOut').onclick=openConnection;}
+// ===================== ĐỌC DỮ LIỆU =====================
+
+function readConfigMap_(ss) {
+  const sh = ss.getSheetByName(SH.CONFIG), map = {};
+  if (!sh || sh.getLastRow() < 2) return map;
+  sh.getRange(2, 1, sh.getLastRow() - 1, 2).getDisplayValues().forEach(function (r) {
+    const k = String(r[0] || '').trim(); if (k) map[k] = String(r[1] || '').trim();
   });
-}
-function barHtml(title,sub,left){
-  return '<header class="bar">'+(left||'')+'<h1>'+esc(title)+(sub?'<small>'+esc(sub)+'</small>':'')+'</h1><span id="loadPill" class="load-pill" '+(S.loading?'':'hidden')+'>⟳ Đang cập nhật</span>'+
-    '<button class="icon-btn" id="btnReload" title="Tải lại">⟳</button><button class="icon-btn" id="btnOut" title="Kết nối dữ liệu">⚙</button></header>';
-}
-function renderList(){
-  stopLive();document.body.classList.remove('scoring');var fh=document.getElementById('fsHint');if(fh)fh.remove();
-  var all=allMatches();
-  var cnt={pending:0,live:0,done:0,all:all.length};all.forEach(function(m){var s=statusOf(m);cnt[s]++;if(s==='live')cnt.pending++;});
-  var f=S.filter,q=S.q.trim().toLowerCase();
-  var list=all.filter(function(m){var s=statusOf(m);return f==='all'||(f==='pending'?s!=='done':s===f);})
-    .filter(function(m){return !q||(teamName(m.teamA)+' '+teamName(m.teamB)+' '+m.label).toLowerCase().indexOf(q)>=0;})
-    .sort(function(a,b){var la=statusOf(a)==='live'?0:1,lb=statusOf(b)==='live'?0:1;return la-lb||(a.sort<b.sort?-1:a.sort>b.sort?1:0);});
-  var pend=LS.get('outbox',[]);
-  var sb=String(S.data.serverBuild||''),sv=(sb.match(/V(\d+)\.(\d+)/)||[0,0,0]),oldSrv=!sb||(Number(sv[1])*100+Number(sv[2]))<908;
-  var warn=oldSrv?'<div class="srv-warn">⚠ Link máy chủ <b>'+esc(apiId(API))+'</b> đang chạy '+(sb?'bản cũ ('+esc(sb)+')':'bản cũ')+' – điểm có thể <b>không lên Live</b>. Trên điện thoại hãy mở link trọng tài lấy từ nút <b>Trọng tài</b> trong App (máy tính), hoặc bấm ⚙ nhập đúng link Web App /exec mới.<br><button class="btn ghost" id="btnConn2" type="button">⚙ Đổi link máy chủ</button></div>':'';
-  var html=barHtml(S.data.tournament.name||'Giải Pickleball','🏓 Trọng tài • bản 9.8 • máy chủ '+apiId(API)+(S.data.loadedAt?' • cập nhật '+new Date(S.data.loadedAt).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit',second:'2-digit'}):''))+
-    warn+'<div class="tools"><div class="seg" id="seg">'+[['pending','Chưa đấu'],['live','Đang đấu'],['done','Đã đấu'],['all','Tất cả']].map(function(x){return '<button data-f="'+x[0]+'" class="'+(f===x[0]?'on':'')+'">'+x[1]+'<b>'+cnt[x[0]]+'</b></button>';}).join('')+'</div>'+
-    '<input class="search" id="search" placeholder="Tìm tên VĐV, bảng, vòng…" value="'+esc(S.q)+'" type="search"></div>'+
-    (pend.length?'<div class="wrap" style="padding-bottom:0"><div class="msg warn">⚠ Có '+pend.length+' kết quả chưa gửi được lên Google Sheet. <button class="btn ghost" id="sendPend" style="min-height:36px;margin-top:8px">Gửi lại ngay</button></div></div>':'')+
-    '<div class="wrap" id="listWrap">';
-  if(!list.length)html+='<div class="empty">'+(all.length?'Không có trận phù hợp bộ lọc.':'Chưa có trận đấu. BTC cần chia bảng / tạo lịch trước.')+'</div>';
-  var stage='';
-  list.forEach(function(m){
-    if(m.stage!==stage){stage=m.stage;html+='<div class="sec-title"><span>'+esc(stage)+'</span></div>';}
-    var s=statusOf(m),aw=m.completed&&Number(m.scoreA)>Number(m.scoreB),bw=m.completed&&Number(m.scoreB)>Number(m.scoreA);
-    html+='<button class="card match '+(s==='live'?'is-live':'')+'" data-k="'+m.kind+'" data-id="'+esc(m.id)+'">'+
-      '<div class="top"><span class="label">'+esc(m.label)+'</span><span class="chip '+s+'">'+(s==='done'?'✓ Đã đấu':s==='live'?'● Đang đấu':'Chưa đấu')+'</span></div>'+
-      '<div class="row"><div class="tname '+(aw?'w':'')+'"><i style="background:var(--a)"></i><span>'+esc(teamName(m.teamA))+'</span></div><div class="sc '+(aw?'w':'')+'">'+(m.completed?esc(m.scoreA):'')+'</div></div>'+
-      '<div class="row"><div class="tname '+(bw?'w':'')+'"><i style="background:var(--b)"></i><span>'+esc(teamName(m.teamB))+'</span></div><div class="sc '+(bw?'w':'')+'">'+(m.completed?esc(m.scoreB):'')+'</div></div></button>';
-  });
-  html+='</div>';
-  app.className='screen';app.innerHTML=html;
-  if($('#btnConn2'))$('#btnConn2').onclick=openConnection;
-  $('#btnReload').onclick=function(){loadList(false).then(function(){if(!S.loading)toast('Đã cập nhật danh sách');});};
-  clearTimeout(listTimer);listTimer=setTimeout(function(){if(!document.hidden&&$('#listWrap'))loadList(false);},30000);
-  $('#btnOut').onclick=openConnection;
-  $('#seg').onclick=function(e){var b=e.target.closest('button');if(!b)return;S.filter=b.dataset.f;LS.set('filter',S.filter);renderList();};
-  var si=$('#search');si.oninput=function(){S.q=si.value;var pos=si.selectionStart;renderList();var n=$('#search');n.focus();try{n.setSelectionRange(pos,pos);}catch(e){}};
-  $('#listWrap').onclick=function(e){var b=e.target.closest('.match');if(!b)return;openMatch(b.dataset.k,b.dataset.id);};
-  if($('#sendPend'))$('#sendPend').onclick=flushOutbox;
-}
-// Đổi link Web App (dữ liệu giải) – không cần đăng nhập
-function openConnection(){
-  sheet('<h3>Kết nối dữ liệu</h3><div class="muted" style="font-size:13.5px">Link Web App (/exec) của giải đang chạy.</div><label class="field" style="margin-top:12px"><span>Link Web App</span><input id="cfgApi" value="'+esc(API)+'" inputmode="url"></label><div class="muted" style="font-size:12.5px;margin-top:6px">Máy chủ: <b>'+esc(apiId(API))+'</b> • '+esc((S.data&&S.data.serverBuild)||'chưa rõ phiên bản')+'</div><div class="actions"><button class="btn block" data-x="save">Lưu và tải lại</button><button class="btn ghost block" data-x="copy">📋 Sao chép link trọng tài (gửi sang điện thoại)</button><button class="btn ghost block" data-x="close">Đóng</button></div>',function(x,close){
-    if(x==='close'){close();return;}
-    if(x==='copy'){copyLink();return;}
-    if(x!=='save')return;
-    var v=document.getElementById('cfgApi').value.trim();
-    if(!/^https:\/\/script\.google(usercontent)?\.com\//i.test(v)){toast('Link phải có dạng https:\/\/script.google.com\/macros\/s\/...\/exec');return;}
-    API=v;LS.set('api',API);LS.del('cache');syncUrl();close();loadList(true);
-  });
-}
-function copyLink(){
-  syncUrl();var url=location.href;
-  var ok=function(){toast('Đã sao chép link trọng tài – gửi link này sang điện thoại',3500);};
-  try{if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(url).then(ok,function(){prompt('Sao chép link:',url);});return;}}catch(e){}
-  prompt('Sao chép link:',url);
+  return map;
 }
 
-/* ---------------- chuẩn bị trận ---------------- */
-function openMatch(kind,id){
-  var m=allMatches().find(function(x){return x.kind===kind&&String(x.id)===String(id);});if(!m)return;
-  var saved=LS.get('game:'+kind+':'+id,null);
-  if(saved&&!m.completed){S.match=m;S.game=saved;return renderScore();}
-  if(m.completed&&!confirm('Trận này đã có kết quả '+m.scoreA+'-'+m.scoreB+'. Bạn muốn đếm lại và ghi đè?'))return;
-  renderSetup(m);
+// Trả về danh sách khóa state.tournament đã có giá trị trong sheet
+function applyConfig_(ss, state) {
+  const map = readConfigMap_(ss), t = state.tournament, found = {};
+  CONFIG_FIELDS.forEach(function (f) {
+    if (map[f[0]] === undefined) return;
+    const v = map[f[0]];
+    found[f[1]] = true;
+    if (f[2] === 'num') { const n = Number(v); t[f[1]] = isFinite(n) ? n : (normalizeKey_(v) === 'tu dong' ? 0 : t[f[1]]); }
+    else if (f[2] === 'bool') t[f[1]] = yes_(v);
+    else if (f[2] === 'list') { const arr = v.split('|').map(function (x) { return x.trim(); }).filter(String); if (arr.length) t[f[1]] = arr; }
+    else t[f[1]] = v;
+  });
+  DATA_FIELDS.forEach(function (f) { if (map[f[0]] !== undefined && map[f[0]] !== '') state.database[f[1]] = map[f[0]]; });
+  return found;
 }
-function renderSetup(m){
-  var bo=bestOf(m),r0=gameRule(m,0),first='A',mode=LS.get('mode','sideout'),live=LS.get('live',true);
-  var rules=[];for(var i=0;i<bo;i++)rules.push(ruleText(gameRule(m,i)));
-  var draw=function(){
-    app.innerHTML='<header class="bar"><button class="icon-btn" id="back">←</button><h1>Chuẩn bị trận<small>'+esc(m.label)+'</small></h1></header>'+
-    '<div class="wrap"><div class="card setup" style="padding:16px">'+
-      '<h3>Chọn đội giao bóng trước</h3><div class="muted" style="font-size:13.5px">Bấm vào đội giao bóng đầu tiên của Game 1.</div>'+
-      '<div class="vs"><button class="t ta '+(first==='A'?'sel':'')+'" data-s="A">'+esc(teamName(m.teamA))+'<small>'+(first==='A'?'🏓 Giao trước':'Đỡ giao')+'</small></button><em>VS</em><button class="t tb '+(first==='B'?'sel':'')+'" data-s="B">'+esc(teamName(m.teamB))+'<small>'+(first==='B'?'🏓 Giao trước':'Đỡ giao')+'</small></button></div>'+
-      '<div class="opt" style="display:block"><b>Cách tính điểm</b><div class="mode" id="mode">'+
-        '<button data-m="sideout" class="'+(mode==='sideout'?'on':'')+'">Giao bóng truyền thống<small>Chỉ bên giao được điểm • Tay 1 / Tay 2 • Mở đầu 0-0-2</small></button>'+
-        '<button data-m="rally" class="'+(mode==='rally'?'on':'')+'">Rally scoring<small>Thắng pha bóng là được điểm và giành giao</small></button></div></div>'+
-      '<div class="opt"><div><b>Phát lên màn hình Live</b><small>Tỷ số cập nhật ngay lên bảng điểm Live Stream</small></div><label class="switch"><input type="checkbox" id="liveSw" '+(live?'checked':'')+'><span></span></label></div>'+
-      '<div class="opt"><div><b>Thể thức</b><small>'+(bo>1?'BO'+bo+' – thắng '+(Math.floor(bo/2)+1)+' game':'1 game')+'<br>'+esc(rules.map(function(t,i){return bo>1?'G'+(i+1)+': '+t:t;}).join(' • '))+'</small></div></div>'+
-      '<button class="btn ok block" id="start" style="margin-top:12px;min-height:56px;font-size:18px">▶ Bắt đầu trận</button>'+
-    '</div></div>';
-    $('#back').onclick=renderList;
-    app.querySelectorAll('.vs .t').forEach(function(b){b.onclick=function(){first=b.dataset.s;draw();};});
-    $('#mode').onclick=function(e){var b=e.target.closest('button');if(!b)return;mode=b.dataset.m;LS.set('mode',mode);draw();};
-    $('#liveSw').onchange=function(){live=this.checked;LS.set('live',live);};
-    $('#start').onclick=function(){
-      S.match=m;
-      S.game={kind:m.kind,id:m.id,bo:bo,mode:mode,live:live,games:[],a:0,b:0,serve:first,hand:mode==='sideout'?2:1,firstServe:first,swap:false,hist:[],startedAt:Date.now()};
-      persist();renderScore();toast('Bắt đầu Game 1 – '+(mode==='sideout'?'gọi 0-0-2':'0-0'));
+
+function readKoConfig_(ss) {
+  const tb = readTable_(ss.getSheetByName(SH.KO_CONFIG));
+  const iR = tb.col(['Vòng đấu', 'Vòng']), iE = tb.col(['Áp dụng']), iG = tb.col(['Số game', 'Số trận/game']),
+    iDT = tb.col(['Điểm trận quyết định']), iDW = tb.col(['Cách biệt trận quyết định']), iO = tb.col(['Thứ tự']),
+    iGR = tb.col(['Chi tiết từng game', 'Chi tiết game']);
+  const byRound = {};
+  let legacy18 = null;
+  tb.rows.forEach(function (r) { const name = cell_(r, iR); if (name === KO_LEGACY_18) legacy18 = r; else if (KO_ROUNDS.indexOf(name) >= 0) byRound[name] = r; });
+  // Dữ liệu cũ: dòng "Vòng 1/8" được dùng làm Tứ kết
+  if (legacy18 && (!byRound['Tứ kết'] || (iE >= 0 && !yes_(cell_(byRound['Tứ kết'], iE)) && yes_(cell_(legacy18, iE))))) byRound['Tứ kết'] = legacy18;
+  return defaultKoRoundConfig_().map(function (d) {
+    const r = byRound[d.round]; if (!r) return d;
+    let g = Number(cell_(r, iG) || 1); if ([1, 3, 5].indexOf(g) < 0) g = 1;
+    return {
+      round: d.round, enabled: iE >= 0 ? yes_(cell_(r, iE)) : d.enabled, games: g,
+      decidingTarget: Math.max(0, Number(cell_(r, iDT) || 0)), decidingWinBy: Math.max(0, Number(cell_(r, iDW) || 0)),
+      gameRules: parseGameRules_(iGR >= 0 ? cell_(r, iGR) : '', g),
+      order: Number(cell_(r, iO)) || d.order
     };
-  };
-  app.className='screen';draw();
-}
-
-/* ---------------- màn hình đếm điểm ---------------- */
-function persist(){if(S.game)LS.set('game:'+S.game.kind+':'+S.game.id,S.game);}
-function wins(){var w={a:0,b:0};S.game.games.forEach(function(g){if(g.a>g.b)w.a++;else w.b++;});return w;}
-function need(){return Math.floor(S.game.bo/2)+1;}
-function snapshot(){var g=S.game;return {a:g.a,b:g.b,serve:g.serve,hand:g.hand,games:g.games.slice()};}
-function renderScore(){
-  var m=S.match,g=S.game;
-  app.className='screen score-screen';
-  app.innerHTML='<header class="bar"><button class="icon-btn" id="back">←</button><h1>'+esc(m.label)+'<small id="gInfo"></small></h1><span class="sync" id="sync" title="Trạng thái Live"></span></header>'+
-    '<div class="call"><div class="mini"><button class="icon-btn" id="back2" aria-label="Quay lại">←</button><span class="mini-t">'+esc(m.label)+'</span><button class="icon-btn" id="fsBtn" aria-label="Toàn màn hình">⛶</button><span class="sync" id="sync2"></span></div><div class="cv" id="callV"></div><div class="cl" id="callL"></div><div id="handBox"><div class="hands" id="hands"><button data-h="1">Tay 1</button><button data-h="2">Tay 2</button><button class="sw" data-h="x" title="Đổi quyền giao sang đội kia">⇄ Đổi giao</button></div><div class="hands-who" id="handsWho"></div></div><span id="liveMsg" class="live-msg"></span></div>'+
-    '<div class="courts" id="courts"></div>'+
-    '<div class="dock"><button id="undo"><span>↶</span>Hoàn tác</button><button id="fix"><span>✎</span>Chỉnh điểm</button><button id="swap"><span>⇅</span>Đổi sân</button><button id="end"><span>⏹</span>Kết thúc</button></div>';
-  var back=function(){exitFull();document.body.classList.remove('scoring');renderList();};
-  tapBind($('#back'),back);tapBind($('#back2'),back);tapBind($('#fsBtn'),function(){goFull(true);});
-  app.querySelectorAll('#hands [data-h]').forEach(function(b){tapBind(b,function(){setHand(b.dataset.h);});});
-  tapBind($('#undo'),undo);tapBind($('#fix'),openAdjust);tapBind($('#swap'),function(){g.swap=!g.swap;persist();drawCourts();});
-  tapBind($('#end'),function(){finishPrompt(true);});
-  tapBind($('#liveMsg'),function(){if(S.game&&S.game.live){S.liveErr='';liveInfo();pushLive(true);}});
-  document.body.classList.add('scoring');S.liveOkAt=0;S.liveErr='';
-  keepAwake();drawCourts();pushLive(true);fsHint();liveInfo();
-}
-function drawCourts(){
-  var m=S.match,g=S.game,w=wins(),n=need();
-  var side=function(k){
-    var isA=k==='A',pts=isA?g.a:g.b,gw=isA?w.a:w.b,dots='';for(var i=0;i<n;i++)dots+='<i class="'+(i<gw?'w':'')+'"></i>';
-    return '<div class="team '+(isA?'ta':'tb')+' '+(g.serve===k?'serving':'')+'" data-side="'+k+'"><div class="serve">🏓 '+(g.mode==='sideout'?'Tay '+g.hand:'Giao')+'</div>'+
-      '<div class="nm">'+esc(teamName(isA?m.teamA:m.teamB))+'</div><div class="pts">'+pts+'</div>'+
-      '<div class="foot"><div class="games">'+(g.bo>1?dots:'')+'</div><div class="hint">'+'Chạm khi đội này thắng pha bóng'+'</div></div></div>';
-  };
-  $('#courts').innerHTML=g.swap?side('B')+side('A'):side('A')+side('B');
-  var sv=g.serve==='A'?g.a:g.b,rc=g.serve==='A'?g.b:g.a;
-  $('#callV').textContent=g.mode==='sideout'?(sv+' – '+rc+' – '+g.hand):(g.a+' – '+g.b);
-  var r=gameRule(m,g.games.length);
-  $('#callL').innerHTML=(g.mode==='sideout'?'Điểm giao – nhận – tay':'Rally scoring')+'<br>'+esc(ruleText(r));
-  // Giao bóng truyền thống: hiện nút Tay 1 / Tay 2 / Đổi giao thay cho dòng chú thích
-  var so=g.mode==='sideout';$('#handBox').hidden=!so;$('#callL').hidden=so;
-  if(so){app.querySelectorAll('#hands [data-h]').forEach(function(b){b.classList.toggle('on',b.dataset.h===String(g.hand));});
-    $('#handsWho').textContent='🏓 '+teamName(g.serve==='A'?m.teamA:m.teamB)+' • '+ruleText(r);}
-  $('#gInfo').textContent=(g.bo>1?'Game '+Math.min(g.games.length+1,g.bo)+'/'+g.bo+' • Tổng '+w.a+'-'+w.b+' • ':'')+(g.live?'Đang phát Live':'Không phát Live');
-  $('#undo').disabled=!g.hist.length;
-  $('#courts').querySelectorAll('.team').forEach(function(el){el.onclick=function(){rally(el.dataset.side,el);};});
-}
-// Một pha bóng kết thúc: winner = đội thắng pha bóng
-function rally(winner,el){
-  var g=S.game;
-  if(document.querySelector('.sheet-bg'))return;
-  // Game đã đủ điều kiện kết thúc: không cộng thêm, hỏi xác nhận kết thúc game
-  if(gameOver(g.a,g.b,gameRule(S.match,g.games.length))){gameEndPrompt();return;}
-  g.hist.push(snapshot());if(g.hist.length>200)g.hist.shift();
-  buzz();
-  if(g.mode==='rally'){
-    if(winner==='A')g.a++;else g.b++;
-    g.serve=winner;g.hand=1;
-  }else if(winner===g.serve){
-    if(winner==='A')g.a++;else g.b++;
-  }else{
-    // Bên giao mất pha bóng: Tay 1 -> Tay 2; Tay 2 -> đổi giao sang đội kia (Tay 1)
-    if(g.hand===1){g.hand=2;toast('Đổi sang Tay 2',1200);}
-    else{g.serve=winner;g.hand=1;toast('Đổi giao bóng ➜ '+teamName(winner==='A'?S.match.teamA:S.match.teamB),1500);}
-  }
-  persist();drawCourts();
-  if(el){var t=$('#courts .team[data-side="'+winner+'"]');if(t){t.classList.add('flash');setTimeout(function(){t.classList.remove('flash');},350);}}
-  pushLive();
-  if(gameOver(g.a,g.b,gameRule(S.match,g.games.length)))gameEndPrompt();
-}
-// Bấm tay: chọn Tay 1 / Tay 2 cho đội đang giao, hoặc đổi giao sang đội kia (bắt đầu Tay 1)
-function setHand(h){
-  var g=S.game;if(!g||document.querySelector('.sheet-bg'))return;
-  if(h!=='x'&&String(g.hand)===h){toast('Đang là Tay '+h,900);buzz(6);return;}
-  g.hist.push(snapshot());buzz(12);
-  if(h==='x'){g.serve=g.serve==='A'?'B':'A';g.hand=1;toast('Đổi giao bóng ➜ '+teamName(g.serve==='A'?S.match.teamA:S.match.teamB),1500);}
-  else g.hand=Number(h);
-  persist();drawCourts();pushLive();
-}
-function undo(){var g=S.game,h=g.hist.pop();if(!h)return;g.a=h.a;g.b=h.b;g.serve=h.serve;g.hand=h.hand;g.games=h.games;persist();drawCourts();pushLive();buzz(8);}
-function gameEndPrompt(){
-  if(document.querySelector('.sheet-bg'))return;
-  var g=S.game,m=S.match,idx=g.games.length,wa=g.a>g.b;
-  sheet('<h3>Kết thúc Game '+(idx+1)+'?</h3><div class="muted">'+esc(ruleText(gameRule(m,idx)))+'</div>'+
-    '<div class="result-big"><div class="n">'+esc(teamName(m.teamA))+'</div><div class="s">'+g.a+' – '+g.b+'</div><div class="n">'+esc(teamName(m.teamB))+'</div></div>'+
-    '<div class="msg info">🏆 '+esc(teamName(wa?m.teamA:m.teamB))+' thắng game này.</div>'+
-    '<div class="actions"><button class="btn ok block" data-x="ok">Xác nhận kết thúc game</button><button class="btn ghost block" data-x="undo">↶ Hoàn tác điểm cuối</button></div>',
-    function(x,close){
-      if(x==='undo'){close();undo();return;}
-      if(x!=='ok')return;
-      close();
-      g.hist.push(snapshot());
-      g.games.push({a:g.a,b:g.b});
-      var w=wins();
-      if(w.a>=need()||w.b>=need()||g.games.length>=g.bo){persist();drawCourts();finishPrompt(false);return;}
-      // Game mới: đội thua game trước giao trước (BTC có thể bấm Chỉnh điểm để đổi)
-      g.a=0;g.b=0;g.serve=wa?'B':'A';g.hand=g.mode==='sideout'?2:1;g.swap=!g.swap;
-      persist();drawCourts();pushLive();toast('Bắt đầu Game '+(g.games.length+1)+' – đã đổi sân',2200);
-    });
-}
-function finishPrompt(manual){
-  var g=S.game,m=S.match,games=g.games.slice();
-  if(manual&&(g.a||g.b)){games.push({a:g.a,b:g.b});}
-  var wa=0,wb=0;games.forEach(function(x){if(x.a>x.b)wa++;else if(x.b>x.a)wb++;});
-  var fa,fb;if(g.bo>1){fa=wa;fb=wb;}else{var last=games[games.length-1]||{a:g.a,b:g.b};fa=last.a;fb=last.b;}
-  var ok=fa!==fb&&(g.bo===1?gameOver(fa,fb,gameRule(m,0)):(wa>=need()||wb>=need()));
-  sheet('<h3>'+(ok?'Kết thúc trận':'Kết thúc sớm?')+'</h3>'+
-    '<div class="result-big"><div class="n">'+esc(teamName(m.teamA))+'</div><div class="s">'+fa+' – '+fb+'</div><div class="n">'+esc(teamName(m.teamB))+'</div></div>'+
-    (g.bo>1?'<div class="games-list">'+games.map(function(x,i){return '<span>G'+(i+1)+': '+x.a+'-'+x.b+'</span>';}).join('')+'</div>':'')+
-    (ok?'<div class="msg info">🏆 '+esc(teamName(fa>fb?m.teamA:m.teamB))+' thắng trận. Bấm Lưu để ghi vào Google Sheet.</div>':'<div class="msg warn">Tỷ số chưa đủ điều kiện kết thúc theo luật ('+esc(ruleText(gameRule(m,Math.min(games.length,g.bo-1))))+'). Chỉ lưu khi BTC đồng ý (bỏ cuộc, chấn thương…).</div>')+
-    '<div class="actions"><button class="btn ok block" data-x="save" '+(fa===fb?'disabled':'')+'>💾 Lưu kết quả lên Google Sheet</button><button class="btn ghost block" data-x="back">Tiếp tục đếm điểm</button></div>',
-    function(x,close){
-      if(x==='back'){close();if(!manual){/* quay lại: bỏ game vừa chốt */var h=g.hist.pop();if(h){g.a=h.a;g.b=h.b;g.serve=h.serve;g.hand=h.hand;g.games=h.games;persist();drawCourts();}}return;}
-      if(x!=='save')return;
-      var payload={kind:m.kind,matchId:m.id,scoreA:fa,scoreB:fb,bestOf:g.bo,games:games.map(function(x){return {scoreA:x.a,scoreB:x.b};}),overwrite:!!m.completed};
-      var btn=document.querySelector('.sheet [data-x="save"]');btn.disabled=true;btn.textContent='Đang lưu…';
-      sendResult(payload).then(function(res){
-        close();
-        if(g.live)pushLive(true,{completed:true,scoreA:g.bo>1?(games[games.length-1]||{}).a:fa,scoreB:g.bo>1?(games[games.length-1]||{}).b:fb});
-        LS.del('game:'+m.kind+':'+m.id);S.game=null;releaseWake();
-        toast(res.queued?'Chưa gửi được – kết quả đã lưu trên máy, sẽ gửi lại sau':'✅ Đã lưu kết quả '+fa+'-'+fb,3500);
-        m.completed=true;m.scoreA=fa;m.scoreB=fb;renderList();loadList(false);
-      }).catch(function(err){btn.disabled=false;btn.textContent='💾 Lưu kết quả lên Google Sheet';toast(err.message||String(err),4000);});
-    });
-}
-function sendResult(p){
-  return call('save',p).then(function(d){
-    if(d.ok)return d;
-    if(d.conflict){if(confirm(d.message+'\n\nGhi đè bằng kết quả mới?')){p.overwrite=true;return sendResult(p);}throw new Error('Đã hủy lưu.');}
-    throw new Error(d.message||'Không lưu được');
-  },function(err){
-    var ob=LS.get('outbox',[]);ob.push(p);LS.set('outbox',ob);return {ok:true,queued:true};
   });
 }
-function flushOutbox(){
-  var ob=LS.get('outbox',[]);if(!ob.length)return;
-  var p=ob[0];
-  call('save',Object.assign({},p,{overwrite:true})).then(function(d){
-    if(!d.ok)throw new Error(d.message);
-    ob.shift();LS.set('outbox',ob);toast('Đã gửi 1 kết quả còn tồn');if(ob.length)flushOutbox();else loadList(false);
-  }).catch(function(err){toast('Vẫn chưa gửi được: '+(err.message||err),3500);});
+
+function readKoPairing_(ss, sheetName) {
+  const tb = readTable_(ss.getSheetByName(sheetName || SH.KO_PAIRING));
+  if (!tb.rows.length) return [];
+  let iR = tb.col(['Vòng đấu', 'Vòng']), iM = tb.col(['Trận', 'Trận số']),
+    iA = tb.col(['Nguồn đội A', 'Nguồn A', 'Đội A']), iB = tb.col(['Nguồn đội B', 'Nguồn B', 'Đội B']);
+  if (iR < 0) iR = 0; if (iM < 0) iM = 1; if (iA < 0) iA = 2; if (iB < 0) iB = 3;
+  const valid = function (s) { return /^(G|W|L|R)\|/.test(s); };
+  const hasTK = tb.rows.some(function (r) { return cell_(r, iR) === 'Tứ kết'; });
+  return tb.rows.map(function (r, i) {
+    let round = cell_(r, iR);
+    if (round === KO_LEGACY_18) round = hasTK ? '' : 'Tứ kết';
+    return { round: round, matchNo: Math.max(1, Number(cell_(r, iM)) || i + 1), sourceA: hasTK ? cell_(r, iA) : koLegacySource_(cell_(r, iA)), sourceB: hasTK ? cell_(r, iB) : koLegacySource_(cell_(r, iB)) };
+  }).filter(function (r) { return KO_ROUNDS.indexOf(r.round) >= 0 && (valid(r.sourceA) || valid(r.sourceB) || (!r.sourceA && !r.sourceB)); });
 }
-function openAdjust(){
-  var g=S.game,m=S.match;
-  var draw=function(){
-    return '<h3>Chỉnh điểm thủ công</h3><div class="muted" style="font-size:13.5px">Dùng khi bấm nhầm hoặc cần sửa quyền giao.</div><div class="adj">'+
-      ['A','B'].map(function(k){var pts=k==='A'?g.a:g.b;return '<div class="col"><b>'+esc(teamName(k==='A'?m.teamA:m.teamB))+'</b><div style="font-size:40px;font-weight:900">'+pts+'</div><div class="row"><button data-x="dec'+k+'">−</button><button data-x="inc'+k+'">+</button></div><div class="row" style="margin-top:8px"><button class="sv" data-x="srv'+k+'1">🏓 Tay 1</button><button class="sv" data-x="srv'+k+'2">Tay 2</button></div></div>';}).join('')+
-      '</div><div class="muted" style="text-align:center;margin-top:10px">Đang giao: <b>'+esc(teamName(g.serve==='A'?m.teamA:m.teamB))+'</b> – Tay '+g.hand+'</div>'+
-      '<div class="actions"><button class="btn block" data-x="close">Xong</button><button class="btn ghost block" data-x="mode">Đổi cách tính: '+(g.mode==='sideout'?'→ Rally scoring':'→ Giao bóng truyền thống')+'</button><button class="btn ghost block" data-x="live">'+(g.live?'⏸ Tạm dừng phát Live':'▶ Phát lên Live')+'</button><button class="btn danger block" data-x="reset">Hủy trận này (xóa điểm đang đếm)</button></div>';
-  };
-  sheet(draw(),function(x,close,el){
-    if(x==='close'){close();return;}
-    g.hist.push(snapshot());
-    if(x==='incA')g.a++;if(x==='decA')g.a=Math.max(0,g.a-1);if(x==='incB')g.b++;if(x==='decB')g.b=Math.max(0,g.b-1);
-    if(/^srv/.test(x)){g.serve=x[3];g.hand=Number(x[4]);}
-    if(x==='mode'){g.mode=g.mode==='sideout'?'rally':'sideout';LS.set('mode',g.mode);}
-    if(x==='live'){g.live=!g.live;LS.set('live',g.live);if(!g.live)call('liveoff').catch(function(){});}
-    if(x==='reset'){if(!confirm('Xóa toàn bộ điểm đang đếm của trận này?')){g.hist.pop();return;}LS.del('game:'+g.kind+':'+g.id);S.game=null;close();if(g.live)call('liveoff').catch(function(){});renderList();return;}
-    persist();drawCourts();pushLive();el.innerHTML='<div class="grab"></div>'+draw();
+
+function parseGames_(text) {
+  const s = String(text || '').trim(); if (!s) return [];
+  return s.split('|').map(function (part) {
+    const m = String(part).match(/(\d+)\s*-\s*(\d+)/);
+    return m ? { scoreA: Number(m[1]), scoreB: Number(m[2]), completed: true } : { scoreA: null, scoreB: null, completed: false };
   });
 }
-function sheet(html,onAction){
-  var bg=document.createElement('div');bg.className='sheet-bg';
-  bg.innerHTML='<div class="sheet"><div class="grab"></div>'+html+'</div>';
-  document.body.appendChild(bg);
-  var el=bg.querySelector('.sheet');
-  var close=function(){bg.remove();};
-  bg.addEventListener('click',function(e){if(e.target===bg){close();return;}var b=e.target.closest('[data-x]');if(b)onAction(b.dataset.x,close,el);});
-  return close;
-}
 
-/* ---------------- Live ---------------- */
-function liveSnapshot(extra){
-  var m=S.match,g=S.game,w=wins();
-  return Object.assign({kind:m.kind,matchId:m.id,teamA:teamName(m.teamA),teamB:teamName(m.teamB),scoreA:g.a,scoreB:g.b,servingSide:g.serve,serverHand:g.mode==='sideout'?g.hand:1,
-    displayLabel:m.stage,roundLabel:m.label,gameCount:g.bo,gameIndex:g.games.length,gamesWonA:w.a,gamesWonB:w.b,completed:false},extra||{});
-}
-function setSync(st){S.liveState=st;['#sync','#sync2'].forEach(function(id){var el=$(id);if(el)el.className='sync '+(st||'');});}
-/* Chạm chắc chắn trên iPhone/iPad: xử lý ngay khi nhấc tay (touchend), không chờ click; vẫn nhận click chuột trên máy tính */
-function tapBind(el,fn){
-  if(!el)return;var sx=0,sy=0,moved=false,last=0;
-  el.addEventListener('touchstart',function(e){var t=e.changedTouches[0];sx=t.clientX;sy=t.clientY;moved=false;},{passive:true});
-  el.addEventListener('touchmove',function(e){var t=e.changedTouches[0];if(Math.abs(t.clientX-sx)>18||Math.abs(t.clientY-sy)>18)moved=true;},{passive:true});
-  el.addEventListener('touchend',function(e){if(moved)return;e.preventDefault();last=Date.now();fn(e);},{passive:false});
-  el.addEventListener('click',function(e){if(Date.now()-last<700)return;fn(e);});
-}
-/* Toàn màn hình khi xoay ngang: Android/iPad dùng Fullscreen API; iPhone Safari không cho phép -> hướng dẫn mở bằng icon trên màn hình chính */
-function isStandalone(){return (window.navigator.standalone===true)||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||(window.matchMedia&&matchMedia('(display-mode: fullscreen)').matches);}
-function fsApi(){var d=document.documentElement;return d.requestFullscreen||d.webkitRequestFullscreen||null;}
-function isFull(){return !!(document.fullscreenElement||document.webkitFullscreenElement);}
-function goFull(fromButton){
-  if(isStandalone()||isFull())return;
-  var f=fsApi();
-  if(f){try{var r=f.call(document.documentElement,{navigationUI:'hide'});if(r&&r.catch)r.catch(function(){});}catch(e){}return;}
-  if(fromButton)toast('iPhone không cho trang web tự ẩn thanh Safari. Hãy mở bằng icon "Trọng tài" trên màn hình chính để dùng toàn màn hình.',5000);
-}
-function exitFull(){try{if(isFull())(document.exitFullscreen||document.webkitExitFullscreen).call(document);}catch(e){}}
-function isLandscape(){return window.matchMedia?matchMedia('(orientation: landscape)').matches:innerWidth>innerHeight;}
-function fsHint(){
-  var old=document.getElementById('fsHint');if(old)old.remove();
-  if(!document.body.classList.contains('scoring')||!isLandscape()||isStandalone()||isFull())return;
-  if(fsApi()){ // Android/iPad: vào toàn màn hình ở lần chạm kế tiếp (trình duyệt yêu cầu có thao tác của người dùng)
-    var once=function(){document.removeEventListener('touchend',once,true);document.removeEventListener('click',once,true);if(isLandscape()&&document.body.classList.contains('scoring'))goFull(false);};
-    document.addEventListener('touchend',once,true);document.addEventListener('click',once,true);return;
-  }
-  if(LS.get('fsHintOff',false))return;
-  var h=document.createElement('div');h.id='fsHint';h.className='fs-hint';
-  h.innerHTML='<b>Muốn toàn màn hình?</b> Trên iPhone: bấm <b>Chia sẻ ⬆ → Thêm vào MH chính</b>, rồi mở bằng icon <b>Trọng tài</b> – sẽ không còn thanh Safari.<button type="button">Đã hiểu</button>';
-  document.body.appendChild(h);
-  tapBind(h.querySelector('button'),function(){LS.set('fsHintOff',true);h.remove();});
-  setTimeout(function(){if(h.parentNode)h.remove();},9000);
-}
-window.addEventListener('orientationchange',function(){setTimeout(fsHint,350);});
-if(window.matchMedia)try{matchMedia('(orientation: landscape)').addEventListener('change',function(){setTimeout(fsHint,350);});}catch(e){}
-// Gửi Live: mỗi lúc chỉ 1 lượt gọi, luôn gửi tỷ số MỚI NHẤT (mạng di động chậm không bị dồn/đảo thứ tự)
-var liveBusy=false,liveNext=null;
-function pushLive(now,extra){
-  if(!S.game||!S.game.live){setSync('');return;}
-  clearTimeout(S.liveTimer);
-  var snap=liveSnapshot(extra);snap.refTs=Date.now();
-  var go=function(){
-    if(liveBusy){liveNext=snap;return;}
-    liveBusy=true;setSync('busy');
-    call('live',{snapshot:snap}).then(function(d){
-      liveBusy=false;
-      if(d&&d.ok){S.liveOkAt=Date.now();S.liveErr='';setSync('on');}else{S.liveErr=(d&&d.message)||'Máy chủ từ chối';setSync('err');}
-      liveInfo();
-      if(liveNext){snap=liveNext;liveNext=null;go();}
-    },function(err){
-      liveBusy=false;S.liveErr=(err&&err.message)||'Mất kết nối';setSync('err');liveInfo();
-      if(liveNext){snap=liveNext;liveNext=null;setTimeout(go,800);}
-    });
+function isDone_(status) { const k = normalizeKey_(status); return k.indexOf('hoan thanh') >= 0 || k.indexOf('da dau') >= 0; }
+
+function loadDirectFromVisibleSheets() {
+  const ss = getSpreadsheet_();
+  const state = loadCore_(ss);
+  // Tự sửa: nếu các sheet dữ liệu còn công thức (VLOOKUP/ARRAYFORMULA lỗi dấu , ;) thì thay bằng giá trị.
+  let repaired = '';
+  try { repaired = autoRepairFormulas_(ss, state); } catch (e) { repaired = 'Không tự sửa được công thức: ' + (e && e.message ? e.message : e); }
+  return {
+    ok: true, source: 'NORMALIZED_SHEETS', state: state,
+    diagnostics: { spreadsheetId: ss.getId(), spreadsheetName: ss.getName(), teams: state.teams.length, groups: state.groups.length, matches: state.matches.length, repaired: repaired,
+      serverBuild: SERVER_BUILD, legacy: legacyCodeFound_(), dataVersion: getDataVersion().v }
   };
-  if(now)go();else S.liveTimer=setTimeout(go,250);
 }
-function liveInfo(){
-  var el=document.getElementById('liveMsg');if(!el)return;
-  if(!S.game||!S.game.live){el.textContent='';el.className='live-msg';return;}
-  if(S.liveErr){el.textContent='Live lỗi: '+S.liveErr+' – chạm để gửi lại';el.className='live-msg err';}
-  else if(S.liveOkAt){el.textContent='● Live đã cập nhật '+new Date(S.liveOkAt).toLocaleTimeString('vi-VN');el.className='live-msg ok';}
-  else{el.textContent='Đang kết nối Live…';el.className='live-msg';}
-}
-function stopLive(){clearTimeout(S.liveTimer);releaseWake();}
-function keepAwake(){try{if(navigator.wakeLock&&!S.wake)navigator.wakeLock.request('screen').then(function(l){S.wake=l;l.addEventListener&&l.addEventListener('release',function(){S.wake=null;});}).catch(function(){});}catch(e){}}
-function releaseWake(){try{if(S.wake){S.wake.release();S.wake=null;}}catch(e){}}
-document.addEventListener('visibilitychange',function(){if(!document.hidden&&S.game&&app.classList.contains('score-screen'))keepAwake();});
 
-/* ---------------- khởi động ---------------- */
-(function(){var c=LS.get('cache',null);if(c){S.data=c;renderList();}loadList(!c);})();
-})();
-</script>
-</body>
-</html>
+function loadCore_(ss) {
+  const state = directBaseState_();
+  applyConfig_(ss, state);
+  state.tournament.knockoutRoundConfig = readKoConfig_(ss);
+  state.tournament.knockoutRoundConfig.forEach(function (r) { state.tournament.knockoutGamesByRound[r.round] = r.games; });
+  state.tournament.thirdPlaceMatch = state.tournament.knockoutRoundConfig.some(function (r) { return r.round === 'Tranh ba' && r.enabled; });
+  state.tournament.knockoutPairingConfig = readKoPairing_(ss);
+
+  // --- VĐV: Mã cặp là khóa (id = Mã cặp) ---
+  const vdv = readTable_(ss.getSheetByName(SH.VDV));
+  if (!ss.getSheetByName(SH.VDV)) throw new Error('Không tìm thấy sheet "VĐV".');
+  let iCode = vdv.col(['Mã cặp', 'Mã đội', 'Mã']), iPair = vdv.col(['Cặp VĐV', 'Tên VĐV', 'Đội']), iNote = vdv.col(['Ghi chú']);
+  if (iCode < 0) iCode = 0; if (iPair < 0) iPair = 1;
+  const reserved = [iCode, iPair, iNote];
+  const extras = vdv.headers.map(function (h, i) { return { h: h || ('Cột ' + (i + 1)), i: i }; })
+    .filter(function (x) { return reserved.indexOf(x.i) < 0; });
+  state.vdvHeaders = HEAD.VDV.concat(extras.map(function (x) { return x.h; }));
+  const byCode = {}, byPair = {};
+  vdv.rows.forEach(function (r) {
+    const pair = cell_(r, iPair); if (!pair) return;
+    let code = cell_(r, iCode);
+    if (!code || byCode[normalizeKey_(code)]) code = nextCode_(state.teams.map(function (t) { return t.code; }));
+    const sheetData = {}; extras.forEach(function (x) { sheetData[x.h] = cell_(r, x.i); });
+    state.teams.push({ id: code, code: code, pair: pair, note: cell_(r, iNote), sheetData: sheetData });
+    byCode[normalizeKey_(code)] = code; byPair[normalizeKey_(pair)] = code;
+  });
+  const resolve = function (code, pair) { return byCode[normalizeKey_(code)] || byPair[normalizeKey_(pair)] || ''; };
+
+  // --- BẢNG ĐẤU ---
+  const gt = readTable_(ss.getSheetByName(SH.GROUPS));
+  const gId = gt.col(['Mã bảng']), gName = gt.col(['Tên bảng']), gPos = gt.col(['Vị trí']), gCode = gt.col(['Mã cặp']), gPair = gt.col(['Cặp VĐV']);
+  const gMap = {}, gOrder = [], groupByName = {};
+  gt.rows.forEach(function (r, i) {
+    const name = cell_(r, gName); const id = cell_(r, gId) || ('G' + (gOrder.length + 1));
+    if (!gMap[id]) { gMap[id] = { id: id, name: name || id, items: [] }; gOrder.push(id); }
+    groupByName[normalizeKey_(name || id)] = id;
+    const tid = resolve(cell_(r, gCode), cell_(r, gPair));
+    if (tid) gMap[id].items.push({ tid: tid, pos: Number(cell_(r, gPos)) || (i + 1) });
+  });
+  state.groups = gOrder.map(function (id) {
+    const g = gMap[id];
+    const ids = []; g.items.sort(function (a, b) { return a.pos - b.pos; }).forEach(function (x) { if (ids.indexOf(x.tid) < 0) ids.push(x.tid); });
+    return { id: g.id, name: g.name, teamIds: ids };
+  });
+
+  // --- LỊCH ĐẤU ---
+  const st = readTable_(ss.getSheetByName(SH.SCHEDULE));
+  const sId = st.col(['Mã trận']), sG = st.col(['Mã bảng']), sGn = st.col(['Bảng']), sR = st.col(['Lượt']),
+    sCA = st.col(['Mã cặp A']), sCB = st.col(['Mã cặp B']), sPA = st.col(['Cặp A']), sPB = st.col(['Cặp B']),
+    sA = st.col(['Điểm A']), sB = st.col(['Điểm B']), sS = st.col(['Trạng thái']), sT = st.col(['Cập nhật lúc']);
+  st.rows.forEach(function (r, i) {
+    const a = resolve(cell_(r, sCA), cell_(r, sPA)), b = resolve(cell_(r, sCB), cell_(r, sPB));
+    if (!a || !b) return;
+    const gid = cell_(r, sG) || groupByName[normalizeKey_(cell_(r, sGn))] || '';
+    const done = isDone_(cell_(r, sS));
+    state.matches.push({
+      id: cell_(r, sId) || ('gm_' + (i + 1)), stage: 'group', groupId: gid, round: Number(cell_(r, sR)) || cell_(r, sR),
+      teamA: a, teamB: b, scoreA: numOrNull_(cell_(r, sA)), scoreB: numOrNull_(cell_(r, sB)), completed: done,
+      updatedAt: parseStamp_(cell_(r, sT))
+    });
+  });
+
+  // --- LOẠI TRỰC TIẾP ---
+  const kt = readTable_(ss.getSheetByName(SH.KO));
+  const kId = kt.col(['Mã trận']), kR = kt.col(['Vòng']), kN = kt.col(['Trận số', 'Trận']),
+    kCA = kt.col(['Mã cặp A']), kCB = kt.col(['Mã cặp B']), kPA = kt.col(['Cặp A']), kPB = kt.col(['Cặp B']),
+    kA = kt.col(['Điểm A', 'Tỷ số trận/Game thắng A']), kB = kt.col(['Điểm B', 'Tỷ số trận/Game thắng B']),
+    kG = kt.col(['Chi tiết game']), kS = kt.col(['Trạng thái']), kT = kt.col(['Cập nhật lúc']);
+  const koRaw = [], counter = {};
+  const hasTKMatch = kt.rows.some(function (r) { return cell_(r, kR) === 'Tứ kết'; });
+  kt.rows.forEach(function (r, i) {
+    let round = cell_(r, kR); if (round === KO_LEGACY_18 && !hasTKMatch) round = 'Tứ kết';
+    if (KO_ROUNDS.indexOf(round) < 0) return;
+    const a = resolve(cell_(r, kCA), cell_(r, kPA)), b = resolve(cell_(r, kCB), cell_(r, kPB)); if (!a || !b) return;
+    counter[round] = (counter[round] || 0) + 1;
+    koRaw.push({
+      id: cell_(r, kId) || ('ko_' + (i + 1)), round: round, matchNo: Number(cell_(r, kN)) || counter[round],
+      teamA: a, teamB: b, scoreA: numOrNull_(cell_(r, kA)), scoreB: numOrNull_(cell_(r, kB)),
+      games: parseGames_(cell_(r, kG)), completed: isDone_(cell_(r, kS)), updatedAt: parseStamp_(cell_(r, kT))
+    });
+  });
+  const mainRows = koRaw.filter(function (m) { return m.round !== 'Tranh ba'; });
+  // Khung nhánh đã lưu ở CẤU HÌNH (để giữ được cả khi chưa có trận nào)
+  const cfgMap = readConfigMap_(ss);
+  const metaRounds = String(cfgMap[KO_META.rounds] || '').split('|').map(function (x) { x = x.trim(); return x === KO_LEGACY_18 ? 'Tứ kết' : x; })
+    .filter(function (x, i, arr) { return KO_ROUNDS.indexOf(x) >= 0 && x !== 'Tranh ba' && arr.indexOf(x) === i; });
+  const metaSize = Number(cfgMap[KO_META.size]) || 0;
+  const metaOk = metaRounds.length && mainRows.every(function (m) { return metaRounds.indexOf(m.round) >= 0; });
+  if (mainRows.length || (metaOk && metaSize)) {
+    let rounds, size;
+    if (metaOk && metaSize) { rounds = metaRounds; size = metaSize; }
+    else {
+      const first = Math.min.apply(null, mainRows.map(function (m) { return KO_ROUNDS.indexOf(m.round); }));
+      rounds = KO_ROUNDS.slice(first, KO_ROUNDS.indexOf('Chung kết') + 1);
+      size = Math.max(2, mainRows.filter(function (m) { return m.round === KO_ROUNDS[first]; }).length * 2);
+    }
+    state.knockout = {
+      size: size, rounds: rounds,
+      matches: koRaw.map(function (m) {
+        const third = m.round === 'Tranh ba';
+        const out = { id: m.id, roundIndex: third ? rounds.length : rounds.indexOf(m.round), matchNo: m.matchNo,
+          teamA: m.teamA, teamB: m.teamB, scoreA: m.scoreA, scoreB: m.scoreB, completed: m.completed, updatedAt: m.updatedAt };
+        if (third) { out.isThirdPlace = true; out.roundName = 'Tranh ba'; }
+        if (m.games.length) out.games = m.games;
+        return out;
+      })
+    };
+  }
+
+  try { state.liveStream = Object.assign({}, state.liveStream, getLiveStreamState()); } catch (e) {}
+  return state;
+}
+
+function sheetHasFormulas_(sh) {
+  if (!sh || sh.getLastRow() < 1 || sh.getLastColumn() < 1) return false;
+  return sh.getRange(1, 1, sh.getLastRow(), sh.getLastColumn()).getFormulas()
+    .some(function (r) { return r.some(function (f) { return f !== ''; }); });
+}
+
+// Đóng băng công thức: mỗi ô công thức được thay bằng chính giá trị đang hiển thị (ô báo lỗi #... thì để trống).
+// Thao tác này không làm mất dữ liệu vì giữ nguyên mọi giá trị đang thấy trên sheet.
+function freezeFormulas_(sh) {
+  if (!sh || sh.getLastRow() < 1 || sh.getLastColumn() < 1) return 0;
+  const rg = sh.getRange(1, 1, sh.getLastRow(), sh.getLastColumn());
+  const f = rg.getFormulas(), v = rg.getDisplayValues();
+  let n = 0;
+  const out = v.map(function (row, r) {
+    return row.map(function (val, c) {
+      if (f[r][c] === '') return val;
+      n++;
+      return /^#/.test(String(val)) ? '' : val;
+    });
+  });
+  if (n) { rg.clearContent(); rg.setNumberFormat('@').setValues(out); rg.setNumberFormat('General'); }
+  return n;
+}
+
+function autoRepairFormulas_(ss, state) {
+  const names = [SH.VDV, SH.GROUPS, SH.SCHEDULE, SH.KO];
+  const bad = names.filter(function (n) { return sheetHasFormulas_(ss.getSheetByName(n)); });
+  if (!bad.length) return '';
+  bad.forEach(function (n) { freezeFormulas_(ss.getSheetByName(n)); });
+  SpreadsheetApp.flush();
+  // Đọc lại sau khi bỏ công thức rồi ghi chuẩn để điền lại tên cặp/bảng theo Mã cặp
+  const fresh = loadCore_(ss);
+  Object.keys(fresh).forEach(function (k) { state[k] = fresh[k]; });
+  saveTournamentState(state);
+  return 'Đã bỏ công thức trong sheet ' + bad.join(', ') + ' và ghi lại dạng giá trị.';
+}
+
+// Chạy tay trong trình soạn thảo nếu cần: đọc lại toàn bộ và ghi lại dạng giá trị, không còn công thức.
+function repairDataSheets() {
+  const ss = getSpreadsheet_();
+  [SH.VDV, SH.GROUPS, SH.SCHEDULE, SH.KO, SH.KO_CONFIG, SH.KO_PAIRING].forEach(function (n) { freezeFormulas_(ss.getSheetByName(n)); });
+  SpreadsheetApp.flush();
+  const state = loadCore_(ss);
+  state.allowEmptyTeams = true;
+  return saveTournamentState(state);
+}
+
+// ----- Cột "Cập nhật lúc": hiển thị dd/MM/yyyy HH:mm:ss, bên trong vẫn so sánh bằng mili giây -----
+const STAMP_FORMAT = 'dd/MM/yyyy HH:mm:ss';
+function sheetTz_() { try { return getSpreadsheet_().getSpreadsheetTimeZone() || 'Asia/Ho_Chi_Minh'; } catch (e) { return 'Asia/Ho_Chi_Minh'; } }
+function parseStamp_(text) {
+  const t = String(text || '').trim(); if (!t) return 0;
+  if (/^\d{11,}$/.test(t)) return Number(t);                       // dữ liệu cũ dạng số mili giây
+  const m = t.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})[ T](\d{1,2}):(\d{2})(?::(\d{2}))?/);
+  if (!m) return 0;
+  const p = function (x) { return ('0' + x).slice(-2); };
+  try { return Utilities.parseDate(p(m[1]) + '/' + p(m[2]) + '/' + m[3] + ' ' + p(m[4]) + ':' + m[5] + ':' + (m[6] || '00'), sheetTz_(), STAMP_FORMAT).getTime(); }
+  catch (e) { return 0; }
+}
+function stampCell_(ms) { const n = Number(ms) || 0; return n ? new Date(n) : ''; }
+function formatStampColumn_(sh, headers, rowCount) {
+  const c = headers.indexOf('Cập nhật lúc');
+  if (c >= 0 && rowCount > 0) sh.getRange(2, c + 1, rowCount, 1).setNumberFormat(STAMP_FORMAT);
+}
+
+// ----- Làm mới dữ liệu cho các máy trạm khác -----
+// Mỗi lần lưu tăng "số phiên bản dữ liệu" (Script Properties, rất nhẹ, không mở Google Sheet).
+// Máy trạm hỏi số này định kỳ; thấy đổi thì mới tải lại toàn bộ dữ liệu.
+function dataVersionKey_() { return 'DATA_VERSION_' + getDataSpreadsheetId_(); }
+function bumpDataVersion_() { const v = String(Date.now()); PropertiesService.getScriptProperties().setProperty(dataVersionKey_(), v); return v; }
+function getDataVersion() { return { v: PropertiesService.getScriptProperties().getProperty(dataVersionKey_()) || '0' }; }
+
+function nextCode_(codes) {
+  let max = 0;
+  (codes || []).forEach(function (c) { const m = String(c || '').match(/(\d+)\s*$/); if (m) max = Math.max(max, Number(m[1])); });
+  return 'C' + String(max + 1).padStart(3, '0');
+}
+
+// ===================== GHI DỮ LIỆU =====================
+
+function saveTournamentState(state) {
+  if (!state || typeof state !== 'object') throw new Error('Dữ liệu app không hợp lệ.');
+  const lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    const ss = ensureSchema_(getSpreadsheet_());
+    const teams = Array.isArray(state.teams) ? state.teams : [];
+    const vdvSheet = ss.getSheetByName(SH.VDV);
+    if (!teams.length && vdvSheet.getLastRow() > 1 && !state.allowEmptyTeams)
+      throw new Error('Chặn ghi: danh sách VĐV gửi lên rỗng trong khi sheet VĐV đang có dữ liệu.');
+
+    // Bảo đảm id = Mã cặp, không trùng
+    const seen = {};
+    teams.forEach(function (t) {
+      let code = String(t.code || t.id || '').trim();
+      if (!code || seen[normalizeKey_(code)]) code = nextCode_(Object.keys(seen).concat(teams.map(function (x) { return x.code; })));
+      seen[normalizeKey_(code)] = true; t.code = code;
+    });
+    const idToCode = {}; teams.forEach(function (t) { idToCode[t.id] = t.code; idToCode[t.code] = t.code; });
+    const code = function (id) { return idToCode[id] || id || ''; };
+
+    // VĐV
+    const extraHeads = (Array.isArray(state.vdvHeaders) ? state.vdvHeaders : []).filter(function (h) {
+      return h && HEAD.VDV.map(normalizeKey_).indexOf(normalizeKey_(h)) < 0;
+    });
+    const vdvHeaders = HEAD.VDV.concat(extraHeads);
+    writeTable_(vdvSheet, vdvHeaders, teams.map(function (t) {
+      const d = t.sheetData || {};
+      return [t.code, t.pair || '', t.note || ''].concat(extraHeads.map(function (h) { return d[h] == null ? '' : d[h]; }));
+    }));
+    vdvSheet.getRange(2, 1, Math.max(1, vdvSheet.getMaxRows() - 1), 1).setNumberFormat('@');
+
+    // Bảo vệ kết quả: nếu trên sheet đã có kết quả MỚI HƠN (máy khác vừa nhập) thì giữ kết quả đó, bỏ qua bản cũ gửi lên.
+    let merged = 0;
+    const keepNewer = function (list, saved) {
+      (list || []).forEach(function (m) {
+        const o = saved[m.id];
+        if (!o || !(o.ts > (Number(m.updatedAt) || 0))) return;
+        if (o.a !== code(m.teamA) || o.b !== code(m.teamB)) return;
+        const same = m.scoreA == o.scoreA && m.scoreB == o.scoreB && !!m.completed === o.done;
+        m.scoreA = o.scoreA; m.scoreB = o.scoreB; m.completed = o.done; m.updatedAt = o.ts;
+        if (o.games) m.games = o.games;
+        if (!same) merged++;
+      });
+    };
+    keepNewer(state.matches, readSavedResults_(ss.getSheetByName(SH.SCHEDULE)));
+    if (state.knockout) keepNewer(state.knockout.matches, readSavedResults_(ss.getSheetByName(SH.KO)));
+
+    const nameOf = {}; teams.forEach(function (t) { nameOf[t.code] = t.pair || ''; });
+    const pairOf = function (id) { return nameOf[code(id)] || ''; };
+    const groupNameOf = {}; (state.groups || []).forEach(function (g) { groupNameOf[g.id] = g.name || g.id; });
+
+    // BẢNG ĐẤU
+    const gRows = [];
+    (state.groups || []).forEach(function (g) {
+      (g.teamIds || []).forEach(function (id, i) {
+        gRows.push([g.id || '', g.name || '', i + 1, code(id), pairOf(id)]);
+      });
+    });
+    writeTable_(ss.getSheetByName(SH.GROUPS), HEAD.GROUPS, gRows);
+
+    // Trạng thái: Hoàn thành / Đang đấu (trận đang chọn Live) / Chưa đấu
+    const liveKey = state.liveStream && state.liveStream.matchId ? String(state.liveStream.kind || '') + '|' + String(state.liveStream.matchId) : '';
+    const statusOf = function (m, kind) { return m.completed ? 'Hoàn thành' : (liveKey && liveKey === kind + '|' + m.id ? 'Đang đấu' : 'Chưa đấu'); };
+
+    // LỊCH ĐẤU
+    const sRows = (state.matches || []).map(function (m, i) {
+      const r = i + 2;
+      return [m.id || '', m.groupId || '', m.round == null ? '' : m.round, code(m.teamA), code(m.teamB),
+        m.scoreA == null ? '' : m.scoreA, m.scoreB == null ? '' : m.scoreB, statusOf(m, 'gm'),
+        groupNameOf[m.groupId] || '', pairOf(m.teamA), pairOf(m.teamB), stampCell_(m.updatedAt)];
+    });
+    writeTable_(ss.getSheetByName(SH.SCHEDULE), HEAD.SCHEDULE, sRows);
+    formatStampColumn_(ss.getSheetByName(SH.SCHEDULE), HEAD.SCHEDULE, sRows.length);
+
+    // LOẠI TRỰC TIẾP
+    const ko = state.knockout && Array.isArray(state.knockout.matches) ? state.knockout : null;
+    const kRows = ko ? ko.matches.map(function (m, i) {
+      const r = i + 2;
+      const round = (m.isThirdPlace || m.roundName === 'Tranh ba') ? 'Tranh ba' : ((ko.rounds || [])[m.roundIndex] || '');
+      const games = Array.isArray(m.games) && m.games.length
+        ? m.games.map(function (g) { return g && g.completed ? (g.scoreA + '-' + g.scoreB) : ''; }).join('|') : '';
+      return [m.id || '', round, m.matchNo || '', code(m.teamA), code(m.teamB),
+        m.scoreA == null ? '' : m.scoreA, m.scoreB == null ? '' : m.scoreB, games, statusOf(m, 'ko'),
+        pairOf(m.teamA), pairOf(m.teamB), stampCell_(m.updatedAt)];
+    }) : [];
+    writeTable_(ss.getSheetByName(SH.KO), HEAD.KO, kRows);
+    formatStampColumn_(ss.getSheetByName(SH.KO), HEAD.KO, kRows.length);
+
+    writeConfig_(ss, state);
+    writeKoConfig_(ss, (state.tournament || {}).knockoutRoundConfig);
+    writeKoPairing_(ss, (state.tournament || {}).knockoutPairingConfig);
+
+    // Chốt cuối: không để sót bất kỳ công thức nào trong các sheet dữ liệu
+    [SH.VDV, SH.GROUPS, SH.SCHEDULE, SH.KO].forEach(function (n) { freezeFormulas_(ss.getSheetByName(n)); });
+    // Dấu vết: ô A1 của mỗi sheet ghi chú bản code nào vừa ghi, lúc nào (rê chuột vào A1 để xem)
+    const stamp = 'Ghi bởi ' + SERVER_BUILD + ' (script ' + ScriptApp.getScriptId() + ') lúc ' +
+      Utilities.formatDate(new Date(), 'Asia/Ho_Chi_Minh', 'dd/MM/yyyy HH:mm:ss');
+    [SH.VDV, SH.GROUPS, SH.SCHEDULE, SH.KO].forEach(function (n) { try { ss.getSheetByName(n).getRange(1, 1).setNote(stamp); } catch (e) {} });
+    SpreadsheetApp.flush();
+    const dataVersion = bumpDataVersion_();
+    return { ok: true, savedAt: new Date().toISOString(), merged: merged, serverBuild: SERVER_BUILD, legacy: legacyCodeFound_(), dataVersion: dataVersion };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+// ===================== LƯU NHANH KẾT QUẢ (V9.7) =====================
+// Nhập/sửa kết quả chỉ ghi đúng các dòng trận thay đổi ở LỊCH ĐẤU / LOẠI TRỰC TIẾP,
+// không ghi lại toàn bộ VĐV, bảng, cấu hình như saveTournamentState → nhanh hơn nhiều lần.
+// payload = { gm: [dòng trận], ko: [dòng trận], liveKey: 'gm|id' }
+function saveMatchResults(payload) {
+  payload = payload || {};
+  const lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    const ss = getSpreadsheet_();
+    const liveKey = String(payload.liveKey || '');
+    let merged = 0, written = 0;
+    const kept = [];
+    [['gm', SH.SCHEDULE, HEAD.SCHEDULE], ['ko', SH.KO, HEAD.KO]].forEach(function (k) {
+      const items = Array.isArray(payload[k[0]]) ? payload[k[0]] : [];
+      if (!items.length) return;
+      const r = writeMatchRows_(ss, k[0], ensureSheet_(ss, k[1], k[2]), k[2], items, liveKey);
+      merged += r.merged; written += r.written; r.kept.forEach(function (x) { kept.push(x); });
+    });
+    SpreadsheetApp.flush();
+    const dataVersion = bumpDataVersion_();
+    return { ok: true, fast: true, written: written, merged: merged, kept: kept, savedAt: new Date().toISOString(),
+      serverBuild: SERVER_BUILD, legacy: legacyCodeFound_(), dataVersion: dataVersion };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function writeMatchRows_(ss, kind, sh, defHeaders, items, liveKey) {
+  if (sh.getLastRow() < 1) sh.getRange(1, 1, 1, defHeaders.length).setValues([defHeaders]).setFontWeight('bold');
+  const lastCol = Math.max(sh.getLastColumn(), 1), lastRow = sh.getLastRow();
+  const rng = sh.getRange(1, 1, Math.max(lastRow, 1), lastCol);
+  const all = rng.getDisplayValues(), raw = rng.getValues(); // raw: giữ nguyên kiểu dữ liệu các cột khác khi ghi lại
+  const headers = all[0].map(function (h) { return String(h || '').trim(); });
+  const norm = headers.map(normalizeKey_);
+  const col = function (aliases) { for (let i = 0; i < aliases.length; i++) { const x = norm.indexOf(normalizeKey_(aliases[i])); if (x >= 0) return x; } return -1; };
+  const C = {
+    id: col(['Mã trận']), grp: col(['Mã bảng']), luot: col(['Lượt']), vong: col(['Vòng']), no: col(['Trận số', 'Trận']),
+    ca: col(['Mã cặp A']), cb: col(['Mã cặp B']), sa: col(['Điểm A', 'Tỷ số trận/Game thắng A']), sb: col(['Điểm B', 'Tỷ số trận/Game thắng B']),
+    g: col(['Chi tiết game']), st: col(['Trạng thái']), gname: col(['Bảng']), pa: col(['Cặp A']), pb: col(['Cặp B']), ts: col(['Cập nhật lúc'])
+  };
+  if (C.id < 0) throw new Error('Sheet ' + sh.getName() + ' thiếu cột "Mã trận". Hãy lưu đầy đủ một lần.');
+  const rowOf = {};
+  for (let r = 1; r < all.length; r++) { const id = String(all[r][C.id] || '').trim(); if (id && !rowOf[id]) rowOf[id] = r; }
+  const out = { merged: 0, written: 0, kept: [] };
+  let appendAt = lastRow + 1;
+  items.forEach(function (m) {
+    const id = String(m.id || '').trim(); if (!id) return;
+    const r = rowOf[id];
+    const old = r ? all[r] : null;
+    // Bảo vệ: trên sheet đã có kết quả MỚI HƠN (máy khác/trọng tài vừa nhập) cho đúng cặp đấu này → giữ kết quả trên sheet
+    if (old) {
+      const ts = C.ts >= 0 ? parseStamp_(old[C.ts]) : 0;
+      const sameTeams = String(old[C.ca] || '').trim() === String(m.teamA || '') && String(old[C.cb] || '').trim() === String(m.teamB || '');
+      if (ts > (Number(m.updatedAt) || 0) && sameTeams) {
+        out.merged++;
+        out.kept.push({ kind: kind, id: id, scoreA: numOrNull_(old[C.sa]), scoreB: numOrNull_(old[C.sb]), completed: isDone_(old[C.st]) });
+        return;
+      }
+    }
+    const row = old ? raw[r].slice() : headers.map(function () { return ''; });
+    const put = function (c, v) { if (c >= 0) row[c] = v == null ? '' : v; };
+    const done = !!m.completed;
+    put(C.id, id);
+    if (kind === 'gm') { put(C.grp, m.groupId); put(C.luot, m.round); put(C.gname, m.groupName); }
+    else { put(C.vong, m.round); put(C.no, m.matchNo); put(C.g, m.games || ''); }
+    put(C.ca, m.teamA); put(C.cb, m.teamB);
+    put(C.sa, m.scoreA == null || m.scoreA === '' ? '' : Number(m.scoreA));
+    put(C.sb, m.scoreB == null || m.scoreB === '' ? '' : Number(m.scoreB));
+    put(C.st, done ? 'Hoàn thành' : (liveKey && liveKey === kind + '|' + id ? 'Đang đấu' : 'Chưa đấu'));
+    put(C.pa, m.pairA); put(C.pb, m.pairB);
+    put(C.ts, stampCell_(m.updatedAt));
+    const rowNum = r ? r + 1 : appendAt++;
+    sh.getRange(rowNum, 1, 1, row.length).setValues([row]);
+    if (C.ts >= 0) sh.getRange(rowNum, C.ts + 1).setNumberFormat(STAMP_FORMAT);
+    if (!r) { all.push(row); raw.push(row); rowOf[id] = all.length - 1; }
+    out.written++;
+  });
+  return out;
+}
+
+function readSavedResults_(sh) {
+  const tb = readTable_(sh), out = {};
+  const i = tb.col(['Mã trận']), a = tb.col(['Mã cặp A']), b = tb.col(['Mã cặp B']), sa = tb.col(['Điểm A']), sb = tb.col(['Điểm B']),
+    st = tb.col(['Trạng thái']), g = tb.col(['Chi tiết game']), t = tb.col(['Cập nhật lúc']);
+  tb.rows.forEach(function (r) {
+    const id = cell_(r, i); if (!id) return;
+    const games = g >= 0 && cell_(r, g) ? parseGames_(cell_(r, g)) : null;
+    out[id] = { a: cell_(r, a), b: cell_(r, b), scoreA: numOrNull_(cell_(r, sa)), scoreB: numOrNull_(cell_(r, sb)),
+      done: isDone_(cell_(r, st)), games: games, ts: parseStamp_(cell_(r, t)) };
+  });
+  return out;
+}
+
+// Dùng cho chức năng "Kiểm tra lưu kết quả": trả về kết quả đang thực sự nằm trên Google Sheet.
+function getSavedResults() {
+  const ss = getSpreadsheet_();
+  return { schedule: readSavedResults_(ss.getSheetByName(SH.SCHEDULE)), ko: readSavedResults_(ss.getSheetByName(SH.KO)) };
+}
+
+function writeConfig_(ss, state) {
+  const t = state.tournament || {}, db = state.database || {};
+  const rows = CONFIG_FIELDS.map(function (f) {
+    let v = t[f[1]];
+    if (f[2] === 'bool') v = v ? 'Có' : 'Không';
+    else if (f[2] === 'list') v = (Array.isArray(v) ? v : DEFAULT_LIVE_ROUNDS).join(' | ');
+    else if (v == null) v = '';
+    return [f[0], v, f[3]];
+  });
+  DATA_FIELDS.forEach(function (f) { rows.push([f[0], db[f[1]] == null ? '' : db[f[1]], 'Thông tin nguồn dữ liệu']); });
+  const ko = state.knockout && Array.isArray(state.knockout.rounds) ? state.knockout : null;
+  rows.push([KO_META.size, ko ? Number(ko.size) || '' : '', 'Do app ghi khi tạo nhánh Knock-out']);
+  rows.push([KO_META.rounds, ko ? ko.rounds.join(' | ') : '', 'Do app ghi khi tạo nhánh Knock-out']);
+  writeTable_(ss.getSheetByName(SH.CONFIG), HEAD.CONFIG, rows);
+}
+
+// "G1: 11/2 | G2: 11/2 | G3: 15/2" (điểm thắng game / cách biệt; 0 = theo cấu hình chung)
+function parseGameRules_(text, games) {
+  const out = [];
+  String(text || '').split('|').forEach(function (part) {
+    const m = String(part).match(/G\s*(\d+)\s*:\s*(\d+)\s*\/\s*(\d+)/i);
+    if (m) out[Number(m[1]) - 1] = { target: Number(m[2]) || 0, winBy: Number(m[3]) || 0 };
+  });
+  const res = [];
+  for (let i = 0; i < (Number(games) || 1); i++) res.push(out[i] || { target: 0, winBy: 0 });
+  return res;
+}
+function gameRulesText_(r) {
+  const n = Number(r.games) || 1, gr = Array.isArray(r.gameRules) ? r.gameRules : [];
+  if (n <= 1) return '';
+  const parts = [];
+  for (let i = 0; i < n; i++) { const x = gr[i] || {}; parts.push('G' + (i + 1) + ': ' + (Number(x.target) || 0) + '/' + (Number(x.winBy) || 0)); }
+  return parts.join(' | ');
+}
+function writeKoConfig_(ss, cfg) {
+  const rows = (Array.isArray(cfg) && cfg.length ? cfg : defaultKoRoundConfig_())
+    .filter(function (r) { return KO_ROUNDS.indexOf(r.round) >= 0; })
+    .map(function (r) { return [Number(r.order) || 0, r.round, r.enabled ? 'Có' : 'Không', Number(r.games) || 1, Number(r.decidingTarget) || 0, Number(r.decidingWinBy) || 0, gameRulesText_(r)]; });
+  writeTable_(ss.getSheetByName(SH.KO_CONFIG), HEAD.KO_CONFIG, rows);
+}
+
+function writeKoPairing_(ss, rows) {
+  const data = (Array.isArray(rows) ? rows : []).filter(function (r) { return r && KO_ROUNDS.indexOf(String(r.round || '').trim()) >= 0; })
+    .map(function (r, i) { return [String(r.round).trim(), Math.max(1, Number(r.matchNo) || i + 1), String(r.sourceA || ''), String(r.sourceB || '')]; });
+  writeTable_(ss.getSheetByName(SH.KO_PAIRING), HEAD.KO_PAIRING, data);
+}
+
+function upsertConfig_(ss, pairs) {
+  const sh = ensureSheet_(ss, SH.CONFIG, HEAD.CONFIG);
+  const last = sh.getLastRow();
+  const keys = last >= 2 ? sh.getRange(2, 1, last - 1, 1).getDisplayValues().map(function (r) { return String(r[0]).trim(); }) : [];
+  Object.keys(pairs).forEach(function (k) {
+    const idx = keys.indexOf(k);
+    if (idx >= 0) sh.getRange(idx + 2, 2).setValue(pairs[k]);
+    else { sh.appendRow([k, pairs[k], '']); keys.push(k); }
+  });
+}
+
+// ===================== CẤU HÌNH DỮ LIỆU / MENU =====================
+
+function getDataConfigFromSheet() {
+  const out = directBaseState_().database;
+  try {
+    const ss = getSpreadsheet_(), map = readConfigMap_(ss);
+    DATA_FIELDS.forEach(function (f) { if (map[f[0]]) out[f[1]] = map[f[0]]; });
+    out.spreadsheetName = ss.getName();
+  } catch (e) {}
+  return out;
+}
+
+// Chỉ ADMIN (xác thực bằng mã phiên) được đổi nguồn dữ liệu.
+function saveDataConfigToSheet(payload, token) {
+  requireAdmin_(token);
+  payload = payload || {};
+  const newId = spreadsheetIdFromUrl_(payload.sheetUrl || payload.spreadsheetId);
+  let switched = false;
+  if (newId && newId !== getDataSpreadsheetId_()) { switchDataSpreadsheet_(newId); switched = true; }
+  const pairs = {};
+  DATA_FIELDS.forEach(function (f) { if (payload[f[1]] !== undefined) pairs[f[0]] = String(payload[f[1]] || ''); });
+  upsertConfig_(getSpreadsheet_(), pairs);
+  const out = getDataConfigFromSheet(); out.switched = switched;
+  return out;
+}
+
+function requireAdmin_(token) {
+  const s = resumeLoginSession(token);
+  if (!s.ok) throw new Error('Phiên đăng nhập không hợp lệ, hãy đăng nhập lại.');
+  if (normalizeKey_(s.user.role) !== 'admin') throw new Error('Chỉ tài khoản ADMIN được thay đổi nguồn dữ liệu.');
+  return s.user;
+}
+
+function getMenuConfig() {
+  const tb = readTable_(getSpreadsheet_().getSheetByName(SH.MENU));
+  const iId = tb.col(['Mã menu', 'Mã', 'ID']), iL = tb.col(['Tên menu', 'Tên']), iI = tb.col(['Biểu tượng', 'Icon']),
+    iO = tb.col(['Thứ tự']), iV = tb.col(['Hiển thị']), iM = tb.col(['Mobile', 'Hiện trên mobile']);
+  return tb.rows.map(function (r) {
+    return { id: cell_(r, iId), label: cell_(r, iL), icon: cell_(r, iI), order: Number(cell_(r, iO)) || 0,
+      visible: iV < 0 ? true : notNo_(cell_(r, iV)), mobile: iM < 0 ? true : notNo_(cell_(r, iM)) };
+  }).filter(function (r) { return r.id; });
+}
+
+function saveMenuConfig(rows) {
+  const ss = getSpreadsheet_();
+  const data = (Array.isArray(rows) ? rows : []).map(function (r) {
+    return [String(r.id || ''), String(r.label || ''), String(r.icon || ''), Number(r.order) || 0, r.visible ? 'Có' : 'Không', r.mobile ? 'Có' : 'Không'];
+  }).filter(function (r) { return r[0]; });
+  writeTable_(ensureSheet_(ss, SH.MENU, HEAD.MENU), HEAD.MENU, data);
+  return getMenuConfig();
+}
+
+// ===================== MODULE TRỌNG TÀI (trongtai.html trên GitHub) =====================
+// Gọi bằng POST (Content-Type: text/plain, body JSON) hoặc GET ?api=ref&payload=<JSON>&callback=<tên hàm> (JSONP).
+// action: list | save | live | liveoff (không cần đăng nhập). login/me vẫn giữ để tương thích.
+function doPost(e) {
+  let body = {};
+  try { body = JSON.parse((e && e.postData && e.postData.contents) || '{}'); } catch (err) { body = {}; }
+  return refOutput_(refApi_(body), '');
+}
+
+function refOutput_(data, callback) {
+  const json = JSON.stringify(data || { ok: false });
+  const cb = String(callback || '');
+  if (/^[A-Za-z_$][0-9A-Za-z_$]*$/.test(cb))
+    return ContentService.createTextOutput(cb + '(' + json + ');').setMimeType(ContentService.MimeType.JAVASCRIPT);
+  return ContentService.createTextOutput(json).setMimeType(ContentService.MimeType.JSON);
+}
+
+function refApi_(b) {
+  b = b && typeof b === 'object' ? b : {};
+  try {
+    const action = String(b.action || '');
+    if (action === 'login') {
+      const r = loginTaiKhoan(b.username, b.password, true);
+      return r.ok ? { ok: true, token: r.token, user: r.user } : { ok: false, message: r.message || 'Đăng nhập không thành công.' };
+    }
+    // Module trọng tài không cần đăng nhập: có token thì ghi tên người lưu, không có thì ghi "Trọng tài"
+    const s = b.token ? resumeLoginSession(b.token) : { ok: false };
+    if (!s.ok) s.user = { username: 'trongtai', fullName: 'Trọng tài', role: 'TRONGTAI' };
+    if (action === 'me') return { ok: true, user: s.user };
+    if (action === 'list') return refList_();
+    if (action === 'save') return refSave_(b, s.user);
+    if (action === 'live') return refLive_(b, true);
+    if (action === 'liveoff') return refLive_(b, false);
+    return { ok: false, message: 'Yêu cầu không hợp lệ: ' + action };
+  } catch (err) {
+    return { ok: false, message: String(err && err.message ? err.message : err) };
+  }
+}
+
+// Danh sách trận cho trọng tài: lưu tạm 60 giây theo "phiên bản dữ liệu" (lưu kết quả mới là tự làm mới) để tải nhanh
+function refList_() {
+  const ver = getDataVersion().v;
+  const cache = CacheService.getScriptCache();
+  const key = 'REFLIST_' + ver;
+  let base = null;
+  try { const hit = cache.get(key); if (hit) base = JSON.parse(hit); } catch (e) { base = null; }
+  const cached = !!base;
+  if (!base) {
+    base = refListBuild_();
+    try { const js = JSON.stringify(base); if (js.length < 95000) cache.put(key, js, 60); } catch (e) {}
+  }
+  const live = getLiveStreamState();
+  base.live = { active: !!live.active, kind: live.kind || '', matchId: live.matchId || '' };
+  base.cached = cached; base.version = ver; base.serverBuild = SERVER_BUILD;
+  return base;
+}
+function refListBuild_() {
+  const ss = getSpreadsheet_();
+  const st = loadCore_(ss);
+  const t = st.tournament || {};
+  return {
+    ok: true,
+    tournament: { name: t.name || '', pointsToWin: Number(t.pointsToWin) || 11, winBy: Number(t.winBy) || 1, scoreCap: Number(t.scoreCap) || 0,
+      allowOverTarget: t.allowOverTarget === true, knockoutRoundConfig: t.knockoutRoundConfig || [] },
+    teams: (st.teams || []).map(function (x) { return { id: x.id, name: x.pair || x.id }; }),
+    groups: (st.groups || []).map(function (g) { return { id: g.id, name: g.name }; }),
+    matches: (st.matches || []).map(function (m) {
+      return { kind: 'gm', id: m.id, groupId: m.groupId, round: m.round, teamA: m.teamA, teamB: m.teamB,
+        scoreA: m.scoreA, scoreB: m.scoreB, completed: !!m.completed, updatedAt: m.updatedAt || 0 };
+    }),
+    knockout: st.knockout ? { rounds: st.knockout.rounds || [], matches: (st.knockout.matches || []).map(function (m) {
+      return { kind: 'ko', id: m.id, roundIndex: m.roundIndex, roundName: m.roundName || '', isThirdPlace: !!m.isThirdPlace, matchNo: m.matchNo,
+        teamA: m.teamA, teamB: m.teamB, scoreA: m.scoreA, scoreB: m.scoreB, games: m.games || [], completed: !!m.completed, updatedAt: m.updatedAt || 0 };
+    }) } : null
+  };
+}
+
+// Ghi kết quả 1 trận do trọng tài nhập (chỉ sửa đúng trận đó, các dữ liệu khác giữ nguyên)
+function refSave_(b, user) {
+  const kind = String(b.kind || ''), id = String(b.matchId || '');
+  const ss = getSpreadsheet_();
+  const st = loadCore_(ss);
+  let m = null;
+  if (kind === 'gm') m = (st.matches || []).filter(function (x) { return String(x.id) === id; })[0];
+  if (kind === 'ko' && st.knockout) m = (st.knockout.matches || []).filter(function (x) { return String(x.id) === id; })[0];
+  if (!m) return { ok: false, message: 'Không tìm thấy trận đấu (có thể BTC vừa chia lại bảng/lịch). Hãy tải lại danh sách.' };
+  if (m.completed && !b.overwrite) return { ok: false, conflict: true, message: 'Trận này đã có kết quả ' + m.scoreA + '-' + m.scoreB + '. Bấm Ghi đè nếu muốn sửa.' };
+  if (kind === 'ko') {
+    const games = (Array.isArray(b.games) ? b.games : []).map(function (g) { return { scoreA: Number(g.scoreA) || 0, scoreB: Number(g.scoreB) || 0, completed: true }; });
+    m.games = games;
+    let wa = 0, wb = 0; games.forEach(function (g) { if (g.scoreA > g.scoreB) wa++; else if (g.scoreB > g.scoreA) wb++; });
+    // BO3/BO5: Kết quả tổng = số game thắng; BO1: lưu điểm của game duy nhất
+    const bo = Math.max(1, Number(b.bestOf) || games.length || 1);
+    if (bo > 1) { m.scoreA = wa; m.scoreB = wb; }
+    else { m.scoreA = games[0] ? games[0].scoreA : Number(b.scoreA) || 0; m.scoreB = games[0] ? games[0].scoreB : Number(b.scoreB) || 0; m.games = []; }
+  } else {
+    m.scoreA = Number(b.scoreA) || 0; m.scoreB = Number(b.scoreB) || 0;
+  }
+  if (m.scoreA === m.scoreB) return { ok: false, message: 'Tỷ số hòa, chưa xác định được đội thắng.' };
+  m.completed = true;
+  m.updatedAt = Date.now();
+  // Chỉ ghi đúng 1 dòng trận (nhanh), không ghi lại toàn bộ dữ liệu
+  const pairOf = function (code) { const t = (st.teams || []).filter(function (x) { return x.id === code || x.code === code; })[0]; return t ? t.pair : ''; };
+  const codeOf = function (id) { const t = (st.teams || []).filter(function (x) { return x.id === id || x.code === id; })[0]; return t ? (t.code || t.id) : (id || ''); };
+  const item = { id: m.id, teamA: codeOf(m.teamA), teamB: codeOf(m.teamB), pairA: pairOf(m.teamA), pairB: pairOf(m.teamB),
+    scoreA: m.scoreA, scoreB: m.scoreB, completed: true, updatedAt: m.updatedAt };
+  if (kind === 'gm') {
+    const g = (st.groups || []).filter(function (x) { return x.id === m.groupId; })[0];
+    item.groupId = m.groupId; item.round = m.round; item.groupName = g ? g.name : '';
+  } else {
+    item.round = (m.isThirdPlace || m.roundName === 'Tranh ba') ? 'Tranh ba' : ((st.knockout.rounds || [])[m.roundIndex] || '');
+    item.matchNo = m.matchNo;
+    item.games = (m.games || []).map(function (g) { return g && g.completed ? (g.scoreA + '-' + g.scoreB) : ''; }).join('|');
+  }
+  const live = getLiveStreamState();
+  const payload = { liveKey: live && live.matchId ? String(live.kind || '') + '|' + String(live.matchId) : '' };
+  payload[kind] = [item];
+  saveMatchResults(payload);
+  return { ok: true, scoreA: m.scoreA, scoreB: m.scoreB, savedBy: user && user.fullName || '', updatedAt: m.updatedAt };
+}
+
+// Cập nhật bảng điểm Live từ máy trọng tài: giữ nguyên logo/vị trí hiển thị, chỉ thay trận và tỷ số
+function refLive_(b, on) {
+  const lock = LockService.getScriptLock();
+  try { lock.waitLock(8000); } catch (e) { return { ok: false, message: 'Máy chủ đang bận, thử lại' }; }
+  try {
+    const cur = getLiveStreamState() || {};
+    if (!on) { cur.active = false; saveLiveStreamState(cur); return { ok: true, serverBuild: SERVER_BUILD }; }
+    const p = b.snapshot && typeof b.snapshot === 'object' ? b.snapshot : {};
+    // Mạng di động có thể đến chậm/đảo thứ tự: bỏ qua tỷ số CŨ HƠN tỷ số đang hiển thị của cùng trận
+    const ts = Number(p.refTs) || 0;
+    if (ts && Number(cur.refTs) > ts && String(cur.matchId) === String(p.matchId) && cur.kind === p.kind) return { ok: true, stale: true, serverBuild: SERVER_BUILD };
+    ['kind', 'matchId', 'teamA', 'teamB', 'scoreA', 'scoreB', 'servingSide', 'serverHand', 'displayLabel', 'roundLabel', 'gameCount', 'gameIndex', 'gamesWonA', 'gamesWonB', 'completed']
+      .forEach(function (k) { if (p[k] !== undefined) cur[k] = p[k]; });
+    cur.refTs = ts; cur.active = true; cur.source = 'referee';
+    const r = saveLiveStreamState(cur); r.serverBuild = SERVER_BUILD;
+    return r;
+  } finally { lock.releaseLock(); }
+}
+
+// ===================== LIVE STREAM =====================
+
+function saveLiveStreamState(payload) {
+  const ss = getSpreadsheet_();
+  const sh = ensureSheet_(ss, SH.LIVE, ['Dữ liệu']);
+  try { sh.hideSheet(); } catch (e) {}
+  const data = payload && typeof payload === 'object' ? payload : { active: false };
+  data.updatedAt = new Date().toISOString();
+  sh.getRange(2, 1).setValue(JSON.stringify(data));
+  return { ok: true, updatedAt: data.updatedAt };
+}
+
+function getLiveStreamState() {
+  const sh = getSpreadsheet_().getSheetByName(SH.LIVE);
+  if (!sh || sh.getLastRow() < 2) return { active: false, updatedAt: '' };
+  const raw = String(sh.getRange(2, 1).getValue() || '');
+  if (!raw) return { active: false, updatedAt: '' };
+  try { return JSON.parse(raw); } catch (e) { return { active: false, updatedAt: '' }; }
+}
+
+function getLiveJsonp_(callbackName) {
+  const callback = /^[A-Za-z_$][0-9A-Za-z_$]*$/.test(String(callbackName || '')) ? String(callbackName) : '__PB_LIVE_CALLBACK__';
+  let data;
+  try { data = getLiveStreamState(); } catch (err) { data = { active: false, updatedAt: '', error: String(err && err.message ? err.message : err) }; }
+  return ContentService.createTextOutput(callback + '(' + JSON.stringify(data || { active: false }) + ');')
+    .setMimeType(ContentService.MimeType.JAVASCRIPT);
+}
+
+// ===================== TÀI KHOẢN & ĐĂNG NHẬP =====================
+
+function sha256Hex_(text) {
+  const bytes = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, String(text || ''), Utilities.Charset.UTF_8);
+  return bytes.map(function (b) { const v = b < 0 ? b + 256 : b; return ('0' + v.toString(16)).slice(-2); }).join('');
+}
+
+function accountCols_(values) {
+  const h = values[0].map(normalizeKey_);
+  return { u: h.indexOf(normalizeKey_('Tên đăng nhập')), n: h.indexOf(normalizeKey_('Họ tên')), p: h.indexOf(normalizeKey_('Mật khẩu')),
+    r: h.indexOf(normalizeKey_('Cấp quyền')), s: h.indexOf(normalizeKey_('Trạng thái')) };
+}
+
+function loginTaiKhoan(username, password, remember) {
+  const res = checkLogin_(username, password);
+  // Luôn cấp mã phiên để F5 không bị đăng xuất. Ghi nhớ: 30 ngày; không ghi nhớ: 12 giờ.
+  if (res.ok) {
+    res.token = createLoginSession_(res.user.username, remember ? SESSION_DAYS * 24 : 12);
+    res.rememberDevice = false;
+    if (remember) res.rememberDevice = rememberDevice_(res.token);
+  }
+  return res;
+}
+
+function checkLogin_(username, password) {
+  username = String(username || '').trim(); password = String(password || '');
+  if (!username || !password) return { ok: false, message: 'Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu.' };
+  const found = findAccount_(username);
+  if (!found.ok) return found;
+  const stored = found.password;
+  const ok = /^[a-f0-9]{64}$/i.test(stored) ? stored.toLowerCase() === sha256Hex_(password) : stored === password;
+  if (!ok) return { ok: false, message: 'Sai mật khẩu.' };
+  return { ok: true, user: found.user };
+}
+
+function findAccount_(username) {
+  const sh = getSpreadsheet_().getSheetByName(SH.ACCOUNT);
+  if (!sh) return { ok: false, message: 'Không tìm thấy sheet "TAI KHOAN".' };
+  if (sh.getLastRow() < 2) return { ok: false, message: 'Sheet TAI KHOAN chưa có dữ liệu tài khoản.' };
+  const values = sh.getDataRange().getDisplayValues(), c = accountCols_(values);
+  if ([c.u, c.n, c.p, c.r, c.s].some(function (i) { return i < 0; }))
+    return { ok: false, message: 'Sheet TAI KHOAN phải có đủ 5 cột: Tên đăng nhập | Họ tên | Mật khẩu | Cấp quyền | Trạng thái.' };
+  for (let r = 1; r < values.length; r++) {
+    const row = values[r];
+    if (normalizeKey_(row[c.u]) !== normalizeKey_(username)) continue;
+    if (normalizeKey_(row[c.s]) !== normalizeKey_('Hoạt động')) return { ok: false, message: 'Tài khoản đang không hoạt động.' };
+    return { ok: true, password: String(row[c.p] || '').trim(),
+      user: { username: String(row[c.u]).trim(), fullName: String(row[c.n]).trim(), role: String(row[c.r]).trim() || 'NHANVIEN', status: String(row[c.s]).trim() } };
+  }
+  return { ok: false, message: 'Không tìm thấy tên đăng nhập.' };
+}
+
+// ----- Ghi nhớ đăng nhập -----
+// Máy trạm chỉ giữ một mã phiên ngẫu nhiên (không giữ mật khẩu).
+// Server lưu băm SHA-256 của mã trong Script Properties, hết hạn sau SESSION_DAYS ngày.
+const SESSION_DAYS = 30;
+
+function createLoginSession_(username, hours) {
+  const token = Utilities.getUuid().replace(/-/g, '') + Utilities.getUuid().replace(/-/g, '');
+  const props = PropertiesService.getScriptProperties();
+  cleanupLoginSessions_(props);
+  props.setProperty('SESS_' + sha256Hex_(token), JSON.stringify({ u: username, exp: Date.now() + (hours || 12) * 3600000 }));
+  return token;
+}
+
+function resumeLoginSession(token) {
+  token = String(token || '');
+  if (!/^[a-f0-9]{64}$/i.test(token)) return { ok: false };
+  const props = PropertiesService.getScriptProperties(), key = 'SESS_' + sha256Hex_(token);
+  let sess = null;
+  try { sess = JSON.parse(props.getProperty(key) || 'null'); } catch (e) {}
+  if (!sess || sess.exp < Date.now()) { props.deleteProperty(key); return { ok: false, message: 'Phiên đăng nhập đã hết hạn.' }; }
+  const found = findAccount_(sess.u);
+  if (!found.ok) { props.deleteProperty(key); return { ok: false, message: found.message }; }
+  return { ok: true, user: found.user };
+}
+
+// Bộ nhớ của iframe Web App bị trình duyệt xóa khi đóng/F5, nên "Ghi nhớ đăng nhập" được giữ ở SERVER,
+// gắn với khóa ẩn danh của tài khoản Google đang mở trình duyệt (Session.getTemporaryActiveUserKey).
+function activeUserKey_() { try { return Session.getTemporaryActiveUserKey() || ''; } catch (e) { return ''; } }
+function rememberDevice_(token) {
+  const key = activeUserKey_(); if (!key) return false;
+  PropertiesService.getScriptProperties().setProperty('REM_' + sha256Hex_(key), token);
+  return true;
+}
+function resumeRememberedLogin() {
+  const key = activeUserKey_(); if (!key) return { ok: false, supported: false };
+  const props = PropertiesService.getScriptProperties(), k = 'REM_' + sha256Hex_(key);
+  const token = props.getProperty(k); if (!token) return { ok: false, supported: true };
+  const r = resumeLoginSession(token);
+  if (!r.ok) { props.deleteProperty(k); return r; }
+  r.token = token; r.remembered = true; return r;
+}
+
+function logoutLoginSession(token) {
+  token = String(token || '');
+  const key = activeUserKey_();
+  if (key) PropertiesService.getScriptProperties().deleteProperty('REM_' + sha256Hex_(key));
+  if (token) PropertiesService.getScriptProperties().deleteProperty('SESS_' + sha256Hex_(token));
+  return { ok: true };
+}
+
+function cleanupLoginSessions_(props) {
+  const all = props.getProperties(), now = Date.now();
+  Object.keys(all).forEach(function (k) {
+    if (k.indexOf('SESS_') !== 0) return;
+    try { if (JSON.parse(all[k]).exp < now) props.deleteProperty(k); } catch (e) { props.deleteProperty(k); }
+  });
+}
+
+function getLoginBranding() {
+  const map = readConfigMap_(getSpreadsheet_());
+  return {
+    logoMode: map['Chế độ logo'] || 'default', logoUrl: map['Đường dẫn logo'] || '',
+    ownerName: map['Tên chủ sân / đơn vị tổ chức'] || '', name: map['Tên giải'] || 'PICKLEBALL'
+  };
+}
+
+function getTaiKhoanList() {
+  const sh = getSpreadsheet_().getSheetByName(SH.ACCOUNT);
+  if (!sh) throw new Error('Không tìm thấy sheet TAI KHOAN.');
+  if (sh.getLastRow() < 2) return [];
+  const values = sh.getDataRange().getDisplayValues(), c = accountCols_(values);
+  return values.slice(1).filter(function (r) { return String(r[c.u] || '').trim(); }).map(function (r) {
+    return { username: String(r[c.u]).trim(), fullName: String(r[c.n] || '').trim(), role: String(r[c.r] || '').trim(), status: String(r[c.s] || '').trim() };
+  });
+}
+
+function saveTaiKhoan(data) {
+  data = data || {};
+  const sh = ensureSheet_(getSpreadsheet_(), SH.ACCOUNT, HEAD.ACCOUNT);
+  const values = sh.getDataRange().getDisplayValues(), c = accountCols_(values);
+  if ([c.u, c.n, c.p, c.r, c.s].some(function (i) { return i < 0; })) throw new Error('Sheet TAI KHOAN thiếu cột bắt buộc.');
+  if (sh.getMaxRows() > 1) sh.getRange(2, c.u + 1, sh.getMaxRows() - 1, 1).setNumberFormat('@');
+  const username = String(data.username || '').trim(), fullName = String(data.fullName || '').trim(),
+    original = String(data.originalUsername || '').trim(), password = String(data.password || ''),
+    role = String(data.role || 'NHANVIEN').trim() || 'NHANVIEN', status = String(data.status || 'Hoạt động').trim() || 'Hoạt động';
+  if (!username) throw new Error('Tên đăng nhập không được để trống.');
+  if (!fullName) throw new Error('Họ tên không được để trống.');
+  let rowIndex = -1;
+  for (let r = 1; r < values.length; r++) if (original && normalizeKey_(values[r][c.u]) === normalizeKey_(original)) { rowIndex = r + 1; break; }
+  for (let r = 1; r < values.length; r++) {
+    if (r + 1 === rowIndex) continue;
+    if (normalizeKey_(values[r][c.u]) === normalizeKey_(username)) throw new Error('Tên đăng nhập đã tồn tại.');
+  }
+  if (rowIndex < 0) {
+    if (!password) throw new Error('Vui lòng nhập mật khẩu cho tài khoản mới.');
+    const row = new Array(Math.max(5, sh.getLastColumn())).fill('');
+    row[c.u] = username; row[c.n] = fullName; row[c.p] = sha256Hex_(password); row[c.r] = role; row[c.s] = status;
+    const nr = sh.getLastRow() + 1;
+    sh.getRange(nr, 1, 1, row.length).setValues([row]);
+    sh.getRange(nr, c.u + 1).setNumberFormat('@').setValue(username);
+    return { ok: true, message: 'Đã thêm tài khoản.' };
+  }
+  sh.getRange(rowIndex, c.u + 1).setNumberFormat('@').setValue(username);
+  sh.getRange(rowIndex, c.n + 1).setValue(fullName);
+  if (password) sh.getRange(rowIndex, c.p + 1).setValue(sha256Hex_(password));
+  sh.getRange(rowIndex, c.r + 1).setValue(role);
+  sh.getRange(rowIndex, c.s + 1).setValue(status);
+  return { ok: true, message: 'Đã cập nhật tài khoản.' };
+}
+
+function deleteTaiKhoan(username, currentUsername) {
+  username = String(username || '').trim(); currentUsername = String(currentUsername || '').trim();
+  if (!username) throw new Error('Thiếu tên đăng nhập.');
+  if (normalizeKey_(username) === normalizeKey_(currentUsername)) throw new Error('Không thể xóa tài khoản đang đăng nhập.');
+  const sh = getSpreadsheet_().getSheetByName(SH.ACCOUNT);
+  if (!sh) throw new Error('Không tìm thấy sheet TAI KHOAN.');
+  const values = sh.getDataRange().getDisplayValues(), c = accountCols_(values);
+  let target = -1;
+  for (let r = 1; r < values.length; r++) if (normalizeKey_(values[r][c.u]) === normalizeKey_(username)) { target = r + 1; break; }
+  if (target < 0) throw new Error('Không tìm thấy tài khoản.');
+  const active = normalizeKey_('Hoạt động');
+  if (normalizeKey_(values[target - 1][c.r]) === 'admin' && normalizeKey_(values[target - 1][c.s]) === active) {
+    const n = values.slice(1).filter(function (r) { return normalizeKey_(r[c.r]) === 'admin' && normalizeKey_(r[c.s]) === active; }).length;
+    if (n <= 1) throw new Error('Không thể xóa ADMIN hoạt động cuối cùng.');
+  }
+  sh.deleteRow(target);
+  return { ok: true, message: 'Đã xóa tài khoản.' };
+}
+
+// ===================== CHUYỂN ĐỔI DỮ LIỆU CŨ (CHẠY 1 LẦN) =====================
+
+function readLegacyAppState_(ss) {
+  const sh = ss.getSheetByName('_APP_STATE');
+  if (!sh || sh.getLastRow() < 2) return null;
+  try {
+    const json = sh.getRange(2, 1, sh.getLastRow() - 1, 2).getValues()
+      .filter(function (r) { return r[1] !== ''; }).sort(function (a, b) { return Number(a[0]) - Number(b[0]); })
+      .map(function (r) { return r[1]; }).join('');
+    return json ? JSON.parse(json) : null;
+  } catch (e) { return null; }
+}
+
+/**
+ * Chạy MỘT LẦN trong trình soạn thảo Apps Script:
+ *  1. Đọc dữ liệu hiện có (ưu tiên _APP_STATE cũ nếu còn) và đổi mọi liên kết sang Mã cặp.
+ *  2. Ghi lại theo cấu trúc chuẩn hóa.
+ *  3. Xóa các sheet thừa trong OBSOLETE_SHEETS.
+ */
+function migrateToNormalizedSchema() {
+  const ss = ensureSchema_(getSpreadsheet_());
+  const current = loadDirectFromVisibleSheets().state;
+  const legacy = readLegacyAppState_(ss);
+  let state = current;
+
+  if (legacy && Array.isArray(legacy.teams)) {
+    const codeByPair = {}; current.teams.forEach(function (t) { codeByPair[normalizeKey_(t.pair)] = t.code; });
+    const codes = current.teams.map(function (t) { return t.code; });
+    const idMap = {};
+    legacy.teams.forEach(function (t) {
+      let code = String(t.code || '').trim();
+      if (!code || codes.indexOf(code) < 0) code = codeByPair[normalizeKey_(t.pair)] || code;
+      if (!code) code = nextCode_(codes);
+      if (codes.indexOf(code) < 0) {
+        codes.push(code);
+        current.teams.push({ id: code, code: code, pair: t.pair || '', note: t.note || '', sheetData: t.sheetData || {} });
+      }
+      idMap[t.id] = code;
+    });
+    const m = function (id) { return idMap[id] || id; };
+    if (Array.isArray(legacy.groups) && legacy.groups.length) {
+      state.groups = legacy.groups.map(function (g) { return { id: g.id, name: g.name, teamIds: (g.teamIds || []).map(m) }; });
+      state.matches = (legacy.matches || []).map(function (x) { return Object.assign({}, x, { stage: 'group', teamA: m(x.teamA), teamB: m(x.teamB) }); });
+    }
+    if (legacy.knockout && Array.isArray(legacy.knockout.matches)) {
+      state.knockout = Object.assign({}, legacy.knockout, {
+        matches: legacy.knockout.matches.map(function (x) { return Object.assign({}, x, { teamA: m(x.teamA), teamB: m(x.teamB) }); })
+      });
+    }
+    const lt = legacy.tournament || {};
+    const found = applyConfig_(ss, directBaseState_());
+    CONFIG_FIELDS.forEach(function (f) { if (!found[f[1]] && lt[f[1]] !== undefined) state.tournament[f[1]] = lt[f[1]]; });
+    if (Array.isArray(lt.knockoutPairingConfig) && lt.knockoutPairingConfig.length) state.tournament.knockoutPairingConfig = lt.knockoutPairingConfig;
+  }
+  if (!state.tournament.knockoutPairingConfig.length) state.tournament.knockoutPairingConfig = readKoPairing_(ss, 'KO_SƠ ĐỒ GHÉP V4');
+
+  state.allowEmptyTeams = true;
+  state.database.lastSync = new Date().toISOString();
+  saveTournamentState(state);
+  const removed = cleanupObsoleteSheets();
+  return { ok: true, teams: state.teams.length, groups: state.groups.length, matches: state.matches.length,
+    knockoutMatches: state.knockout ? state.knockout.matches.length : 0, removedSheets: removed };
+}
+
+function cleanupObsoleteSheets() {
+  const ss = getSpreadsheet_(), removed = [];
+  OBSOLETE_SHEETS.forEach(function (name) {
+    const sh = ss.getSheetByName(name);
+    if (sh && ss.getSheets().length > 1) { removed.push(sh.getName()); ss.deleteSheet(sh); }
+  });
+  return removed;
+}
+
+function testSpreadsheetConnection() {
+  try {
+    const ss = getSpreadsheet_();
+    return { ok: true, spreadsheetId: ss.getId(), spreadsheetName: ss.getName(), sheets: ss.getSheets().map(function (s) { return s.getName(); }) };
+  } catch (err) { return { ok: false, message: err && err.message ? err.message : String(err), spreadsheetId: getDataSpreadsheetId_() }; }
+}
+
+
+// ===================== TRANG KIỂM TRA CÀI ĐẶT (mở link Web App + ?view=diag) =====================
+// Kiểm tra trên máy chủ: Code.gs đúng bản chưa, còn file .gs cũ không, App/Index/Live có bị dán lỗi không.
+const APP_EXPECTED = { lines: 2751, blocks: ["3b7d93c6282d", "6e4a8311117b", "c1aa2bbe0212", "5f51505b1693", "aaec3a8e9e14", "23b2497a7ddd", "c8f45f6bfba5", "9f063d5ee1ea", "d1a96af6f491", "69ba55e36da0", "0027c33cad34", "b64d60a0a47b", "370f7b9ea192", "33f8ab28c09c", "13184d6e6e9a", "1b87ee4f8843", "b1cf29105682", "451b5de421fa", "bf243007c349", "c1688b1a6acf", "a92a1131b4e9", "4f96af980e55", "3608eb07d386", "3d0b7403b472", "3f1b5f65a983", "2126df5d844e", "106950782410", "ae56e3379c15"] };
+
+function hexOf_(text) {
+  return Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, text, Utilities.Charset.UTF_8)
+    .map(function (b) { const v = b < 0 ? b + 256 : b; return ('0' + v.toString(16)).slice(-2); }).join('');
+}
+
+function googleStripComments_(js) {
+  let out = '', i = 0, state = null; const n = js.length;
+  while (i < n) {
+    const c = js[i];
+    if (state === null) {
+      if (js.substr(i, 2) === '//') { const j = js.indexOf('\n', i); i = j >= 0 ? j : n; continue; }
+      if (js.substr(i, 2) === '/*') { const j = js.indexOf('*/', i + 2); const seg = js.slice(i, j >= 0 ? j + 2 : n); out += seg.replace(/[^\n]/g, ''); i = j >= 0 ? j + 2 : n; continue; }
+      if (c === "'" || c === '"') state = c;
+    } else {
+      if (c === '\\') { out += js.substr(i, 2); i += 2; continue; }
+      if (c === state) state = null;
+    }
+    out += c; i++;
+  }
+  return out;
+}
+
+function checkScripts_(name) {
+  let raw;
+  try { raw = HtmlService.createHtmlOutputFromFile(name).getContent(); } catch (e) { return { name: name, ok: false, msg: 'Không có file ' + name + '.html' }; }
+  const out = { name: name, ok: true, size: raw.length, lines: raw.split('\n').length, errors: [] };
+  const re = /<script>([\s\S]*?)<\/script>/g; let m, k = 0;
+  while ((m = re.exec(raw))) {
+    k++;
+    // Mô phỏng cách Google xóa chú thích "//" (không nhận biết biểu thức chính quy) rồi mới kiểm tra cú pháp
+    try { new Function(googleStripComments_(m[1])); }
+    catch (e) {
+      // Tìm dòng hỏng: dòng đầu tiên mà khi cắt đến đó lỗi "ký tự lạ" đã xuất hiện
+      const lines = m[1].split('\n'); let bad = -1;
+      for (let i = 0; i < lines.length; i++) {
+        try { new Function('/*' + '*/' + lines[i].replace(/^\s+/, '') + '\n'); }
+        catch (e2) { if (/Invalid or unexpected token|Unterminated/i.test(String(e2.message))) { bad = i + 1; break; } }
+      }
+      out.ok = false;
+      out.errors.push('Khối script ' + k + ': ' + e.message + (bad > 0 ? ' — nghi ở dòng ' + bad + ' của khối: ' + String(lines[bad - 1] || '').trim().slice(0, 200) : ''));
+    }
+  }
+  if (name === 'App') {
+    const L = raw.replace(/\r\n/g, '\n').replace(/\s+$/, '').split('\n');
+    out.marker = raw.indexOf("APP_FILE_END='" + SERVER_BUILD + "'") >= 0;
+    out.diffBlocks = [];
+    for (let i = 0; i < APP_EXPECTED.blocks.length; i++) {
+      const h = hexOf_(L.slice(i * 100, i * 100 + 100).join('\n')).slice(0, 12);
+      if (h !== APP_EXPECTED.blocks[i]) out.diffBlocks.push('dòng ' + (i * 100 + 1) + '–' + (i * 100 + 100));
+    }
+    out.expectedLines = APP_EXPECTED.lines; out.actualLines = L.length;
+  }
+  return out;
+}
+
+function diagnosePage_() {
+  const esc = function (s) { return String(s == null ? '' : s).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); };
+  const row = function (ok, title, detail) { return '<tr><td style="font-size:20px">' + (ok ? '✅' : '❌') + '</td><td><b>' + esc(title) + '</b><div style="color:#475569">' + detail + '</div></td></tr>'; };
+  let h = '';
+  const legacy = legacyCodeFound_();
+  h += row(true, 'Code.gs đang chạy bản ' + SERVER_BUILD, 'Bản đúng là ' + esc(SERVER_BUILD) + '. Nếu link Web App không mở được trang này: chưa triển khai Phiên bản mới.');
+  let trig = [];
+  try { trig = ScriptApp.getProjectTriggers().map(function (t) { return t.getHandlerFunction() + ' (' + t.getEventType() + ')'; }); } catch (e) {}
+  h += row(true, 'Dự án đang chạy', 'Script ID: <b>' + esc(ScriptApp.getScriptId()) + '</b><br>Link Web App của bản triển khai này: ' + esc(ScriptApp.getService().getUrl() || '') +
+    '<br>Trình kích hoạt (trigger): ' + (trig.length ? esc(trig.join(', ')) : 'không có'));
+  let note = ''; try { note = getSpreadsheet_().getSheetByName(SH.SCHEDULE).getRange(1, 1).getNote(); } catch (e) {}
+  let lichF = false; try { lichF = sheetHasFormulas_(getSpreadsheet_().getSheetByName(SH.SCHEDULE)); } catch (e) {}
+  h += row(!lichF, 'Sheet LỊCH ĐẤU', (lichF ? '<b style="color:#b91c1c">ĐANG CÓ CÔNG THỨC</b> – có code khác ghi vào. ' : 'Không có công thức. ') + 'Lần ghi gần nhất: ' + esc(note || 'chưa có dấu vết (chưa ghi bằng bản V6)'));
+  h += row(!legacy.length, 'File .gs cũ còn sót', legacy.length ? 'Có hàm cũ: ' + esc(legacy.join(', ')) + ' → xóa file .gs chứa các hàm này.' : 'Không có.');
+  let ds = {}; try { ds = getDataSourceStatus(); } catch (e) { ds = { configured: false, message: e.message }; }
+  h += row(!!ds.configured, 'Google Sheet dữ liệu', ds.configured ? esc(ds.spreadsheetName + ' (' + ds.spreadsheetId + ')') : esc(ds.message || 'Chưa cấu hình'));
+  ['Index', 'App', 'Live'].forEach(function (n) {
+    const c = checkScripts_(n);
+    let d = c.size ? (c.lines + ' dòng, ' + c.size + ' ký tự. ') : '';
+    if (c.msg) d += esc(c.msg);
+    if (c.errors && c.errors.length) d += '<br><b style="color:#b91c1c">' + c.errors.map(esc).join('<br>') + '</b>';
+    if (n === 'App') {
+      d += '<br>Dòng đánh dấu cuối file: ' + (c.marker ? 'có' : '<b style="color:#b91c1c">KHÔNG CÓ (file dán thiếu hoặc là bản khác)</b>');
+      d += '<br>Số dòng: ' + c.actualLines + ' / bản gốc ' + c.expectedLines;
+      if (c.diffBlocks.length) d += '<br>Khác bản gốc ở: ' + esc(c.diffBlocks.slice(0, 8).join(', ')) + (c.diffBlocks.length > 8 ? '…' : '');
+    }
+    const ok = c.ok && (n !== 'App' || (c.marker && !c.diffBlocks.length));
+    h += row(ok, 'File ' + n + '.html', d || 'OK');
+  });
+  const html = '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Kiểm tra cài đặt</title>' +
+    '<style>body{font-family:Segoe UI,Arial,sans-serif;margin:16px;color:#0f172a}table{border-collapse:collapse;width:100%;max-width:900px}td{border-bottom:1px solid #e2e8f0;padding:10px;vertical-align:top;word-break:break-word}</style></head><body>' +
+    '<h2>Kiểm tra cài đặt ứng dụng</h2><table>' + h + '</table><p style="color:#64748b">Chụp màn hình trang này gửi lại nếu còn dấu ❌.</p></body></html>';
+  return HtmlService.createHtmlOutput(html).setTitle('Kiểm tra cài đặt').setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
