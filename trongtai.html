@@ -10,10 +10,10 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="application-name" content="Trọng tài">
 <!-- Icon riêng cho module Trọng tài khi "Thêm vào màn hình chính" -->
-<link rel="manifest" href="./manifest-trongtai.json?v=3">
-<link rel="icon" type="image/png" sizes="192x192" href="./icon/trongtai-192.png?v=2">
-<link rel="icon" type="image/png" sizes="512x512" href="./icon/trongtai-512.png?v=2">
-<link rel="apple-touch-icon" sizes="180x180" href="./icon/trongtai-180.png?v=2">
+<link rel="manifest" href="./manifest-trongtai.json?v=4">
+<link rel="icon" type="image/png" sizes="192x192" href="./trongtai-192.png?v=3">
+<link rel="icon" type="image/png" sizes="512x512" href="./trongtai-512.png?v=3">
+<link rel="apple-touch-icon" sizes="180x180" href="./trongtai-180.png?v=3">
 <title>Trọng tài Pickleball</title>
 <style>
 :root{
@@ -243,11 +243,16 @@ body.scoring{overflow:hidden;position:fixed;inset:0;width:100%;height:100%}
    ===================================================================== */
 (function(){
 'use strict';
-var DEFAULT_API_URL='https:\/\/script.google.com\/macros\/s\/AKfycbyn5qtFeeh5PXr0Fh8e52GAvNzXvAGd8BYYaHRHpL8T2wfhULQ3HWT6jjpJGNBHk8i7\/exec';
+// Link Web App chính của giải (trùng APP_URL trong index.html của repo PICKLEBALL)
+var DEFAULT_API_URL='https:\/\/script.google.com\/macros\/s\/AKfycbxaR-EOa1SQtF_Z-a5hpBy9vZSiNn_gHYzn9Pe4jU-Nsmzf2v86VfwHK5frbIs7vUPp\/exec';
+var OLD_API_IDS=['AKfycbyn5qtFeeh5PXr0Fh8e52GAvNzXvAGd8BYYaHRHpL8T2wfhULQ3HWT6jjpJGNBHk8i7'];
 var Q=new URLSearchParams(location.search);
 var LS={get:function(k,d){try{var v=localStorage.getItem('pbRef:'+k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set:function(k,v){try{localStorage.setItem('pbRef:'+k,JSON.stringify(v));}catch(e){}},del:function(k){try{localStorage.removeItem('pbRef:'+k);}catch(e){}}};
-var API=String(Q.get('apiUrl')||LS.get('api','')||DEFAULT_API_URL).trim();
-if(Q.get('apiUrl'))LS.set('api',API);
+// Điện thoại còn nhớ link cũ (bản triển khai cũ) → tự chuyển sang link chính
+(function(){var a=String(LS.get('api','')||'');if(a&&OLD_API_IDS.some(function(id){return a.indexOf(id)>=0;})){LS.set('api',DEFAULT_API_URL);LS.del('cache');LS.del('transport2');}})();
+var qApi=String(Q.get('apiUrl')||'');if(qApi&&OLD_API_IDS.some(function(id){return qApi.indexOf(id)>=0;}))qApi='';
+var API=String(qApi||LS.get('api','')||DEFAULT_API_URL).trim();
+if(qApi)LS.set('api',API);
 // Ghi link máy chủ vào địa chỉ trang: "Thêm vào MH chính" trên điện thoại sẽ nhớ đúng giải (iPhone dùng bộ nhớ riêng cho icon)
 function syncUrl(){try{var u=new URL(location.href);if(u.searchParams.get('apiUrl')!==API){u.searchParams.set('apiUrl',API);history.replaceState(null,'',u.toString());}}catch(e){}}
 syncUrl();
@@ -381,7 +386,7 @@ function renderList(){
   var pend=LS.get('outbox',[]);
   var sb=String(S.data.serverBuild||''),sv=(sb.match(/V(\d+)\.(\d+)/)||[0,0,0]),oldSrv=!sb||(Number(sv[1])*100+Number(sv[2]))<908;
   var warn=oldSrv?'<div class="srv-warn">⚠ Link máy chủ <b>'+esc(apiId(API))+'</b> đang chạy '+(sb?'bản cũ ('+esc(sb)+')':'bản cũ')+' – điểm có thể <b>không lên Live</b>. Trên điện thoại hãy mở link trọng tài lấy từ nút <b>Trọng tài</b> trong App (máy tính), hoặc bấm ⚙ nhập đúng link Web App /exec mới.<br><button class="btn ghost" id="btnConn2" type="button">⚙ Đổi link máy chủ</button></div>':'';
-  var html=barHtml(S.data.tournament.name||'Giải Pickleball','🏓 Trọng tài • bản 9.9 • máy chủ '+apiId(API)+(S.data.loadedAt?' • cập nhật '+new Date(S.data.loadedAt).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit',second:'2-digit'}):''))+
+  var html=barHtml(S.data.tournament.name||'Giải Pickleball','🏓 Trọng tài • bản 10.0 • máy chủ '+apiId(API)+(S.data.loadedAt?' • cập nhật '+new Date(S.data.loadedAt).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit',second:'2-digit'}):''))+
     warn+'<div class="tools"><div class="seg" id="seg">'+[['pending','Chưa đấu'],['live','Đang đấu'],['done','Đã đấu'],['all','Tất cả']].map(function(x){return '<button data-f="'+x[0]+'" class="'+(f===x[0]?'on':'')+'">'+x[1]+'<b>'+cnt[x[0]]+'</b></button>';}).join('')+'</div>'+
     '<input class="search" id="search" placeholder="Tìm tên VĐV, bảng, vòng…" value="'+esc(S.q)+'" type="search"></div>'+
     (pend.length?'<div class="wrap" style="padding-bottom:0"><div class="msg warn">⚠ Có '+pend.length+' kết quả chưa gửi được lên Google Sheet. <button class="btn ghost" id="sendPend" style="min-height:36px;margin-top:8px">Gửi lại ngay</button></div></div>':'')+
