@@ -624,7 +624,7 @@ function finishPrompt(manual){
     '<div class="result-big"><div class="n">'+esc(teamName(m.teamA))+'</div><div class="s">'+fa+' – '+fb+'</div><div class="n">'+esc(teamName(m.teamB))+'</div></div>'+
     (g.bo>1?'<div class="games-list">'+games.map(function(x,i){return '<span>G'+(i+1)+': '+x.a+'-'+x.b+'</span>';}).join('')+'</div>':'')+
     (ok?'<div class="msg info">🏆 '+esc(teamName(fa>fb?m.teamA:m.teamB))+' thắng trận. Bấm Lưu để ghi vào Google Sheet.</div>':'<div class="msg warn">Tỷ số chưa đủ điều kiện kết thúc theo luật ('+esc(ruleText(gameRule(m,Math.min(games.length,g.bo-1))))+'). Chỉ lưu khi BTC đồng ý (bỏ cuộc, chấn thương…).</div>')+
-    '<div class="actions"><button class="btn ok block" data-x="save" '+(fa===fb?'disabled':'')+'>💾 Lưu kết quả lên Google Sheet</button><button class="btn ghost block" data-x="back">Tiếp tục đếm điểm</button></div>',
+    '<div class="actions"><button class="btn ok block" data-x="save" '+(fa===fb?'disabled':'')+'>💾 Lưu kết quả</button><button class="btn ghost block" data-x="back">Tiếp tục đếm điểm</button></div>',
     function(x,close){
       if(x==='back'){close();if(!manual){/* quay lại: bỏ game vừa chốt */var h=g.hist.pop();if(h){g.a=h.a;g.b=h.b;g.serve=h.serve;g.hand=h.hand;g.games=h.games;persist();drawCourts();}}return;}
       if(x!=='save')return;
@@ -636,7 +636,7 @@ function finishPrompt(manual){
         LS.del('game:'+m.kind+':'+m.id);S.game=null;releaseWake();
         toast(res.queued?'Chưa gửi được – kết quả đã lưu trên máy, sẽ gửi lại sau':'✅ Đã lưu kết quả '+fa+'-'+fb,3500);
         m.completed=true;m.scoreA=fa;m.scoreB=fb;renderList();loadList(false);
-      }).catch(function(err){btn.disabled=false;btn.textContent='💾 Lưu kết quả lên Google Sheet';toast(err.message||String(err),4000);});
+      }).catch(function(err){btn.disabled=false;btn.textContent='💾 Lưu kết quả';toast(err.message||String(err),4000);});
     });
 }
 function sendResult(p){
